@@ -8,7 +8,7 @@ db = SQLAlchemy()
 
 def create_app():
   app = Flask(__name__)
-  app.config.from_oejct(Config)
+  app.config.from_object(Config)
   CORS(app)
   db.init_app(app)
   os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
