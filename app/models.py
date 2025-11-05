@@ -1,4 +1,4 @@
-from . import dp
+from . import db
 from datetime import datetime
 
 class Post(db.Model):
