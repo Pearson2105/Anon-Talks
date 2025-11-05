@@ -13,8 +13,8 @@ def create_app():
   db.init_app(app)
   os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-  from .routes import db
-  app.register_blueprint(db)
+  from .routes import pb
+  app.register_blueprint(bp)
 
   with app.app_context():
     db.create_all()
