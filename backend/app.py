@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
-from config import Config
-from extensions import db, cors, limiter
-from models import Post
+from .config import Config
+from .extensions import db, cors, limiter
+from .models import Post
 import bleach
 
 def create_app():
