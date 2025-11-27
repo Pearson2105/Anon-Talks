@@ -31,7 +31,7 @@ def create_app():
     image_url = body.get("imageUrl") or body.get("image_url")
 
   if (not content or not content.strip()) and (not image_url or not image_url.strip()):
-  return jsonify({"error": "content or imageUrl required"}), 400
+    return jsonify({"error": "content or imageUrl required"}), 400
 
   username = Post.normalize_username(username)
   content = (content or "").strip()
