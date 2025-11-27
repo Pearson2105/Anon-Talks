@@ -12,7 +12,7 @@ class Post(db.Model):
   username = db.Column(db.String(64), nullable=True) 
   content = db.Column(db.Text, nullable=True)
   image_url = db.Column(db.String(1000), nullable=True)
-  created_at = db.Column(db.DateTime, deafult=datetime.utcnow, nullable=False)
+  created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 def as_dict(self):
   return 
