@@ -5,52 +5,59 @@ from models import Post
 import bleach
 
 def create_app():
-  app = Flask(__name__)
-  app.config.from_object(Config)
-  db.init_app(app)
-  cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
-  limiter.init_app(app)
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-  @app.before_first_reguest
-  def create_tables():
-    db.create_all()
+    db.init_app(app)
+    cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
+    limiter.init_app(app)
 
-  @app.route("/api/posts", methods=["GET"])
-  def list_posts():
-    posts = Post.query.order_by(Post.created_at.desc()).all()
-    return jsonify([p.as_dict() for p in posts]), 200
+   
+    @app.before_first_request
+    def create_tables():
+        db.create_all()
 
-  @limiter.limit("30 per hour")
-  @app.route("/api/posts", methods=["POST"])
-  def create_post():
-    if not request.is_json:
-      return jsonify({"error": "JSON body required"}), 400
-    body = request.get_json()
-    username = body.get("username")
-    content = body.get("content")
-    image_url = body.get("imageUrl") or body.get("image_url")
+    @app.route("/api/posts", methods=["GET"])
+    def list_posts():
+        posts = Post.query.order_by(Post.created_at.desc()).all()
+        return jsonify([p.as_dict() for p in posts]), 200
 
-  if (not content or not content.strip()) and (not image_url or not image_url.strip()):
-    return jsonify({"error": "content or imageUrl required"}), 400
+    @app.route("/api/posts", methods=["POST"])
+    @limiter.limit("30 per hour")
+    def create_post():
+        if not request.is_json:
+            return jsonify({"error": "JSON body required"}), 400
 
-  username = Post.normalize_username(username)
-  content = (content or "").strip()
-  if content and len(content) > 4096:
-      content = content[:4096]
+        body = request.get_json()
+        username = body.get("username")
+        content = body.get("content")
+        image_url = body.get("imageUrl") or body.get("image_url")
 
-  content = bleach.clean(content, tags=[], attributes={}, strip=True)
-  if image_url:
-    image_url = image_url.strip()
-    if len(image_url) > 1000:
-      image_url = image_url[:1000]
+        if (not content or not content.strip()) and (not image_url or not image_url.strip()):
+            return jsonify({"error": "content or imageUrl required"}), 400
 
-  post = Post(username=username, content=content or None, image_url=image_url or None)
-  db.session.add(post)
-  db.session.commit()
-  return jsonify(post.as_dict()), 201
+        username = Post.normalize_username(username)
+        content = (content or "").strip()
 
-return app
+        if content and len(content) > 4096:
+            content = content[:4096]
+
+        content = bleach.clean(content, tags=[], attributes={}, strip=True)
+
+        if image_url:
+            image_url = image_url.strip()
+            if len(image_url) > 1000:
+                image_url = image_url[:1000]
+
+        post = Post(username=username, content=content or None, image_url=image_url or None)
+        db.session.add(post)
+        db.session.commit()
+
+        return jsonify(post.as_dict()), 201
+
+    return app
+
 
 if __name__ == "__main__":
-  app = create_app()
-  app.run(host="0.0.0.0", port=8080)
+    app = create_app()
+    app.run(host="0.0.0.0", port=8080)
