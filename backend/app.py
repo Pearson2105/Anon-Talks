@@ -22,7 +22,7 @@ def create_app():
 
   @limiter.limit("30 per hour")
   @app.route("/api/posts", methods=["POST"])
-  def create_post();
+  def create_post():
     if not request.is_json:
       return jsonify({"error": "JSON body required"}), 400
     body = request.get_json()
