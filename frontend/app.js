@@ -1,6 +1,6 @@
 const API = (location.hostname === '127.0.0.1' || location.hostname === 'localhost')
   ? 'http://localhost:8080/api'
-  : 'https://YOUR_API_HOST/api';
+  : 'http://127.0.0.1:8080/api';
 
 async function fetchPosts(){
   try {
