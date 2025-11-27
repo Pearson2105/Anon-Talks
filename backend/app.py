@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
-from .config import Config
-from .extensions import db, cors, limiter
-from .models import Post
+from config import Config
+from extensions import db, cors, limiter
+from models import Post
 import bleach
 
 
@@ -37,4 +37,41 @@ def create_app():
 
         body = request.get_json()
         username = body.get("username")
-        content = body.ge
+        content = body.get("content")
+        image_url = body.get("imageUrl") or body.get("image_url")
+
+        # require content or image
+        if (not content or not content.strip()) and (not image_url or not image_url.strip()):
+            return jsonify({"error": "content or imageUrl required"}), 400
+
+        # username
+        username = Post.normalize_username(username)
+
+        # content
+        content = (content or "").strip()
+        if content and len(content) > 4096:
+            content = content[:4096]
+        content = bleach.clean(content, tags=[], attributes={}, strip=True)
+
+        # image URL
+        if image_url:
+            image_url = image_url.strip()
+            if len(image_url) > 1000:
+                image_url = image_url[:1000]
+
+        post = Post(
+            username=username,
+            content=content or None,
+            image_url=image_url or None
+        )
+        db.session.add(post)
+        db.session.commit()
+
+        return jsonify(post.as_dict()), 201
+
+    return app
+
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(host="0.0.0.0", port=8080)
