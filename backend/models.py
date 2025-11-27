@@ -8,7 +8,7 @@ def gen_anon():
 
 class Post(db.Model):
   __tablename__ = "posts"
-  id = db.Column(db.Integer, primary_key+True)
+  id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(64), nullable=True) 
   content = db.Column(db.Text, nullable=True)
   image_url = db.Column(db.String(1000), nullable=True)
