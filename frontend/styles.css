@@ -1,11 +1,126 @@
-*{box-sizing:border-box}
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;padding:0;background:#f7f7f7;color:#111}
-header{background:#222;color:#fff;padding:12px 16px}
-h1{margin:0;font-size:18px}
-main{padding:12px;max-width:900px;margin:0 auto}
-#new-post{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
-#new-post input,#new-post textarea{padding:8px;border:1px solid #ccc;border-radius:6px}
-#new-post button{padding:10px;border:none;border-radius:6px;cursor:pointer}
-.post{background:#fff;border:1px solid #ddd;padding:10px;border-radius:8px;margin-bottom:8px}
-.post .meta{font-size:12px;color:#666;margin-bottom:6px}
-.post img{max-width:100%;border-radius:6px;margin-top:8px}
+body {
+    margin: 0;
+    padding: 0;
+    background: #7c7cf8;
+    font-family: Arial, sans-serif;
+}
+
+/* HEADER CLOUD BAR */
+header {
+    background: #d4c8ff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom-left-radius: 60px;
+    border-bottom-right-radius: 60px;
+}
+
+.username {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.search-container input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 20px;
+    border: none;
+}
+
+/* PLUS BUTTON */
+#createBtn {
+    font-size: 60px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px 20px;
+    border-radius: 20px;
+    transition: 0.2s;
+}
+
+#createBtn:hover {
+    transform: scale(1.1);
+}
+
+/* PAGE TITLE */
+.center {
+    text-align: center;
+    font-size: 55px;
+    margin-top: 10px;
+}
+
+/* POST CARD */
+.post {
+    width: 60%;
+    background: white;
+    margin: 25px auto;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.post img {
+    width: 220px;
+    height: auto;
+    border-radius: 10px;
+}
+
+/* TEXT AREA */
+.post .post-content {
+    width: 100%;
+}
+
+.meta {
+    color: gray;
+    margin-bottom: 8px;
+}
+
+.reactions {
+    margin-top: 10px;
+    font-size: 18px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.reactions span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* POPUP */
+#popupOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#popupBox {
+    background: white;
+    padding: 25px;
+    width: 350px;
+    border-radius: 15px;
+}
+
+#popupBox input,
+#popupBox textarea {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+#popupBox button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    border: none;
+    background: #7c7cf8;
+    color: white;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 16px;
+}
