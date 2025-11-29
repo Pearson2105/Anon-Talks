@@ -1,22 +1,43 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewpoer" content="width=device-width,initial-scale=1" />
-  <title>Board</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anon534 - Home</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header><h1>/b/ - Anonymous Board</h1></header>
-  <main>
-    <section id="new-post">
-      <input id="username" placeholder="anonymous name (optional)" maxlength="32" />
-      <textarea id="content" placeholder="post content" maxlength="4096"></textarea>
-      <input id="imageUrl" placeholder="image URL(optional)" />
-      <button id="postBtn">Post</button>button>
-    </section>
-    <section id="posts"></section>
-  </main>
-  <script src="app.js"></script>
-</body>  
+    <header>
+        <div class="username">Anon534</div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search/Filter">
+        </div>
+        <div id="createBtn">+</div>
+    </header>
+
+    <h1 class="center">Home</h1>
+
+    <div id="postsContainer"></div>
+
+    <!-- POPUP CREATE POST -->
+    <div id="popupOverlay">
+        <div id="popupBox">
+            <h2>Create Post</h2>
+
+            <label>Username:</label>
+            <input id="username" />
+
+            <label>Text:</label>
+            <textarea id="text"></textarea>
+
+            <label>Image URL (optional):</label>
+            <input id="imageUrl" />
+
+            <button id="submitPost">Post</button>
+            <button id="closePopup">Cancel</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
 </html>
