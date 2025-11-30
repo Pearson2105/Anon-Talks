@@ -15,18 +15,17 @@ class Post(db.Model):
   created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 def as_dict(self):
-  return 
-  {
-    "id": self.id,
-    "username": self.username,
-    "content": self.content,
-    "imageUrl": self.image_url,
-    "createdAt": self.created_at.isoformat() + "Z"
-  }
+    return {
+        "id": self.id,
+        "username": self.username,
+        "content": self.content,
+        "imageUrl": self.image_url,
+        "createdAt": self.created_at.isoformat() + "Z"
+    }
 
 @staticmethod
 def normalize_username(username):
   if not username or not username.strip():
-    return gem_anon()
+    return gen_anon()
   u = username.strip()
   return u[:32]
