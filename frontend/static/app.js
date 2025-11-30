@@ -9,11 +9,11 @@ document.getElementById("closePopup").onclick = () => popup.style.display = "non
 document.getElementById("submitPost").onclick = async () => {
     const data = {
         username: document.getElementById("username").value,
-        text: document.getElementById("text").value,
-        image_url: document.getElementById("imageUrl").value
+        content: document.getElementById("text").value,
+        imageUrl: document.getElementById("imageUrl").value
     };
 
-    await fetch(backendURL + "/api/create_post", {
+    await fetch(backendURL + "/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -31,22 +31,22 @@ async function loadPosts() {
     const container = document.getElementById("postsContainer");
     container.innerHTML = "";
 
-    posts.reverse().forEach(p => {
+    posts.forEach(p => {
         const el = document.createElement("div");
         el.className = "post";
 
         el.innerHTML = `
-            <img src="${p.image_url || 'https://via.placeholder.com/200'}">
+            <img src="${p.imageUrl || 'https://via.placeholder.com/200'}">
 
             <div class="post-content">
-                <div class="meta">${p.username} | Posted: ${p.timestamp}</div>
+                <div class="meta">${p.username} | Posted: ${p.createdAt}</div>
                 
-                <div class="text">${p.text}</div>
+                <div class="text">${p.content || ""}</div>
 
                 <div class="reactions">
-                    <span>👍 ${p.likes}</span>
-                    <span>👎 ${p.dislikes}</span>
-                    <span>💬 ${p.comments.length}</span>
+                    <span>👍 0</span>
+                    <span>👎 0</span>
+                    <span>💬 0</span>
                 </div>
             </div>
         `;
