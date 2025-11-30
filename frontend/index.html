@@ -1,38 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Anon534 - Home</title>
-  <link rel="stylesheet" href="/static/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anon534 - Home</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
+
+<header>
     <div class="username">Anon534</div>
-    <div class="search-container"><input type="text" id="searchInput" placeholder="Search/Filter"></div>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search/Filter">
+    </div>
     <div id="createBtn">+</div>
-  </header>
+</header>
 
-  <h1 class="center">Home</h1>
+<h1 class="center">Home</h1>
 
-  <div id="postsContainer"></div>
+<!-- POSTS -->
+<div id="postsContainer"></div>
 
-  <div id="popupOverlay">
+<!-- POPUP -->
+<div id="popupOverlay">
     <div id="popupBox">
-      <h2>Create Post</h2>
-      <label>Username:</label>
-      <input id="username" />
-      <label>Text:</label>
-      <textarea id="text"></textarea>
-      <label>Image URL (optional):</label>
-      <input id="imageUrl" />
-      <div style="margin-top:12px">
+        <h2>Create Post</h2>
+
+        <label>Username:</label>
+        <input id="username">
+
+        <label>Text:</label>
+        <textarea id="text"></textarea>
+
+        <label>Image URL (optional):</label>
+        <input id="imageUrl">
+
         <button id="submitPost">Post</button>
         <button id="closePopup">Cancel</button>
-      </div>
     </div>
-  </div>
+</div>
 
-  <script src="/static/app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
