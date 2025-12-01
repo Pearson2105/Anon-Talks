@@ -121,8 +121,10 @@ body {
 
 header {
     width: 100%;
-    height: 180px; /* adjust if needed */
-    background: url("static/header.png") no-repeat center top;
+    height: 140px; /* do NOT increase */
+    background-image: url("/static/cloud.png");
+    background-repeat: no-repeat;
+    background-position: top center;
     background-size: cover;
 
     display: flex;
@@ -130,6 +132,6 @@ header {
     align-items: center;
 
     padding: 20px;
-    border-bottom-left-radius: 60px;
-    border-bottom-right-radius: 60px;
+    box-sizing: border-box;
 }
+
