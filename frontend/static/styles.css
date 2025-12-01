@@ -102,7 +102,7 @@ header {
 }
 
 #popupBox {
-    background: #7371fc;
+    background: #7371FC;
     padding: 25px;
     width: 350px;
     border-radius: 15px;
@@ -113,15 +113,19 @@ header {
 #popupBox textarea {
     width: 100%;
     margin-bottom: 12px;
+    background: white;
+    color: black;
+    border-radius: 6px;
+    padding: 6px;
 }
 
 #popupBox button {
     margin-top: 10px;
     padding: 8px 15px;
     border: none;
-    background: #7c7cf8;
+    background: #7371fc;
     color: white;
     cursor: pointer;
     border-radius: 8px;
     font-size: 16px;
-} " }
+}
