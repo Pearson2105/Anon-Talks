@@ -102,10 +102,11 @@ header {
 }
 
 #popupBox {
-    background: white;
+    background: #7371fc;
     padding: 25px;
     width: 350px;
     border-radius: 15px;
+    color: white;
 }
 
 #popupBox input,
