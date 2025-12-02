@@ -29,20 +29,33 @@ def create_app():
                 db.create_all()
             tables_created = True
 
-    # ===== FRONTEND ROUTES =====
+    # ============================
+    # FRONTEND ROUTES (FIXED)
+    # ============================
 
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def serve_frontend(path):
-        frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+        frontend_dir = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "frontend")
+        )
+        static_dir = os.path.join(frontend_dir, "static")
 
+        # root → index.html
         if path == "" or path == "index.html":
             return send_from_directory(frontend_dir, "index.html")
 
-        # static files handled by Flask automatically
+        # serve static files like /static/cloud.png
+        if path.startswith("static/"):
+            filename = path.replace("static/", "")
+            return send_from_directory(static_dir, filename)
+
+        # other frontend files
         return send_from_directory(frontend_dir, path)
 
-    # ===== API ROUTES =====
+    # ============================
+    # API ROUTES
+    # ============================
 
     @app.route("/api/posts", methods=["GET"])
     def list_posts():
@@ -60,16 +73,20 @@ def create_app():
         content = body.get("content")
         image_url = body.get("imageUrl") or body.get("image_url")
 
+        # require text OR image
         if (not content or not content.strip()) and (not image_url or not image_url.strip()):
             return jsonify({"error": "content or imageUrl required"}), 400
 
+        # sanitize username
         username = Post.normalize_username(username)
 
+        # sanitize content
         content = (content or "").strip()
         if content and len(content) > 4096:
             content = content[:4096]
         content = bleach.clean(content, tags=[], attributes={}, strip=True)
 
+        # sanitize image url
         if image_url:
             image_url = image_url.strip()
             if len(image_url) > 1000:
