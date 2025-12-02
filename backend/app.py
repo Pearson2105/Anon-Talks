@@ -7,6 +7,7 @@ import os
 
 
 def create_app():
+    # FIXED STATIC SERVING
     app = Flask(
         __name__,
         static_folder="../frontend/static",
@@ -30,7 +31,8 @@ def create_app():
             tables_created = True
 
     # ============================
-    # FRONTEND ROUTES (FIXED)
+    # FRONTEND ROUTE ONLY
+    # (STATIC LEFT TO FLASK)
     # ============================
 
     @app.route("/", defaults={"path": ""})
@@ -39,18 +41,13 @@ def create_app():
         frontend_dir = os.path.abspath(
             os.path.join(os.path.dirname(__file__), "..", "frontend")
         )
-        static_dir = os.path.join(frontend_dir, "static")
 
         # root → index.html
         if path == "" or path == "index.html":
             return send_from_directory(frontend_dir, "index.html")
 
-        # serve static files like /static/cloud.png
-        if path.startswith("static/"):
-            filename = path.replace("static/", "")
-            return send_from_directory(static_dir, filename)
-
-        # other frontend files
+        # let Flask handle /static/*
+        # if not static, serve frontend files directly:
         return send_from_directory(frontend_dir, path)
 
     # ============================
@@ -73,20 +70,16 @@ def create_app():
         content = body.get("content")
         image_url = body.get("imageUrl") or body.get("image_url")
 
-        # require text OR image
         if (not content or not content.strip()) and (not image_url or not image_url.strip()):
             return jsonify({"error": "content or imageUrl required"}), 400
 
-        # sanitize username
         username = Post.normalize_username(username)
 
-        # sanitize content
         content = (content or "").strip()
         if content and len(content) > 4096:
             content = content[:4096]
         content = bleach.clean(content, tags=[], attributes={}, strip=True)
 
-        # sanitize image url
         if image_url:
             image_url = image_url.strip()
             if len(image_url) > 1000:
