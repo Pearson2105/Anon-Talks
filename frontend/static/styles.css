@@ -5,27 +5,41 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* TOP BAR */
-.topbar {
+/* HEADER CLOUD BAR */
+header {
     width: 100%;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    box-sizing: border-box;
-    color: white;
-    font-size: 26px;
+    height: 160px;
+    background-image: url("/static/cloud.png");
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-size: auto 160px;
+
+    position: relative;
+}
+
+/* TOP LEFT USERNAME */
+.username {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+
+    font-size: 30px;
     font-weight: bold;
+    color: black;
 }
 
-.right-controls {
+/* TOP RIGHT BUTTONS */
+.top-right {
+    position: absolute;
+    top: 20px;
+    right: 20px;
     display: flex;
+    gap: 15px;
     align-items: center;
-    gap: 20px;
 }
 
-.search {
+/* SEARCH INPUT */
+.search-container input {
     padding: 10px 15px;
     font-size: 16px;
     border-radius: 20px;
@@ -37,31 +51,22 @@ body {
     font-size: 50px;
     font-weight: bold;
     cursor: pointer;
-    padding: 5px 20px;
-    border-radius: 20px;
+    padding: 5px 12px;
+    border-radius: 15px;
     transition: 0.2s;
     background: white;
     color: #7371FC;
 }
 
 #createBtn:hover {
-    transform: scale(1.15);
+    transform: scale(1.1);
 }
 
-/* CLOUD BAR */
-.cloudbar {
-    width: 100%;
-    height: 230px;
-    background-image: url("/static/cloud.png");
-    background-repeat: repeat-x;
-    background-size: auto 230px;
-}
-
-/* PAGE TITLE */
+/* HOME TITLE */
 .center {
     text-align: center;
     font-size: 55px;
-    margin-top: 10px;
+    margin-top: 40px; /* pushes it BELOW cloud */
 }
 
 /* POST CARD */
@@ -78,7 +83,25 @@ body {
 
 .post img {
     width: 220px;
+    height: auto;
     border-radius: 10px;
+}
+
+.post .post-content {
+    width: 100%;
+}
+
+.meta {
+    color: gray;
+    margin-bottom: 8px;
+}
+
+.reactions {
+    margin-top: 10px;
+    font-size: 18px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
 }
 
 /* POPUP */
@@ -113,7 +136,7 @@ body {
     margin-top: 10px;
     padding: 8px 15px;
     border: none;
-    background: #5a56e8;
+    background: #7371FC;
     color: white;
     cursor: pointer;
     border-radius: 8px;
