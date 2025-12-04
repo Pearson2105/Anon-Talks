@@ -5,11 +5,37 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* USERNAME LEFT */
+/* HEADER CLOUD BAR */
+header {
+    width: 100%;
+    height: 160px;
+    background-image: url("/static/cloud.png");
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-size: auto 160px;
+
+    position: relative;
+}
+
+/* TOP LEFT USERNAME */
 .username {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+
     font-size: 30px;
     font-weight: bold;
     color: black;
+}
+
+/* TOP RIGHT BUTTONS */
+.top-right {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
 }
 
 /* SEARCH INPUT */
@@ -36,11 +62,11 @@ body {
     transform: scale(1.1);
 }
 
-/* PAGE TITLE */
+/* HOME TITLE */
 .center {
     text-align: center;
     font-size: 55px;
-    margin-top: 10px;
+    margin-top: 40px; /* pushes it BELOW cloud */
 }
 
 /* POST CARD */
@@ -61,7 +87,6 @@ body {
     border-radius: 10px;
 }
 
-/* TEXT AREA */
 .post .post-content {
     width: 100%;
 }
@@ -77,12 +102,6 @@ body {
     display: flex;
     gap: 20px;
     align-items: center;
-}
-
-.reactions span {
-    display: flex;
-    align-items: center;
-    gap: 5px;
 }
 
 /* POPUP */
@@ -117,40 +136,9 @@ body {
     margin-top: 10px;
     padding: 8px 15px;
     border: none;
-    background: #7371fc;
+    background: #7371FC;
     color: white;
     cursor: pointer;
     border-radius: 8px;
     font-size: 16px;
-}
-
-/* HEADER CLOUD BAR */
-header {
-    width: 100%;
-    height: 160px; /* adjust as needed */
-    background-image: url("/static/cloud.png");
-    background-repeat: repeat-x;
-    background-position: bottom center;
-    background-size: auto 160px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* TOP LEFT USERNAME */
-.username {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-}
-
-/* TOP RIGHT BUTTONS */
-.top-right {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
 }
