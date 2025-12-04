@@ -121,12 +121,10 @@ body {
 
 header {
     width: 100%;
-    height: 180px; /* adjust to match cloud height */
+    height: 160px; /* adjust to cloud height */
     background-image: url("/static/cloud.png");
-    background-repeat: no-repeat;
+    background-repeat: repeat-x;   /* 🔥 makes cloud span full width */
     background-position: top center;
-    background-size: contain;     /* prevents stretching/cropping */
-    background-color: transparent;
+    background-size: auto 160px;   /* keeps sharp quality */
 }
-
 
