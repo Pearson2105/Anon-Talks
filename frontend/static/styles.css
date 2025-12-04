@@ -5,57 +5,27 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* HEADER */
-header {
+/* TOP BAR */
+.topbar {
     width: 100%;
-    height: 200px;
-    position: relative;
-}
-
-/* CLOUD BAR */
-.cloud-bar {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 160px;
-    background-image: url("/static/cloud.png");
-    background-repeat: repeat-x;
-    background-position: bottom center;
-    background-size: auto 160px;
-}
-
-/* HOME TITLE ON TOP OF CLOUD */
-.center {
-    position: absolute;
-    bottom: 160px; /* sits ABOVE cloud bar */
-    width: 100%;
-    text-align: center;
-    font-size: 55px;
-    margin: 0;
-}
-
-/* TOP LEFT USERNAME */
-.username {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 30px;
-    font-weight: bold;
-    color: black;
-}
-
-/* TOP RIGHT CONTROLS */
-.top-right {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    height: 80px;
     display: flex;
-    gap: 15px;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    box-sizing: border-box;
+    color: white;
+    font-size: 26px;
+    font-weight: bold;
 }
 
-/* SEARCH INPUT */
-.search-container input {
+.right-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.search {
     padding: 10px 15px;
     font-size: 16px;
     border-radius: 20px;
@@ -67,18 +37,34 @@ header {
     font-size: 50px;
     font-weight: bold;
     cursor: pointer;
-    padding: 5px 12px;
-    border-radius: 15px;
+    padding: 5px 20px;
+    border-radius: 20px;
     transition: 0.2s;
     background: white;
     color: #7371FC;
 }
 
 #createBtn:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 
-/* POSTS */
+/* CLOUD BAR */
+.cloudbar {
+    width: 100%;
+    height: 230px;
+    background-image: url("/static/cloud.png");
+    background-repeat: repeat-x;
+    background-size: auto 230px;
+}
+
+/* PAGE TITLE */
+.center {
+    text-align: center;
+    font-size: 55px;
+    margin-top: 10px;
+}
+
+/* POST CARD */
 .post {
     width: 60%;
     background: white;
@@ -95,15 +81,14 @@ header {
     border-radius: 10px;
 }
 
-/* POPUP FIXED */
+/* POPUP */
 #popupOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.6);
     display: none;
     justify-content: center;
     align-items: center;
-    z-index: 9999; /* FIX: popup now appears */
 }
 
 #popupBox {
@@ -128,7 +113,7 @@ header {
     margin-top: 10px;
     padding: 8px 15px;
     border: none;
-    background: #7371FC;
+    background: #5a56e8;
     color: white;
     cursor: pointer;
     border-radius: 8px;
