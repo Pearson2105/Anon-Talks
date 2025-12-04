@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Chicago';
+    src: url('/static/Chicago.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -15,6 +22,17 @@ header {
     background-size: auto 160px;
 
     position: relative;
+}
+
+.header-title {
+    font-family: 'Chicago', sans-serif;
+    font-size: 70px;
+    font-weight: normal;
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: black;
 }
 
 /* TOP LEFT USERNAME */
