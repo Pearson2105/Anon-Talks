@@ -13,7 +13,18 @@ class Post(db.Model):
   content = db.Column(db.Text, nullable=True)
   image_url = db.Column(db.String(1000), nullable=True)
   created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    @staticmethod
+  
+
+def as_dict(self):
+    return {
+        "id": self.id,
+        "username": self.username,
+        "content": self.content,
+        "imageUrl": self.image_url,
+        "createdAt": self.created_at.isoformat() + "Z"
+    }
+
+ @staticmethod
     def normalize_username(username: str | None):
         if not username:
             return "Anon"
@@ -25,19 +36,3 @@ class Post(db.Model):
 
         # Limit size (optional)
         return username[:30]
-
-def as_dict(self):
-    return {
-        "id": self.id,
-        "username": self.username,
-        "content": self.content,
-        "imageUrl": self.image_url,
-        "createdAt": self.created_at.isoformat() + "Z"
-    }
-
-@staticmethod
-def normalize_username(username):
-  if not username or not username.strip():
-    return gen_anon()
-  u = username.strip()
-  return u[:32]
