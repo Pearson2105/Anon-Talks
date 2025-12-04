@@ -5,11 +5,14 @@ body {
     font-family: Arial, sans-serif;
 }
 
+/* USERNAME LEFT */
 .username {
     font-size: 30px;
     font-weight: bold;
+    color: white;
 }
 
+/* SEARCH INPUT */
 .search-container input {
     padding: 10px 15px;
     font-size: 16px;
@@ -19,12 +22,14 @@ body {
 
 /* PLUS BUTTON */
 #createBtn {
-    font-size: 60px;
+    font-size: 50px;
     font-weight: bold;
     cursor: pointer;
-    padding: 5px 20px;
-    border-radius: 20px;
+    padding: 5px 12px;
+    border-radius: 15px;
     transition: 0.2s;
+    background: white;
+    color: #7371FC;
 }
 
 #createBtn:hover {
@@ -119,12 +124,33 @@ body {
     font-size: 16px;
 }
 
+/* HEADER CLOUD BAR */
 header {
     width: 100%;
-    height: 450px; /* adjust to cloud height */
+    height: 250px; /* adjust as needed */
     background-image: url("/static/cloud.png");
-    background-repeat: repeat-x;   /* 🔥 makes cloud span full width */
-    background-position: top center;
-    background-size: auto 450px;   /* keeps sharp quality */
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-size: auto 250px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+/* TOP LEFT USERNAME */
+.username {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+/* TOP RIGHT BUTTONS */
+.top-right {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
