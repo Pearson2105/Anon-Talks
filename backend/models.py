@@ -24,15 +24,9 @@ def as_dict(self):
         "createdAt": self.created_at.isoformat() + "Z"
     }
 
- @staticmethod
-    def normalize_username(username: str | None):
-        if not username:
-            return "Anon"
-
-        username = username.strip()
-
-        if username == "":
-            return "Anon"
-
-        # Limit size (optional)
-        return username[:30]
+ @staticmethod 
+def normalize_username(username): 
+if not username 
+or not username.strip(): 
+return gem_anon() u = username.strip() 
+return u[:32] 
