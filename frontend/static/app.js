@@ -1,11 +1,31 @@
 const backendURL = "/api";
 
-// open popup
+// POPUP HANDLERS
 const popup = document.getElementById("popupOverlay");
-document.getElementById("createBtn").onclick = () => popup.style.display = "flex";
-document.getElementById("closePopup").onclick = () => popup.style.display = "none";
 
-// submit post
+document.getElementById("createBtn").onclick = () => {
+    popup.style.display = "flex";
+};
+
+document.getElementById("closePopup").onclick = () => {
+    popup.style.display = "none";
+};
+
+// TIME FORMATTER - LOCAL TIMEZONE
+function formatTimestamp(iso) {
+    const d = new Date(iso);
+
+    const hours = d.getHours().toString().padStart(2, "0");
+    const minutes = d.getMinutes().toString().padStart(2, "0");
+
+    const day = d.getDate().toString().padStart(2, "0");
+    const month = (d.getMonth() + 1).toString().padStart(2, "0");
+    const year = d.getFullYear();
+
+    return `${hours}:${minutes} on ${day}/${month}/${year}`;
+}
+
+// SUBMIT POST
 document.getElementById("submitPost").onclick = async () => {
     const data = {
         username: document.getElementById("username").value,
@@ -23,7 +43,7 @@ document.getElementById("submitPost").onclick = async () => {
     loadPosts();
 };
 
-// load posts
+// LOAD POSTS
 async function loadPosts() {
     const res = await fetch(backendURL + "/posts");
     const posts = await res.json();
@@ -38,7 +58,7 @@ async function loadPosts() {
         el.innerHTML = `
             <img src="${p.imageUrl || 'https://via.placeholder.com/200'}">
             <div class="post-content">
-                <div class="meta">${p.username} | ${p.createdAt}</div>
+                <div class="meta">${p.username} | ${formatTimestamp(p.createdAt)}</div>
                 <div class="text">${p.content || ""}</div>
             </div>
         `;
