@@ -63,6 +63,13 @@ async function loadPosts() {
             </div>
         `;
 
+        // ★ FIX: ensure the full image loads and height is recalculated
+        const img = el.querySelector("img");
+        img.onload = () => {
+            img.style.height = "auto";
+            img.style.maxHeight = "none";
+        };
+
         container.appendChild(el);
     });
 }
