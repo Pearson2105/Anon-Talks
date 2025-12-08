@@ -96,14 +96,12 @@ header {
     overflow: visible;    /* prevent clipping */
 }
 
-/* IMAGE inside the post */
 .post img {
-    width: 100%;      
-    height: auto;        /* maintain correct ratio */
-    max-height: none;    /* FIX: prevents cropping */
-    object-fit: contain; /* FIX: shows full image */
-    border-radius: 10px;
-    display: block;      /* FIX: removes weird gaps */
+    width: 100%;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    display: block;
 }
 
 .post-content {
@@ -154,9 +152,8 @@ header {
     font-size: 16px;
 }
 
-/* OVERRIDE ANY UNWANTED HEIGHT FROM PARENT CONTAINERS */
 .post, .post * {
     height: auto !important;
-    min-height: 0 !important;
     max-height: none !important;
+    overflow: visible !important;
 }
