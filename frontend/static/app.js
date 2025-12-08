@@ -4,12 +4,11 @@
 document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("anon_username");
     if (!username) {
-        // redirect to login/generate page if not logged in
         window.location.href = "/select.html";
         return;
     }
 
-    // Set username in header
+    // Header username
     const headerElem = document.getElementById("headerUsername");
     if (headerElem) headerElem.innerText = username;
 
@@ -94,9 +93,37 @@ document.getElementById("submitPost").onclick = async () => {
         popupOverlay.style.display = "none";
         document.getElementById("text").value = "";
         document.getElementById("imageUrl").value = "";
-        loadPosts(); // refresh posts for everyone
+        loadPosts();
     } else {
         const data = await res.json();
         alert(data.error || "Failed to create post");
     }
 };
+
+// ----------------------------
+// USERNAME DROPDOWN
+// ----------------------------
+const headerUsername = document.getElementById("headerUsername");
+const usernameDropdown = document.getElementById("usernameDropdown");
+
+headerUsername.addEventListener("click", () => {
+    usernameDropdown.classList.toggle("show");
+});
+
+document.addEventListener("click", (e) => {
+    if (!headerUsername.contains(e.target) && !usernameDropdown.contains(e.target)) {
+        usernameDropdown.classList.remove("show");
+    }
+});
+
+// LOGOUT
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("anon_username");
+    localStorage.removeItem("anon_password");
+    window.location.href = "/select.html";
+});
+
+// EDIT POSTS
+document.getElementById("editPosts").addEventListener("click", () => {
+    alert("Feature coming soon: edit your posts!");
+});
