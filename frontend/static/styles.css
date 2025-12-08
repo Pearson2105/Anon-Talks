@@ -29,25 +29,28 @@ header {
 
     position: relative;
     display: flex;
-    justify-content: center;
+    justify-content: center; /* title centered */
     align-items: center;
 }
 
-/* HEADER TITLE */
-.title-text {
+/* CENTERED TITLE */
+.center.title-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-family: "Chicago", Arial, sans-serif;
     font-size: 60px;
     color: black;
-    position: relative;
-    top: -20px;
 }
 
-/* USERNAME CONTAINER */
+/* USERNAME CONTAINER (top-left) */
 .username-container {
     position: absolute;
     top: 20px;
     left: 20px;
     cursor: pointer;
+    z-index: 20;
 }
 
 .username {
@@ -98,6 +101,7 @@ header {
     display: flex;
     gap: 15px;
     align-items: center;
+    z-index: 20;
 }
 
 /* SEARCH BOX */
@@ -136,7 +140,6 @@ header {
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 
-    /* fix cropping */
     height: auto;
     overflow: visible;
 }
@@ -178,7 +181,6 @@ header {
     text-align: center;
 }
 
-/* POPUP INPUTS */
 .popup-box input,
 .popup-box textarea {
     width: 100%;
@@ -189,7 +191,6 @@ header {
     padding: 6px;
 }
 
-/* POPUP BUTTONS */
 .popup-box button {
     margin-top: 10px;
     padding: 8px 15px;
@@ -220,7 +221,7 @@ header {
     background: #7371FC;
 }
 
-/* BOX FOR LOGIN & GENERATE PAGE */
+/* LOGIN / GENERATE PAGE BOX */
 .setup-box {
     width: 350px;
     margin: 100px auto;
