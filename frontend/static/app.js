@@ -1,136 +1,84 @@
-from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
-import os
-import json
-import random
-from datetime import datetime, timezone
+// ----------------------------
+// POPUP ELEMENTS
+// ----------------------------
+const loginPopup = document.getElementById("loginPopup");
+const generatePopup = document.getElementById("generatePopup");
 
-app = Flask(__name__, static_folder="static")
-CORS(app)
+// ----------------------------
+// LOGIN BUTTON
+// ----------------------------
+document.getElementById("loginBtn").onclick = () => loginPopup.style.display = "flex";
+document.getElementById("loginConfirm").onclick = async () => {
+    const username = document.getElementById("loginUser").value.trim();
+    const password = document.getElementById("loginPass").value.trim();
 
-DATA_FILE = "data.json"
+    const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
 
+    const data = await res.json();
 
-# ----------------------------
-# DATA STORAGE
-# ----------------------------
-def load_data():
-    if not os.path.exists(DATA_FILE):
-        return {"users": [], "posts": []}
-    with open(DATA_FILE, "r") as f:
-        return json.load(f)
-
-
-def save_data(data):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=4)
-
-
-# ----------------------------
-# HELPER: GENERATE UNIQUE USERNAME
-# ----------------------------
-def generate_unique_username(existing):
-    while True:
-        num = random.randint(100, 999)
-        username = f"Anon{num}"
-        if username not in existing:
-            return username
-
-
-# ----------------------------
-# ROUTE – GENERATE ACCOUNT
-# ----------------------------
-@app.route("/api/generate", methods=["POST"])
-def generate_account():
-    data = load_data()
-
-    existing_usernames = [u["username"] for u in data["users"]]
-    username = generate_unique_username(existing_usernames)
-    password = str(random.randint(100000, 999999))
-
-    data["users"].append({
-        "username": username,
-        "password": password
-    })
-    save_data(data)
-
-    return jsonify({
-        "username": username,
-        "password": password
-    })
-
-
-# ----------------------------
-# ROUTE – LOGIN
-# ----------------------------
-@app.route("/api/login", methods=["POST"])
-def login():
-    req = request.json
-    username = req.get("username", "").strip()
-    password = req.get("password", "").strip()
-
-    data = load_data()
-
-    for user in data["users"]:
-        if user["username"] == username and user["password"] == password:
-            return jsonify({"success": True})
-
-    return jsonify({"success": False, "error": "Invalid username or password"}), 401
-
-
-# ----------------------------
-# ROUTE – GET POSTS
-# ----------------------------
-@app.route("/api/posts", methods=["GET"])
-def get_posts():
-    data = load_data()
-    return jsonify(data["posts"][::-1])  # newest first
-
-
-# ----------------------------
-# ROUTE – CREATE POST
-# ----------------------------
-@app.route("/api/posts", methods=["POST"])
-def create_post():
-    req = request.json
-
-    username = req.get("username", "").strip()
-    text = req.get("content", "").strip()
-    image_url = req.get("imageUrl", "").strip()
-
-    if username == "":
-        return jsonify({"error": "Username required"}), 400
-
-    data = load_data()
-
-    post = {
-        "username": username,
-        "content": text,
-        "imageUrl": image_url,
-        "createdAt": datetime.now(timezone.utc).isoformat()
+    if (data.success) {
+        localStorage.setItem("anon_username", username);
+        localStorage.setItem("anon_password", password);
+        window.location.href = "/";
+    } else {
+        document.getElementById("loginError").style.display = "block";
     }
+};
 
-    data["posts"].append(post)
-    save_data(data)
+function closeLogin() { loginPopup.style.display = "none"; }
 
-    return jsonify({"success": True})
+// ----------------------------
+// GENERATE BUTTON
+// ----------------------------
+document.getElementById("generateBtn").onclick = fetchGeneratedIdentity;
 
+async function fetchGeneratedIdentity() {
+    const res = await fetch("/api/generate", { method: "GET" });
+    const data = await res.json();
 
-# ----------------------------
-# STATIC FILES
-# ----------------------------
-@app.route("/")
-def home():
-    return send_from_directory("", "index.html")
+    document.getElementById("genUser").innerText = data.username;
+    document.getElementById("genPass").innerText = data.password;
 
+    generatePopup.style.display = "flex";
 
-@app.route("/<path:path>")
-def serve_static(path):
-    return send_from_directory("", path)
+    document.getElementById("useIdentity").onclick = () => {
+        localStorage.setItem("anon_username", data.username);
+        localStorage.setItem("anon_password", data.password);
+        window.location.href = "/";
+    };
+}
 
+function closeGenerate() { generatePopup.style.display = "none"; }
 
-# ----------------------------
-# RUN SERVER
-# ----------------------------
-if __name__ == "__main__":
-    app.run(debug=True)
+// ----------------------------
+// POSTS
+// ----------------------------
+async function loadPosts() {
+    const res = await fetch("/api/posts");
+    const posts = await res.json();
+
+    const container = document.getElementById("postsContainer");
+    container.innerHTML = "";
+
+    posts.forEach(post => {
+        const div = document.createElement("div");
+        div.className = "post";
+
+        let imgHtml = post.imageUrl ? `<img src="${post.imageUrl}" alt="Post image">` : "";
+        div.innerHTML = `
+            ${imgHtml}
+            <div class="post-content">
+                <div class="meta">${post.username} • ${new Date(post.createdAt).toLocaleString()}</div>
+                <div class="text">${post.content || ""}</div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// Load posts when page loads
+document.addEventListener("DOMContentLoaded", loadPosts);
