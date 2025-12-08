@@ -153,3 +153,10 @@ header {
     border-radius: 8px;
     font-size: 16px;
 }
+
+/* OVERRIDE ANY UNWANTED HEIGHT FROM PARENT CONTAINERS */
+.post, .post * {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
