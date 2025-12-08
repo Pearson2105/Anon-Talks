@@ -1,10 +1,4 @@
 <!DOCTYPE html>
-<script>
-if (!localStorage.getItem("anon_username")) {
-    window.location.href = "/select.html";
-}
-</script>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +9,13 @@ if (!localStorage.getItem("anon_username")) {
 <body>
 
 <header>
-    <div class="username" id="headerUsername"></div>
+    <div class="username-container">
+        <div class="username" id="headerUsername"></div>
+        <div class="username-dropdown" id="usernameDropdown">
+            <div class="dropdown-item" id="editPosts">Edit Posts</div>
+            <div class="dropdown-item" id="logoutBtn">Log Out</div>
+        </div>
+    </div>
     <div class="center title-text">Anon-Talks</div>
     <div class="top-right">
         <div class="search-container">
@@ -27,13 +27,13 @@ if (!localStorage.getItem("anon_username")) {
 
 <div id="postsContainer"></div>
 
-<!-- POPUP -->
-<div id="popupOverlay">
-    <div id="popupBox">
+<!-- CREATE POST POPUP -->
+<div id="popupOverlay" class="popup-overlay">
+    <div id="popupBox" class="popup-box">
         <h2>Create Post</h2>
 
         <label>Username:</label>
-        <input id="username">
+        <input id="username" readonly>
 
         <label>Text:</label>
         <textarea id="text"></textarea>
