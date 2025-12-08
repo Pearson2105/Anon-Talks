@@ -21,7 +21,7 @@ class Post(db.Model):
             "username": self.username,
             "content": self.content,
             "imageUrl": self.image_url,
-            "createdAt": self.created_at.isoformat() + "Z"
+            "createdAt": self.created_at.isoformat()
         }
 
     @staticmethod
