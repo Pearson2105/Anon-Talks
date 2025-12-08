@@ -6,7 +6,7 @@ import bleach
 import os
 import random
 import string
-
+from datetime import datetime, timezone
 
 def create_app():
     app = Flask(
@@ -97,25 +97,37 @@ def create_app():
     # ============================
     # GENERATE ACCOUNT
     # ============================
-
-    @app.route("/api/generate", methods=["GET", "POST"])
+    @app.route("/api/generate", methods=["GET"])
     def generate_identity():
         """Generate a unique username + password."""
-        from .models import gen_anon
         username = gen_anon()
         password = ''.join(random.choices(string.digits, k=6))
-
         return jsonify({
             "username": username,
             "password": password
         })
 
+    # ============================
+    # LOGIN
+    # ============================
+    @app.route("/api/login", methods=["POST"])
+    def login():
+        if not request.is_json:
+            return jsonify({"success": False, "error": "JSON required"}), 400
+
+        body = request.get_json()
+        username = body.get("username", "").strip()
+        password = body.get("password", "").strip()
+
+        # For now, accept any anon username with 6-digit password
+        if username.startswith("anon") and password.isdigit() and len(password) == 6:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False, "error": "Invalid username or password"}), 401
+
     return app
 
 
-# ============================
-# RUN SERVER
-# ============================
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=8080)
