@@ -1,10 +1,14 @@
-/* IMPORT CUSTOM FONT */
+/* ----------------------------
+   IMPORT CUSTOM FONT
+---------------------------- */
 @font-face {
     font-family: "Chicago";
     src: url("Chicago.otf") format("opentype");
 }
 
-/* BASIC PAGE STYLE */
+/* ----------------------------
+   BASIC PAGE STYLE
+---------------------------- */
 body {
     margin: 0;
     padding: 0;
@@ -12,7 +16,9 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* HEADER CLOUD BAR */
+/* ----------------------------
+   HEADER CLOUD BAR
+---------------------------- */
 header {
     width: 100%;
     height: 160px;
@@ -36,14 +42,52 @@ header {
     top: -20px;
 }
 
-/* USERNAME IN HEADER */
-.username {
+/* USERNAME CONTAINER */
+.username-container {
     position: absolute;
     top: 20px;
     left: 20px;
+    cursor: pointer;
+}
+
+.username {
     font-size: 30px;
     font-weight: bold;
     color: black;
+}
+
+/* DROPDOWN MENU */
+.username-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 10;
+}
+
+.username-dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-item {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: black;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: #7371FC;
+    color: white;
 }
 
 /* TOP RIGHT SECTION */
@@ -79,7 +123,9 @@ header {
     transform: scale(1.1);
 }
 
-/* POST CARD */
+/* ----------------------------
+   POST CARD
+---------------------------- */
 .post {
     width: 60%;
     background: white;
@@ -95,7 +141,6 @@ header {
     overflow: visible;
 }
 
-/* POST IMAGE — FIXED FULL IMAGE LOADING */
 .post img {
     width: 220px;
     height: auto;
@@ -113,9 +158,10 @@ header {
     margin-bottom: 8px;
 }
 
-/* UNIVERSAL POPUP OVERLAY */
-.popup-overlay,
-#popupOverlay {
+/* ----------------------------
+   POPUP OVERLAY
+---------------------------- */
+.popup-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.6);
@@ -124,9 +170,7 @@ header {
     align-items: center;
 }
 
-/* UNIVERSAL POPUP BOX */
-.popup-box,
-#popupBox {
+.popup-box {
     background: white;
     padding: 25px;
     width: 350px;
@@ -134,11 +178,9 @@ header {
     text-align: center;
 }
 
-/* POPUP FIELDS */
+/* POPUP INPUTS */
 .popup-box input,
-.popup-box textarea,
-#popupBox input,
-#popupBox textarea {
+.popup-box textarea {
     width: 100%;
     margin-bottom: 12px;
     background: white;
@@ -148,8 +190,7 @@ header {
 }
 
 /* POPUP BUTTONS */
-.popup-box button,
-#popupBox button {
+.popup-box button {
     margin-top: 10px;
     padding: 8px 15px;
     border: none;
@@ -160,7 +201,9 @@ header {
     font-size: 16px;
 }
 
-/* LOGIN / GENERATE PAGE BUTTONS */
+/* ----------------------------
+   LOGIN / GENERATE PAGE BUTTONS
+---------------------------- */
 .big-btn {
     width: 100%;
     padding: 15px;
