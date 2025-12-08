@@ -233,16 +233,17 @@ header {
 }
 
 /* ----------------------------
-   SELECT.HTML HEADER
+   SELECT.HTML HEADER TITLE
 ---------------------------- */
-.select-username {
+.select-title {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 30px;
+    top: 40px; /* move up slightly */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 50px;
     font-weight: bold;
     color: black;
-    font-family: Arial, sans-serif; /* default font */
+    font-family: "Chicago", Arial, sans-serif; /* revert to previous font */
 }
 
 .select-title {
