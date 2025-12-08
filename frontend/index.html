@@ -9,19 +9,17 @@ if (!localStorage.getItem("anon_username")) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anon534 - Home</title>
+    <title>Anon-Talks</title>
     <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
 
 <header>
-    <div class="username">Anon534</div>
-
+    <div class="username" id="headerUsername">Anon534</div>
     <div class="center title-text">Anon-Talks</div>
-
     <div class="top-right">
         <div class="search-container">
-            <input type="text" placeholder="Search/Filter">
+            <input type="text" id="searchBox" placeholder="Search/Filter">
         </div>
         <div id="createBtn">+</div>
     </div>
