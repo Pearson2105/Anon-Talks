@@ -88,21 +88,22 @@ header {
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 
+    /* FIX: let container grow properly */
     display: flex;
-    flex-direction: column; /* stack image on top */
+    flex-direction: column;
     gap: 15px;
-
-    /* allow full height for images/text */
-    height: auto;
+    height: auto;         /* unlimited height */
+    overflow: visible;    /* prevent clipping */
 }
 
-/* IMAGE INSIDE POST */
+/* IMAGE inside the post */
 .post img {
-    width: 100%;          /* full container width */
-    height: auto;         /* full height based on aspect ratio */
-    max-height: none;     
-    object-fit: contain;  /* show full image */
+    width: 100%;      
+    height: auto;        /* maintain correct ratio */
+    max-height: none;    /* FIX: prevents cropping */
+    object-fit: contain; /* FIX: shows full image */
     border-radius: 10px;
+    display: block;      /* FIX: removes weird gaps */
 }
 
 .post-content {
