@@ -40,7 +40,7 @@ def generate_unique_username(existing):
 # ----------------------------
 # ROUTE – GENERATE ACCOUNT
 # ----------------------------
-@app.route("/api/generate", methods=["GET"])
+@app.route("/api/generate", methods=["POST"])
 def generate_account():
     data = load_data()
 
