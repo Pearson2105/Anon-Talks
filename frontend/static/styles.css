@@ -85,15 +85,23 @@ header {
     background: white;
     margin: 25px auto;
     padding: 20px;
-    display: flex;
-    gap: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+    display: flex;
+    flex-direction: column; /* stack image on top */
+    gap: 15px;
+
+    /* allow full height for images/text */
+    height: auto;
 }
 
+/* IMAGE INSIDE POST */
 .post img {
-    width: 220px;
-    height: auto;
+    width: 100%;          /* full container width */
+    height: auto;         /* full height based on aspect ratio */
+    max-height: none;     
+    object-fit: contain;  /* show full image */
     border-radius: 10px;
 }
 
