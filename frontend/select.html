@@ -7,8 +7,14 @@
 </head>
 <body>
 
+<!-- SAME HEADER AS index.html -->
+<header>
+    <div class="username">Welcome</div>
+    <div class="center title-text">Anon-Talks</div>
+</header>
+
 <div class="setup-box">
-    <h1>Anon-Talks</h1>
+    <h1 class="title-text" style="font-size:40px; margin-top:-10px;">Anon-Talks</h1>
     <p>Choose how you want to continue:</p>
 
     <button id="loginBtn" class="big-btn">Login</button>
@@ -87,7 +93,10 @@ document.getElementById("loginConfirm").onclick = async () => {
  GENERATE UNIQUE IDENTITY
 --------------------------*/
 async function fetchGeneratedIdentity() {
-    const res = await fetch("/api/generate");
+    const res = await fetch("/api/generate", {
+        method: "POST"
+    });
+
     const data = await res.json();
 
     document.getElementById("genUser").innerText = data.username;
