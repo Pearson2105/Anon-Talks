@@ -81,7 +81,7 @@ def create_app():
     # ---------------------------
     # GENERATE ACCOUNT
     # ---------------------------
-    @app.route("/api/generate", methods=["GET"])
+    @app.route("/api/generate", methods=["GET", "POST"])
     def generate_identity():
         username = gen_anon()
         password = ''.join(random.choices(string.digits, k=6))
