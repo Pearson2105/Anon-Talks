@@ -231,28 +231,3 @@ header {
     text-align: center;
     box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
 }
-
-/* ----------------------------
-   SELECT.HTML HEADER TITLE
----------------------------- */
-.select-title {
-    position: absolute;
-    top: 40px; /* move up slightly */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 50px;
-    font-weight: bold;
-    color: black;
-    font-family: "Chicago", Arial, sans-serif; /* revert to previous font */
-}
-
-.select-title {
-    position: absolute;
-    top: 60px; /* move down a bit */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 50px;
-    font-weight: bold;
-    color: black;
-    font-family: Arial, sans-serif; /* default font */
-}
