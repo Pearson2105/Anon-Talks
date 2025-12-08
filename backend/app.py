@@ -97,7 +97,7 @@ def create_app():
     # ============================
     # GENERATE ACCOUNT
     # ============================
-    @app.route("/api/generate", methods=["GET"])
+    @app.route("/api/generate", methods=["GET", "POST"])
     def generate_identity():
         """Generate a unique username + password."""
         username = gen_anon()
