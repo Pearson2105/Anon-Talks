@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify, send_from_directory
 from .config import Config
 from .extensions import db, cors, limiter
-from .models import Post
+from .models import Post, gen_anon
 import bleach
 import os
+import random
+import string
 
 
 def create_app():
-    # FIXED STATIC SERVING
     app = Flask(
         __name__,
         static_folder="../frontend/static",
@@ -31,8 +32,7 @@ def create_app():
             tables_created = True
 
     # ============================
-    # FRONTEND ROUTE ONLY
-    # (STATIC LEFT TO FLASK)
+    # FRONTEND ROUTE
     # ============================
 
     @app.route("/", defaults={"path": ""})
@@ -42,23 +42,22 @@ def create_app():
             os.path.join(os.path.dirname(__file__), "..", "frontend")
         )
 
-        # root → index.html
         if path == "" or path == "index.html":
             return send_from_directory(frontend_dir, "index.html")
 
-        # let Flask handle /static/*
-        # if not static, serve frontend files directly:
         return send_from_directory(frontend_dir, path)
 
     # ============================
     # API ROUTES
     # ============================
 
+    # ---- GET POSTS ----
     @app.route("/api/posts", methods=["GET"])
     def list_posts():
         posts = Post.query.order_by(Post.created_at.desc()).all()
         return jsonify([p.as_dict() for p in posts]), 200
 
+    # ---- CREATE POST ----
     @limiter.limit("30 per hour")
     @app.route("/api/posts", methods=["POST"])
     def create_post():
@@ -70,20 +69,20 @@ def create_app():
         content = body.get("content")
         image_url = body.get("imageUrl") or body.get("image_url")
 
+        # At least text or image
         if (not content or not content.strip()) and (not image_url or not image_url.strip()):
             return jsonify({"error": "content or imageUrl required"}), 400
 
+        # Clean + normalize
         username = Post.normalize_username(username)
 
         content = (content or "").strip()
-        if content and len(content) > 4096:
+        if content:
             content = content[:4096]
-        content = bleach.clean(content, tags=[], attributes={}, strip=True)
+            content = bleach.clean(content, tags=[], attributes={}, strip=True)
 
         if image_url:
-            image_url = image_url.strip()
-            if len(image_url) > 1000:
-                image_url = image_url[:1000]
+            image_url = image_url.strip()[:1000]
 
         post = Post(
             username=username,
@@ -95,9 +94,28 @@ def create_app():
 
         return jsonify(post.as_dict()), 201
 
+    # ============================
+    # GENERATE ACCOUNT
+    # ============================
+
+    @app.route("/api/generate", methods=["GET"])
+    def generate_identity():
+        """Generate a unique username + password."""
+        from .models import gen_anon
+        username = gen_anon()
+        password = ''.join(random.choices(string.digits, k=6))
+
+        return jsonify({
+            "username": username,
+            "password": password
+        })
+
     return app
 
 
+# ============================
+# RUN SERVER
+# ============================
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=8080)
