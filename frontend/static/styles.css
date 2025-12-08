@@ -231,3 +231,27 @@ header {
     text-align: center;
     box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
 }
+
+/* ----------------------------
+   SELECT.HTML HEADER
+---------------------------- */
+.select-username {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    color: black;
+    font-family: Arial, sans-serif; /* default font */
+}
+
+.select-title {
+    position: absolute;
+    top: 60px; /* move down a bit */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 50px;
+    font-weight: bold;
+    color: black;
+    font-family: Arial, sans-serif; /* default font */
+}
