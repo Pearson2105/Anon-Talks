@@ -1,77 +1,136 @@
-const backendURL = "/api";
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+import os
+import json
+import random
+from datetime import datetime, timezone
 
-// POPUP HANDLERS
-const popup = document.getElementById("popupOverlay");
+app = Flask(__name__, static_folder="static")
+CORS(app)
 
-document.getElementById("createBtn").onclick = () => {
-    popup.style.display = "flex";
-};
+DATA_FILE = "data.json"
 
-document.getElementById("closePopup").onclick = () => {
-    popup.style.display = "none";
-};
 
-// TIME FORMATTER - LOCAL TIMEZONE
-function formatTimestamp(iso) {
-    const d = new Date(iso);
+# ----------------------------
+# DATA STORAGE
+# ----------------------------
+def load_data():
+    if not os.path.exists(DATA_FILE):
+        return {"users": [], "posts": []}
+    with open(DATA_FILE, "r") as f:
+        return json.load(f)
 
-    const hours = d.getHours().toString().padStart(2, "0");
-    const minutes = d.getMinutes().toString().padStart(2, "0");
 
-    const day = d.getDate().toString().padStart(2, "0");
-    const month = (d.getMonth() + 1).toString().padStart(2, "0");
-    const year = d.getFullYear();
+def save_data(data):
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=4)
 
-    return `${hours}:${minutes} on ${day}/${month}/${year}`;
-}
 
-// SUBMIT POST
-document.getElementById("submitPost").onclick = async () => {
-    const data = {
-        username: document.getElementById("username").value,
-        content: document.getElementById("text").value,
-        imageUrl: document.getElementById("imageUrl").value
-    };
+# ----------------------------
+# HELPER: GENERATE UNIQUE USERNAME
+# ----------------------------
+def generate_unique_username(existing):
+    while True:
+        num = random.randint(100, 999)
+        username = f"Anon{num}"
+        if username not in existing:
+            return username
 
-    await fetch(backendURL + "/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    });
 
-    popup.style.display = "none";
-    loadPosts();
-};
+# ----------------------------
+# ROUTE – GENERATE ACCOUNT
+# ----------------------------
+@app.route("/api/generate", methods=["POST"])
+def generate_account():
+    data = load_data()
 
-// LOAD POSTS
-async function loadPosts() {
-    const res = await fetch(backendURL + "/posts");
-    const posts = await res.json();
+    existing_usernames = [u["username"] for u in data["users"]]
+    username = generate_unique_username(existing_usernames)
+    password = str(random.randint(100000, 999999))
 
-    const container = document.getElementById("postsContainer");
-    container.innerHTML = "";
+    data["users"].append({
+        "username": username,
+        "password": password
+    })
+    save_data(data)
 
-    posts.forEach(p => {
-        const el = document.createElement("div");
-        el.className = "post";
+    return jsonify({
+        "username": username,
+        "password": password
+    })
 
-        el.innerHTML = `
-            <img src="${p.imageUrl || 'https://via.placeholder.com/200'}">
-            <div class="post-content">
-                <div class="meta">${p.username} | ${formatTimestamp(p.createdAt)}</div>
-                <div class="text">${p.content || ""}</div>
-            </div>
-        `;
 
-        // ★ FIX: ensure the full image loads and height is recalculated
-        const img = el.querySelector("img");
-        img.onload = () => {
-            img.style.height = "auto";
-            img.style.maxHeight = "none";
-        };
+# ----------------------------
+# ROUTE – LOGIN
+# ----------------------------
+@app.route("/api/login", methods=["POST"])
+def login():
+    req = request.json
+    username = req.get("username", "").strip()
+    password = req.get("password", "").strip()
 
-        container.appendChild(el);
-    });
-}
+    data = load_data()
 
-loadPosts();
+    for user in data["users"]:
+        if user["username"] == username and user["password"] == password:
+            return jsonify({"success": True})
+
+    return jsonify({"success": False, "error": "Invalid username or password"}), 401
+
+
+# ----------------------------
+# ROUTE – GET POSTS
+# ----------------------------
+@app.route("/api/posts", methods=["GET"])
+def get_posts():
+    data = load_data()
+    return jsonify(data["posts"][::-1])  # newest first
+
+
+# ----------------------------
+# ROUTE – CREATE POST
+# ----------------------------
+@app.route("/api/posts", methods=["POST"])
+def create_post():
+    req = request.json
+
+    username = req.get("username", "").strip()
+    text = req.get("content", "").strip()
+    image_url = req.get("imageUrl", "").strip()
+
+    if username == "":
+        return jsonify({"error": "Username required"}), 400
+
+    data = load_data()
+
+    post = {
+        "username": username,
+        "content": text,
+        "imageUrl": image_url,
+        "createdAt": datetime.now(timezone.utc).isoformat()
+    }
+
+    data["posts"].append(post)
+    save_data(data)
+
+    return jsonify({"success": True})
+
+
+# ----------------------------
+# STATIC FILES
+# ----------------------------
+@app.route("/")
+def home():
+    return send_from_directory("", "index.html")
+
+
+@app.route("/<path:path>")
+def serve_static(path):
+    return send_from_directory("", path)
+
+
+# ----------------------------
+# RUN SERVER
+# ----------------------------
+if __name__ == "__main__":
+    app.run(debug=True)
