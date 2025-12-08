@@ -4,6 +4,7 @@
     src: url("Chicago.otf") format("opentype");
 }
 
+/* BASIC PAGE STYLE */
 body {
     margin: 0;
     padding: 0;
@@ -26,16 +27,16 @@ header {
     align-items: center;
 }
 
-/* CENTER TITLE */
+/* HEADER TITLE */
 .title-text {
     font-family: "Chicago", Arial, sans-serif;
     font-size: 60px;
     color: black;
     position: relative;
-    top: -20px; /* lift above cloud curve */
+    top: -20px;
 }
 
-/* USERNAME LEFT */
+/* USERNAME IN HEADER */
 .username {
     position: absolute;
     top: 20px;
@@ -45,7 +46,7 @@ header {
     color: black;
 }
 
-/* TOP RIGHT */
+/* TOP RIGHT SECTION */
 .top-right {
     position: absolute;
     top: 20px;
@@ -63,7 +64,7 @@ header {
     border: none;
 }
 
-/* PLUS BUTTON */
+/* + BUTTON */
 #createBtn {
     font-size: 50px;
     font-weight: bold;
@@ -74,7 +75,6 @@ header {
     background: white;
     color: #7371FC;
 }
-
 #createBtn:hover {
     transform: scale(1.1);
 }
@@ -89,12 +89,19 @@ header {
     gap: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+    /* fix cropping */
+    height: auto;
+    overflow: visible;
 }
 
+/* POST IMAGE — FIXED FULL IMAGE LOADING */
 .post img {
     width: 220px;
     height: auto;
     border-radius: 10px;
+    object-fit: contain;
+    display: block;
 }
 
 .post-content {
@@ -106,7 +113,8 @@ header {
     margin-bottom: 8px;
 }
 
-/* POPUP */
+/* UNIVERSAL POPUP OVERLAY */
+.popup-overlay,
 #popupOverlay {
     position: fixed;
     inset: 0;
@@ -116,14 +124,19 @@ header {
     align-items: center;
 }
 
+/* UNIVERSAL POPUP BOX */
+.popup-box,
 #popupBox {
-    background: #7371FC;
+    background: white;
     padding: 25px;
     width: 350px;
     border-radius: 15px;
-    color: white;
+    text-align: center;
 }
 
+/* POPUP FIELDS */
+.popup-box input,
+.popup-box textarea,
 #popupBox input,
 #popupBox textarea {
     width: 100%;
@@ -134,13 +147,43 @@ header {
     padding: 6px;
 }
 
+/* POPUP BUTTONS */
+.popup-box button,
 #popupBox button {
     margin-top: 10px;
     padding: 8px 15px;
     border: none;
-    background: #5c58ff;
+    background: #7371FC;
     color: white;
     cursor: pointer;
     border-radius: 8px;
     font-size: 16px;
+}
+
+/* LOGIN / GENERATE PAGE BUTTONS */
+.big-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+}
+
+.big-btn.purple {
+    background: #7371FC;
+}
+
+/* BOX FOR LOGIN & GENERATE PAGE */
+.setup-box {
+    width: 350px;
+    margin: 100px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
 }
