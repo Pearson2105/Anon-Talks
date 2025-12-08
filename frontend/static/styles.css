@@ -85,23 +85,16 @@ header {
     background: white;
     margin: 25px auto;
     padding: 20px;
+    display: flex;
+    gap: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-
-    /* FIX: let container grow properly */
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    height: auto;         /* unlimited height */
-    overflow: visible;    /* prevent clipping */
 }
 
 .post img {
-    width: 100%;
-    height: auto !important;
-    max-height: none !important;
-    object-fit: contain !important;
-    display: block;
+    width: 220px;
+    height: auto;
+    border-radius: 10px;
 }
 
 .post-content {
@@ -150,10 +143,4 @@ header {
     cursor: pointer;
     border-radius: 8px;
     font-size: 16px;
-}
-
-.post, .post * {
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
 }
