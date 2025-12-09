@@ -5,6 +5,9 @@ const pathname = window.location.pathname;
 const onSelectPage = pathname.includes("select.html");
 const onIndexPage = pathname === "/" || pathname.includes("index.html");
 
+// =====================================================
+// DOM CONTENT LOADED
+// =====================================================
 document.addEventListener("DOMContentLoaded", () => {
 
     // -----------------------
@@ -14,31 +17,38 @@ document.addEventListener("DOMContentLoaded", () => {
         const username = localStorage.getItem("anon_username");
 
         if (!username) {
-            // Redirect only if not on select page
-            if (!onSelectPage) window.location.href = "/select.html";
+            // Redirect to select page if not logged in
+            window.location.href = "/select.html";
             return;
         }
 
+        // Set header username and popup username
         document.getElementById("headerUsername").innerText = username;
         document.getElementById("username").value = username;
 
         loadPosts();
 
-        // Header dropdown
+        // Header dropdown toggle
         const headerUsername = document.getElementById("headerUsername");
         const dropdown = document.getElementById("usernameDropdown");
+
         headerUsername?.addEventListener("click", () => dropdown.classList.toggle("show"));
         document.addEventListener("click", (e) => {
             if (!headerUsername?.contains(e.target) && !dropdown?.contains(e.target)) {
                 dropdown?.classList.remove("show");
             }
         });
+
+        // Dropdown items
+        document.getElementById("editPosts")?.addEventListener("click", () => {
+            window.location.href = "/my-posts.html";
+        });
         document.getElementById("logoutBtn")?.addEventListener("click", () => {
             localStorage.clear();
             window.location.href = "/select.html";
         });
 
-        // Popup
+        // Create post popup
         const popupOverlay = document.getElementById("popupOverlay");
         document.getElementById("createBtn")?.addEventListener("click", () => {
             popupOverlay.style.display = "flex";
@@ -47,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
             popupOverlay.style.display = "none";
         });
 
+        // Submit new post
         document.getElementById("submitPost")?.addEventListener("click", async () => {
             const username = document.getElementById("username").value.trim();
             const content = document.getElementById("text").value.trim();
@@ -74,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Load posts
+        // Search posts
         document.getElementById("searchBox")?.addEventListener("input", (e) => {
             loadPosts(e.target.value);
         });
@@ -136,9 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// -----------------------
+// =====================================================
 // LOAD POSTS FUNCTION
-// -----------------------
+// =====================================================
 async function loadPosts(filter = "") {
     const res = await fetch("/api/posts");
     const posts = await res.json();
