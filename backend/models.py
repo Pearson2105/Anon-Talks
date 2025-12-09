@@ -1,19 +1,14 @@
-from datetime import datetime
 from .extensions import db
+from datetime import datetime
 import random
 import string
 
-def gen_anon():
-    return "anon" + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-
 class Post(db.Model):
-    __tablename__ = "posts"
-
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), nullable=True)
-    content = db.Column(db.Text, nullable=True)
-    image_url = db.Column(db.String(1000), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    username = db.Column(db.String(50), nullable=False)
+    content = db.Column(db.String(4096))
+    image_url = db.Column(db.String(1000))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def as_dict(self):
         return {
@@ -26,7 +21,7 @@ class Post(db.Model):
 
     @staticmethod
     def normalize_username(username):
-        if not username or not username.strip():
-            return gen_anon()
-        u = username.strip()
-        return u[:32]
+        return username.strip() if username else "anon"
+
+def gen_anon():
+    return "anon" + ''.join(random.choices(string.digits, k=6))
