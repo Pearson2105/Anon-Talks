@@ -6,7 +6,6 @@ import bleach
 import os
 import random
 import string
-from datetime import datetime
 
 def create_app():
     app = Flask(
@@ -65,7 +64,6 @@ def create_app():
         if not content and not image_url:
             return jsonify({"error": "content or imageUrl required"}), 400
 
-        # Clean content
         if content:
             content = bleach.clean(content[:4096], tags=[], attributes={}, strip=True)
         if image_url:
