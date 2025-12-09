@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anon-Talks</title>
     <link rel="stylesheet" href="/static/styles.css">
     <script src="/static/app.js" defer></script>
@@ -16,20 +17,31 @@
         </div>
     </div>
     <div class="center title-text">Anon-Talks</div>
-    <div class="top-right"></div>
+    <div class="top-right">
+        <div class="search-container">
+            <input type="text" id="searchBox" placeholder="Search posts...">
+        </div>
+        <button id="createBtn">+</button>
+    </div>
 </header>
 
 <div class="container">
-    <div id="post-area" style="margin-top:25px;">
-        <h3>Create a Post</h3>
-        <input id="username" type="hidden">
-        <textarea id="text" rows="4" placeholder="Write something..."></textarea>
-        <input id="imageUrl" placeholder="Image URL (optional)">
-        <button id="submitPost">Submit</button>
+
+    <!-- Popup Overlay for Creating Post -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-box">
+            <h3>Create a Post</h3>
+            <input id="username" placeholder="Username" readonly>
+            <textarea id="text" placeholder="Write something..."></textarea>
+            <input id="imageUrl" placeholder="Image URL (optional)">
+            <button id="submitPost">Submit</button>
+            <button id="closePopup">Cancel</button>
+        </div>
     </div>
 
-    <h2 style="margin-top:30px;">Recent Posts</h2>
+    <!-- Posts Feed -->
     <div id="postsContainer"></div>
+
 </div>
 
 </body>
