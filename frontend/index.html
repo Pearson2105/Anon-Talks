@@ -8,9 +8,9 @@
 
 <body>
 
-<div class="header">
-    <h1>Anon-Talks</h1>
-</div>
+<header>
+    <div class="center title-text">Anon-Talks</div>
+</header>
 
 <div class="container">
     <!-- Login status -->
@@ -50,12 +50,12 @@
         <h3>Create a Post</h3>
         <input id="post-title" placeholder="Title">
         <textarea id="post-body" rows="4" placeholder="Write something..."></textarea>
-        <button onclick="submitPost()">Submit</button>
+        <button id="submitPost">Submit</button>
     </div>
 
     <!-- Feed -->
     <h2 style="margin-top:30px;">Recent Posts</h2>
-    <div id="posts-feed"></div>
+    <div id="postsContainer"></div>
 </div>
 
 </body>
