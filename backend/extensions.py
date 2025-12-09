@@ -5,4 +5,5 @@ from flask_limiter.util import get_remote_address
 
 db = SQLAlchemy()
 cors = CORS()
-limiter = Limiter(key_func=get_remote_address)  # key_func set here
+# Limiter is initialized here with key_func
+limiter = Limiter(key_func=get_remote_address)
