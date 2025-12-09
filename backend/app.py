@@ -13,13 +13,12 @@ def create_app():
         static_folder="../frontend/static",
         static_url_path="/static"
     )
-
     app.config.from_object(Config)
 
     # Initialize extensions
     db.init_app(app)
     cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
-    limiter.init_app(app, key_func=lambda: request.remote_addr)  # fix Limiter key_func
+    limiter.init_app(app)
 
     # Create tables once
     @app.before_first_request
@@ -62,6 +61,7 @@ def create_app():
         if not content and not image_url:
             return jsonify({"error": "content or imageUrl required"}), 400
 
+        # Clean content
         if content:
             content = bleach.clean(content[:4096], tags=[], attributes={}, strip=True)
         if image_url:
