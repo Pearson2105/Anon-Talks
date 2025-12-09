@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Posts – Anon-Talks</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/my-posts.js" defer></script>
 </head>
 <body>
 
@@ -15,25 +16,24 @@
             <div class="dropdown-item" id="logoutBtn">Log Out</div>
         </div>
     </div>
-
     <div class="center title-text">My Posts</div>
-    <div class="top-right"></div>
 </header>
 
-<div id="postsContainer"></div>
+<div class="container">
+    <div id="postsContainer"></div>
+</div>
 
-<!-- Modal for editing -->
-<div class="modal-bg" id="editModalBg">
-    <div class="edit-modal">
+<!-- Edit modal -->
+<div class="popup-overlay" id="editModalBg">
+    <div class="popup-box">
         <h3>Edit Post</h3>
-        <textarea id="editText"></textarea>
-        <div class="modal-actions">
-            <button class="delete-btn" id="cancelEdit">Cancel</button>
-            <button class="edit-btn" id="saveEdit">Save</button>
+        <textarea id="editText" rows="4"></textarea>
+        <div style="margin-top:10px;">
+            <button id="cancelEdit">Cancel</button>
+            <button id="saveEdit">Save</button>
         </div>
     </div>
 </div>
 
-<script src="/static/my-posts.js"></script>
 </body>
 </html>
