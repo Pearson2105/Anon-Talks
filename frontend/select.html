@@ -7,10 +7,15 @@
 </head>
 <body>
 
-<!-- SAME HEADER AS index.html -->
 <header>
-    <div class="select-username">Welcome</div>
-    <div class="select-title">Anon-Talks</div>
+    <div class="username-container">
+        <div class="username" id="headerUsernameSelect"></div>
+        <div class="username-dropdown" id="usernameDropdownSelect">
+            <div class="dropdown-item" id="logoutBtnSelect">Log Out</div>
+        </div>
+    </div>
+    <div class="center title-text">Anon-Talks</div>
+    <div class="top-right"></div>
 </header>
 
 <div class="setup-box">
@@ -35,11 +40,11 @@
         <div id="loginError" style="color:red; display:none;">Invalid login.</div>
 
         <button id="loginConfirm">Login</button>
-        <button onclick="closeLogin()">Cancel</button>
+        <button id="closeLogin">Cancel</button>
     </div>
 </div>
 
-<!-- GENERATE POPUP -->
+<!-- GENERATE ID POPUP -->
 <div id="generatePopup" class="popup-overlay">
     <div class="popup-box">
         <h2>Your Anonymous Identity</h2>
@@ -48,69 +53,10 @@
         <p><strong>Password:</strong> <span id="genPass"></span></p>
 
         <button id="useIdentity">Use This Identity</button>
-        <button onclick="closeGenerate()">Cancel</button>
+        <button id="closeGenerate">Cancel</button>
     </div>
 </div>
 
-<script>
-/* -------------------------
-        OPEN / CLOSE POPUPS
---------------------------*/
-const loginPopup = document.getElementById("loginPopup");
-const generatePopup = document.getElementById("generatePopup");
-
-document.getElementById("loginBtn").onclick = () => loginPopup.style.display = "flex";
-document.getElementById("generateBtn").onclick = fetchGeneratedIdentity;
-
-function closeLogin() { loginPopup.style.display = "none"; }
-function closeGenerate() { generatePopup.style.display = "none"; }
-
-/* -------------------------
-       LOGIN HANDLING
---------------------------*/
-document.getElementById("loginConfirm").onclick = async () => {
-    const username = document.getElementById("loginUser").value;
-    const password = document.getElementById("loginPass").value;
-
-    const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-        localStorage.setItem("anon_username", username);
-        localStorage.setItem("anon_password", password);
-        window.location.href = "/";
-    } else {
-        document.getElementById("loginError").style.display = "block";
-    }
-};
-
-/* -------------------------
- GENERATE UNIQUE IDENTITY
---------------------------*/
-async function fetchGeneratedIdentity() {
-    const res = await fetch("/api/generate", {
-        method: "POST"
-    });
-
-    const data = await res.json();
-
-    document.getElementById("genUser").innerText = data.username;
-    document.getElementById("genPass").innerText = data.password;
-
-    generatePopup.style.display = "flex";
-
-    document.getElementById("useIdentity").onclick = () => {
-        localStorage.setItem("anon_username", data.username);
-        localStorage.setItem("anon_password", data.password);
-        window.location.href = "/";
-    };
-}
-</script>
-
+<script src="static/app.js"></script>
 </body>
 </html>
