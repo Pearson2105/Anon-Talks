@@ -1,48 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Identity – Anon-Talks</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <script src="/static/app.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Select Identity – Anon-Talks</title>
+<link rel="stylesheet" href="/static/styles.css">
+<script src="/static/app.js" defer></script>
 </head>
 <body>
 
 <header>
-    <div class="center title-text">Anon-Talks</div>
+    <div class="center title-text">Select Identity</div>
 </header>
 
-<!-- MAIN BOX -->
-<div class="setup-box">
-    <h2>Welcome!</h2>
+<div class="container">
     <h2>Choose how you want to continue:</h2>
+    <button id="loginBtn">Login</button>
+    <button id="generateBtn">Generate Identity</button>
 
-    <!-- Buttons -->
-    <button class="big-btn" id="loginBtn">Login</button>
-    <button class="big-btn purple" id="generateBtn">Generate Identity</button>
-</div>
-
-<!-- LOGIN POPUP -->
-<div class="popup-overlay" id="loginPopup">
-    <div class="popup-box">
-        <h3>Login</h3>
-        <input id="loginUser" placeholder="Username">
-        <input id="loginPass" type="password" placeholder="Password">
-        <button id="loginConfirm">Login</button>
-        <button id="closeLogin">Cancel</button>
-        <p id="loginError" style="color:red; display:none;">Invalid credentials</p>
+    <div class="popup-overlay" id="loginPopup">
+        <div class="popup-box">
+            <h3>Login</h3>
+            <input id="loginUser" placeholder="Username">
+            <input id="loginPass" type="password" placeholder="Password">
+            <button id="loginConfirm">Login</button>
+            <button id="closeLogin">Cancel</button>
+            <p id="loginError" style="color:red; display:none;">Invalid credentials</p>
+        </div>
     </div>
-</div>
 
-<!-- GENERATE POPUP -->
-<div class="popup-overlay" id="generatePopup">
-    <div class="popup-box">
-        <h3>Generated Identity</h3>
-        <p>Username: <span id="genUser"></span></p>
-        <p>Password: <span id="genPass"></span></p>
-        <button id="useIdentity">Use This Identity</button>
-        <button id="closeGenerate">Cancel</button>
+    <div class="popup-overlay" id="generatePopup">
+        <div class="popup-box">
+            <h3>Generated Identity</h3>
+            <p>Username: <span id="genUser"></span></p>
+            <p>Password: <span id="genPass"></span></p>
+            <button id="useIdentity">Use This Identity</button>
+            <button id="closeGenerate">Cancel</button>
+        </div>
     </div>
 </div>
 

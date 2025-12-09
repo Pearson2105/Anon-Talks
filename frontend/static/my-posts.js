@@ -1,130 +1,97 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const username = localStorage.getItem("anon_username");
     if (!username) {
         window.location.href = "/select.html";
         return;
     }
 
-    // HEADER DROPDOWN
+    document.getElementById("headerUsername").innerText = username;
+    loadUserPosts(username);
+
+    // Header dropdown
     const headerUsername = document.getElementById("headerUsername");
     const dropdown = document.getElementById("usernameDropdown");
-    headerUsername.innerText = username;
-
     headerUsername.addEventListener("click", () => dropdown.classList.toggle("show"));
     document.addEventListener("click", (e) => {
         if (!headerUsername.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.classList.remove("show");
         }
     });
-
     document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.clear();
         window.location.href = "/select.html";
     });
+});
 
-    // REDIRECT DROPDOWN
-    const editPostsBtn = document.getElementById("editPostsBtn");
-    if (editPostsBtn) {
-        editPostsBtn.addEventListener("click", () => {
-            window.location.href = "/my-posts.html";
-        });
+async function loadUserPosts(username) {
+    const res = await fetch("/api/posts");
+    const posts = await res.json();
+
+    const container = document.getElementById("postsContainer");
+    container.innerHTML = "";
+
+    const userPosts = posts.filter(p => p.username === username);
+    if (userPosts.length === 0) {
+        container.innerHTML = `<p style="text-align:center; margin-top:40px;">You have not created any posts yet.</p>`;
+        return;
     }
 
-    // MODAL ELEMENTS
-    const editModal = document.getElementById("editModalBg");
-    const editText = document.getElementById("editText");
-    let editingPostId = null;
-
-    document.getElementById("cancelEdit").addEventListener("click", () => {
-        editModal.style.display = "none";
-        editingPostId = null;
+    userPosts.forEach(post => {
+        const card = document.createElement("div");
+        card.className = "post-card";
+        const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}">` : "";
+        card.innerHTML = `
+            ${imgHtml}
+            <div class="post-meta">${new Date(post.createdAt).toLocaleString()}</div>
+            <div class="post-text">${post.content || ""}</div>
+            <div class="post-actions">
+                <button class="edit-btn" data-id="${post.id}" data-content="${post.content}">Edit</button>
+                <button class="delete-btn" data-id="${post.id}">Delete</button>
+            </div>
+        `;
+        container.appendChild(card);
     });
 
-    document.getElementById("saveEdit").addEventListener("click", async () => {
-        if (!editingPostId) return;
-
-        const newContent = editText.value.trim();
-        if (!newContent) {
-            alert("Post content cannot be empty.");
-            return;
-        }
-
-        const res = await fetch(`/api/posts/${editingPostId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ content: newContent })
+    // Delete
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-id");
+            const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
+            if (res.ok) loadUserPosts(username);
+            else alert("Failed to delete");
         });
-
-        if (res.ok) {
-            editModal.style.display = "none";
-            editingPostId = null;
-            loadUserPosts(username);
-        } else {
-            alert("Failed to save changes.");
-        }
     });
 
-    // LOAD USER POSTS
-    loadUserPosts(username);
-
-    async function loadUserPosts(username) {
-        const res = await fetch("/api/posts");
-        const posts = await res.json();
-
-        const container = document.getElementById("postsContainer");
-        container.innerHTML = "";
-
-        const userPosts = posts.filter(p => p.username === username);
-        if (!userPosts.length) {
-            container.innerHTML = `<p style="text-align:center; margin-top:40px;">No posts yet.</p>`;
-            return;
-        }
-
-        userPosts.forEach(post => {
-            const card = document.createElement("div");
-            card.className = "post";
-
-            const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}">` : "";
-
-            card.innerHTML = `
-                ${imgHtml}
-                <div class="post-content">
-                    <div class="meta">${new Date(post.createdAt).toLocaleString()}</div>
-                    <div class="text">${post.content || ""}</div>
-                    <div class="post-actions">
-                        <button class="edit-btn" data-id="${post.id}" data-content="${post.content}">Edit</button>
-                        <button class="delete-btn" data-id="${post.id}">Delete</button>
-                    </div>
-                </div>
-            `;
-
-            container.appendChild(card);
+    // Edit
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            editingPostId = btn.getAttribute("data-id");
+            document.getElementById("editText").value = btn.getAttribute("data-content");
+            document.getElementById("editModalBg").style.display = "flex";
         });
+    });
+});
 
-        // ATTACH EDIT EVENTS
-        container.querySelectorAll(".edit-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                editingPostId = btn.dataset.id;
-                editText.value = btn.dataset.content;
-                editModal.style.display = "flex";
-            });
-        });
+let editingPostId = null;
 
-        // ATTACH DELETE EVENTS
-        container.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.addEventListener("click", async () => {
-                if (!confirm("Are you sure you want to delete this post?")) return;
+document.getElementById("cancelEdit").addEventListener("click", () => {
+    document.getElementById("editModalBg").style.display = "none";
+});
 
-                const res = await fetch(`/api/posts/${btn.dataset.id}`, {
-                    method: "DELETE"
-                });
+document.getElementById("saveEdit").addEventListener("click", async () => {
+    const newText = document.getElementById("editText").value;
+    const username = localStorage.getItem("anon_username");
 
-                if (res.ok) {
-                    loadUserPosts(username);
-                } else {
-                    alert("Failed to delete post.");
-                }
-            });
-        });
+    const res = await fetch(`/api/posts/${editingPostId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newText })
+    });
+
+    if (res.ok) {
+        document.getElementById("editModalBg").style.display = "none";
+        loadUserPosts(username);
+    } else {
+        alert("Failed to save edit");
     }
 });
