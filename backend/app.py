@@ -6,6 +6,7 @@ import bleach
 import os
 import random
 import string
+from datetime import datetime
 
 def create_app():
     app = Flask(
@@ -13,6 +14,7 @@ def create_app():
         static_folder="../frontend/static",
         static_url_path="/static"
     )
+
     app.config.from_object(Config)
 
     # Initialize extensions
@@ -20,8 +22,10 @@ def create_app():
     cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
     limiter.init_app(app)
 
-    # Create tables once
-    @app.before_first_request
+    # ---------------------------
+    # CREATE TABLES ON STARTUP
+    # ---------------------------
+    @app.before_serving
     def create_tables():
         db.create_all()
 
@@ -32,7 +36,7 @@ def create_app():
     @app.route("/<path:path>")
     def serve_frontend(path):
         frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
-        if path == "" or path == "index.html":
+        if path in ["", "index.html"]:
             return send_from_directory(frontend_dir, "index.html")
         elif path == "my-posts.html":
             return send_from_directory(frontend_dir, "my-posts.html")
@@ -48,8 +52,8 @@ def create_app():
         posts = Post.query.order_by(Post.created_at.desc()).all()
         return jsonify([p.as_dict() for p in posts]), 200
 
-    @limiter.limit("30 per hour")
     @app.route("/api/posts", methods=["POST"])
+    @limiter.limit("30 per hour")
     def create_post():
         if not request.is_json:
             return jsonify({"error": "JSON body required"}), 400
@@ -120,7 +124,9 @@ def create_app():
 
     return app
 
-
+# ---------------------------
+# RUN APP
+# ---------------------------
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=8080, debug=True)
