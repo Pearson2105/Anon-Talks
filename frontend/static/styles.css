@@ -143,13 +143,16 @@ header {
 }
 
 .post img, .post-card img {
-    max-width: 100%;
+    max-width: 220px;     /* constrain width */
+    max-height: 180px;    /* constrain height */
+    width: auto;
     height: auto;
     border-radius: 10px;
-    object-fit: contain;
+    object-fit: cover;    /* crop if needed without stretching */
     display: block;
     margin: 0 auto;
 }
+
 
 .post-content {
     width: 100%;
