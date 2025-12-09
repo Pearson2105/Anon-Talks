@@ -24,8 +24,7 @@ def create_app():
     # ---------------------------
     # CREATE TABLES ON STARTUP
     # ---------------------------
-    @app.before_serving
-    def create_tables():
+    with app.app_context():
         db.create_all()
 
     # ---------------------------
