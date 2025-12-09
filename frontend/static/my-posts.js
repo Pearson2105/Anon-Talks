@@ -7,10 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("headerUsername").innerText = username;
 
-    // Back button in dropdown
-    document.getElementById("backBtn")?.addEventListener("click", () => {
-        window.location.href = "/index.html";
-    });
+    loadUserPosts(username);
 
     // Header dropdown
     const headerUsername = document.getElementById("headerUsername");
@@ -21,12 +18,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             dropdown.classList.remove("show");
         }
     });
+
     document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.clear();
         window.location.href = "/select.html";
     });
 
-    await loadUserPosts(username);
+    document.getElementById("backBtn").addEventListener("click", () => {
+        window.location.href = "/";
+    });
 });
 
 let editingPostId = null;
@@ -47,14 +47,16 @@ async function loadUserPosts(username) {
     userPosts.forEach(post => {
         const card = document.createElement("div");
         card.className = "post-card";
-        const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}" style="max-width:100%;">` : "";
+
+        const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}">` : "";
+
         card.innerHTML = `
             ${imgHtml}
             <div class="post-meta">${new Date(post.createdAt).toLocaleString()}</div>
             <div class="post-text">${post.content || ""}</div>
-            <div class="post-actions" style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
-                <button class="edit-btn big-btn purple" data-id="${post.id}" data-content="${post.content}" data-image="${post.imageUrl || ''}" style="width:120px;">Edit</button>
-                <button class="delete-btn big-btn" data-id="${post.id}" style="width:120px;">Delete</button>
+            <div class="post-actions">
+                <button class="edit-btn" data-id="${post.id}" data-content="${post.content || ""}" data-image="${post.imageUrl || ""}">Edit</button>
+                <button class="delete-btn" data-id="${post.id}">Delete</button>
             </div>
         `;
         container.appendChild(card);
@@ -81,32 +83,23 @@ async function loadUserPosts(username) {
     });
 }
 
-// CANCEL EDIT
 document.getElementById("cancelEdit").addEventListener("click", () => {
     document.getElementById("editModalBg").style.display = "none";
-    editingPostId = null;
 });
 
-// SAVE EDIT
 document.getElementById("saveEdit").addEventListener("click", async () => {
-    const newText = document.getElementById("editText").value.trim();
-    const newImageUrl = document.getElementById("editImageUrl").value.trim();
+    const newText = document.getElementById("editText").value;
+    const newImage = document.getElementById("editImageUrl").value;
     const username = localStorage.getItem("anon_username");
-
-    if (!newText && !newImageUrl) {
-        alert("Please provide content or image URL.");
-        return;
-    }
 
     const res = await fetch(`/api/posts/${editingPostId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newText, imageUrl: newImageUrl })
+        body: JSON.stringify({ content: newText, image_url: newImage })
     });
 
     if (res.ok) {
         document.getElementById("editModalBg").style.display = "none";
-        editingPostId = null;
         loadUserPosts(username);
     } else {
         alert("Failed to save edit");
