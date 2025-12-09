@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Posts – Anon-Talks</title>
-    <link rel="stylesheet" href="static/styles.css">
-    <script src="static/my-posts.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Posts – Anon-Talks</title>
+<link rel="stylesheet" href="/static/styles.css">
+<script src="/static/my-posts.js" defer></script>
 </head>
 <body>
 
@@ -13,7 +13,6 @@
     <div class="username-container">
         <div class="username" id="headerUsername"></div>
         <div class="username-dropdown" id="usernameDropdown">
-            <div class="dropdown-item" id="editPostsBtn">Edit Posts</div>
             <div class="dropdown-item" id="logoutBtn">Log Out</div>
         </div>
     </div>
@@ -23,14 +22,13 @@
 <div class="container">
     <div id="postsContainer"></div>
 
-    <!-- Edit Modal -->
-    <div class="popup-overlay" id="editModalBg">
-        <div class="popup-box">
+    <div class="modal-bg" id="editModalBg">
+        <div class="edit-modal">
             <h3>Edit Post</h3>
             <textarea id="editText"></textarea>
             <div class="modal-actions">
-                <button id="cancelEdit">Cancel</button>
-                <button id="saveEdit">Save</button>
+                <button class="delete-btn" id="cancelEdit">Cancel</button>
+                <button class="edit-btn" id="saveEdit">Save</button>
             </div>
         </div>
     </div>
