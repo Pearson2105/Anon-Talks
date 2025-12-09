@@ -13,26 +13,23 @@
     <div class="username-container">
         <div class="username" id="headerUsername"></div>
         <div class="username-dropdown" id="usernameDropdown">
-            <div class="dropdown-item" id="backBtn">Back to Index</div>
+            <div class="dropdown-item" id="goHome">Home</div>
             <div class="dropdown-item" id="logoutBtn">Log Out</div>
         </div>
     </div>
     <div class="center title-text">My Posts</div>
 </header>
 
-<div class="container">
-    <div id="postsContainer"></div>
+<div class="container" id="postsContainer"></div>
 
-    <!-- EDIT POST POPUP -->
-    <div class="popup-overlay" id="editModalBg">
-        <div class="popup-box">
-            <h3>Edit Post</h3>
-            <textarea id="editText" placeholder="Edit content..."></textarea>
-            <input id="editImageUrl" placeholder="Edit Image URL (optional)">
-            <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
-                <button id="cancelEdit" class="big-btn">Cancel</button>
-                <button id="saveEdit" class="big-btn purple">Save</button>
-            </div>
+<div class="popup-overlay" id="editModalBg">
+    <div class="popup-box">
+        <h3>Edit Post</h3>
+        <textarea id="editText" placeholder="Content"></textarea>
+        <input id="editImageUrl" placeholder="Image URL (optional)">
+        <div class="popup-actions">
+            <button id="cancelEdit" class="big-btn">Cancel</button>
+            <button id="saveEdit" class="big-btn purple">Save</button>
         </div>
     </div>
 </div>
