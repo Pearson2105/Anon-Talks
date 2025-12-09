@@ -3,7 +3,7 @@ styles.css "/* ----------------------------
 ---------------------------- */
 @font-face {
     font-family: "Chicago";
-    src: url("Chicago.otf") format("opentype");
+    src: url("/static/Chicago.otf") format("opentype");
 }
 
 /* ----------------------------
