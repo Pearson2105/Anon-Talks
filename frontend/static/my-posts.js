@@ -1,4 +1,3 @@
-// Redirect if not logged in
 document.addEventListener("DOMContentLoaded", async () => {
     const username = localStorage.getItem("anon_username");
 
@@ -7,13 +6,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // Show username
     document.getElementById("headerUsername").innerText = username;
-
     loadUserPosts(username);
+
+    // Dropdown toggle
+    document.getElementById("headerUsername").addEventListener("click", () => {
+        document.getElementById("usernameDropdown").classList.toggle("show");
+    });
 });
 
-// Load only user posts
 async function loadUserPosts(username) {
     const res = await fetch("/api/posts");
     const posts = await res.json();
@@ -29,45 +30,71 @@ async function loadUserPosts(username) {
     }
 
     userPosts.forEach(post => {
-        const div = document.createElement("div");
-        div.className = "post";
+        const card = document.createElement("div");
+        card.className = "post-card";
 
-        const imgHtml = post.imageUrl
-            ? `<img src="${post.imageUrl}" alt="Post image">`
-            : "";
+        const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}">` : "";
 
-        div.innerHTML = `
+        card.innerHTML = `
             ${imgHtml}
-            <div class="post-content">
-                <div class="meta">${post.username} • ${new Date(post.createdAt).toLocaleString()}</div>
-                <div class="text">${post.content || ""}</div>
+            <div class="post-meta">${new Date(post.createdAt).toLocaleString()}</div>
+            <div class="post-text">${post.content || ""}</div>
 
-                <button class="deletePostBtn" data-id="${post.id}">Delete</button>
+            <div class="post-actions">
+                <button class="edit-btn" data-id="${post.id}" data-content="${post.content}">Edit</button>
+                <button class="delete-btn" data-id="${post.id}">Delete</button>
             </div>
         `;
 
-        container.appendChild(div);
+        container.appendChild(card);
     });
 
-    // Enable delete buttons
-    document.querySelectorAll(".deletePostBtn").forEach(btn => {
+    // Event listeners
+    document.querySelectorAll(".delete-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
-            const postId = btn.getAttribute("data-id");
-
-            const res = await fetch(`/api/posts/${postId}`, {
-                method: "DELETE"
-            });
-
-            if (res.ok) {
-                loadUserPosts(username);
-            } else {
-                alert("Failed to delete post.");
-            }
+            const id = btn.getAttribute("data-id");
+            await fetch(`/api/posts/${id}`, { method: "DELETE" });
+            loadUserPosts(username);
         });
+    });
+
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", () => openEditModal(btn));
     });
 }
 
-// Logout button
+/* ------------------------
+   EDIT MODAL FUNCTIONS
+------------------------ */
+
+let editingPostId = null;
+
+function openEditModal(btn) {
+    editingPostId = btn.getAttribute("data-id");
+    document.getElementById("editText").value = btn.getAttribute("data-content");
+    document.getElementById("editModalBg").style.display = "flex";
+}
+
+document.getElementById("cancelEdit").addEventListener("click", () => {
+    document.getElementById("editModalBg").style.display = "none";
+});
+
+document.getElementById("saveEdit").addEventListener("click", async () => {
+    const newText = document.getElementById("editText").value;
+
+    await fetch(`/api/posts/${editingPostId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newText })
+    });
+
+    document.getElementById("editModalBg").style.display = "none";
+
+    const username = localStorage.getItem("anon_username");
+    loadUserPosts(username);
+});
+
+/* Logout */
 document.getElementById("logoutBtn")?.addEventListener("click", () => {
     localStorage.clear();
     window.location.href = "/select.html";
