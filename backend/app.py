@@ -1,110 +1,131 @@
-from flask import Flask, request, jsonify, send_from_directory
-from .config import Config
-from .extensions import db, cors, limiter
-from .models import Post, gen_anon
-import bleach
-import os
-import random
-import string
-from datetime import datetime, timezone
+document.addEventListener("DOMContentLoaded", () => {
+    const path = window.location.pathname;
 
-def create_app():
-    app = Flask(
-        __name__,
-        static_folder="../frontend/static",
-        static_url_path="/static"
-    )
+    const headerUsername = document.getElementById("headerUsername");
+    const dropdown = document.getElementById("usernameDropdown");
 
-    app.config.from_object(Config)
+    if (headerUsername) {
+        const username = localStorage.getItem("anon_username");
+        headerUsername.innerText = username || "Guest";
 
-    db.init_app(app)
-    cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
-    limiter.init_app(app)
+        headerUsername.addEventListener("click", () => {
+            dropdown?.classList.toggle("show");
+        });
 
-    tables_created = False
+        document.addEventListener("click", (e) => {
+            if (!headerUsername.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown?.classList.remove("show");
+            }
+        });
 
-    @app.before_request
-    def create_tables_once():
-        nonlocal tables_created
-        if not tables_created:
-            with app.app_context():
-                db.create_all()
-            tables_created = True
+        document.getElementById("logoutBtn")?.addEventListener("click", () => {
+            localStorage.clear();
+            window.location.href = "/select.html";
+        });
+    }
 
-    # ---------------------------
-    # FRONTEND ROUTES
-    # ---------------------------
-    @app.route("/", defaults={"path": ""})
-    @app.route("/<path:path>")
-    def serve_frontend(path):
-        frontend_dir = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "frontend")
-        )
-        if path == "" or path == "index.html":
-            return send_from_directory(frontend_dir, "index.html")
-        return send_from_directory(frontend_dir, path)
+    // Redirect to select.html if not logged in
+    if (path === "/" || path.includes("index.html")) {
+        const username = localStorage.getItem("anon_username");
+        if (!username) window.location.href = "/select.html";
 
-    # ---------------------------
-    # POSTS
-    # ---------------------------
-    @app.route("/api/posts", methods=["GET"])
-    def list_posts():
-        posts = Post.query.order_by(Post.created_at.desc()).all()
-        return jsonify([p.as_dict() for p in posts]), 200
+        loadPosts();
+    }
 
-    @limiter.limit("30 per hour")
-    @app.route("/api/posts", methods=["POST"])
-    def create_post():
-        if not request.is_json:
-            return jsonify({"error": "JSON body required"}), 400
-        body = request.get_json()
-        username = body.get("username")
-        content = body.get("content")
-        image_url = body.get("imageUrl") or body.get("image_url")
+    // Select page login/generate
+    if (path.includes("select.html")) {
+        document.getElementById("loginBtn").onclick = () => {
+            document.getElementById("loginPopup").style.display = "flex";
+        };
+        document.getElementById("generateBtn").onclick = fetchGeneratedIdentity;
+        document.getElementById("closeLogin").onclick = () => {
+            document.getElementById("loginPopup").style.display = "none";
+        };
+        document.getElementById("closeGenerate").onclick = () => {
+            document.getElementById("generatePopup").style.display = "none";
+        };
+        document.getElementById("loginConfirm").onclick = loginUser;
+    }
+});
 
-        if (not content or not content.strip()) and (not image_url or not image_url.strip()):
-            return jsonify({"error": "content or imageUrl required"}), 400
+// ======================
+// POST FUNCTIONS
+// ======================
+async function loadPosts() {
+    const res = await fetch("/api/posts");
+    const posts = await res.json();
+    const container = document.getElementById("postsContainer");
+    if (!container) return;
 
-        username = Post.normalize_username(username)
-        content = (content or "").strip()
-        if content:
-            content = content[:4096]
-            content = bleach.clean(content, tags=[], attributes={}, strip=True)
-        if image_url:
-            image_url = image_url.strip()[:1000]
+    container.innerHTML = "";
+    posts.forEach(post => {
+        const div = document.createElement("div");
+        div.className = "post";
+        div.innerHTML = `
+            ${post.imageUrl ? `<img src="${post.imageUrl}">` : ""}
+            <div class="post-content">
+                <div class="meta">${post.username} • ${new Date(post.createdAt).toLocaleString()}</div>
+                <div class="text">${post.content || ""}</div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
 
-        post = Post(username=username, content=content or None, image_url=image_url or None)
-        db.session.add(post)
-        db.session.commit()
-        return jsonify(post.as_dict()), 201
+async function loginUser() {
+    const username = document.getElementById("loginUser").value.trim();
+    const password = document.getElementById("loginPass").value.trim();
 
-    # ---------------------------
-    # GENERATE ACCOUNT
-    # ---------------------------
-    @app.route("/api/generate", methods=["GET", "POST"])
-    def generate_identity():
-        username = gen_anon()
-        password = ''.join(random.choices(string.digits, k=6))
-        return jsonify({"username": username, "password": password})
+    const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({username,password})
+    });
 
-    # ---------------------------
-    # LOGIN
-    # ---------------------------
-    @app.route("/api/login", methods=["POST"])
-    def login():
-        if not request.is_json:
-            return jsonify({"success": False, "error": "JSON required"}), 400
-        body = request.get_json()
-        username = body.get("username", "").strip()
-        password = body.get("password", "").strip()
+    const data = await res.json();
+    if (data.success) {
+        localStorage.setItem("anon_username", username);
+        localStorage.setItem("anon_password", password);
+        window.location.href = "/";
+    } else {
+        document.getElementById("loginError").style.display = "block";
+    }
+}
 
-        if username.startswith("anon") and password.isdigit() and len(password) == 6:
-            return jsonify({"success": True})
-        else:
-            return jsonify({"success": False, "error": "Invalid username or password"}), 401
+async function fetchGeneratedIdentity() {
+    const res = await fetch("/api/generate", {method:"POST"});
+    const data = await res.json();
+    document.getElementById("genUser").innerText = data.username;
+    document.getElementById("genPass").innerText = data.password;
+    document.getElementById("generatePopup").style.display = "flex";
 
-    return app
+    document.getElementById("useIdentity").onclick = () => {
+        localStorage.setItem("anon_username", data.username);
+        localStorage.setItem("anon_password", data.password);
+        window.location.href = "/";
+    };
+}
 
-if __name__ == "__main__":
-    app = create_app()
-    app.run(host="0.0.0.0", port=8080)
+// ======================
+// SUBMIT POST
+// ======================
+document.getElementById("submitPost")?.addEventListener("click", async () => {
+    const username = document.getElementById("username").value;
+    const content = document.getElementById("text").value.trim();
+    const imageUrl = document.getElementById("imageUrl").value.trim();
+
+    if (!username || (!content && !imageUrl)) {
+        alert("Username and content or image URL required");
+        return;
+    }
+
+    await fetch("/api/posts", {
+        method:"POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({username, content, imageUrl})
+    });
+
+    document.getElementById("text").value = "";
+    document.getElementById("imageUrl").value = "";
+    loadPosts();
+});
