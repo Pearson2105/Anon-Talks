@@ -135,28 +135,26 @@ header {
     margin: 25px auto;
     padding: 20px;
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    flex-direction: row;        /* side by side */
+    gap: 20px;                  /* spacing between image and content */
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     box-sizing: border-box;
+    align-items: flex-start;    /* align top of image and content */
 }
 
 .post img, .post-card img {
-    max-width: 220px;     /* constrain width */
-    max-height: 180px;    /* constrain height */
-    width: auto;
-    height: auto;
+    width: 180px;               /* fixed width */
+    height: 140px;              /* fixed height */
     border-radius: 10px;
-    object-fit: cover;    /* crop if needed without stretching */
-    display: block;
-    margin: 0 auto;
+    object-fit: cover;          /* crop if needed */
+    flex-shrink: 0;             /* prevent shrinking */
 }
-
 
 .post-content {
-    width: 100%;
+    flex: 1;                    /* take remaining space */
 }
+
 
 .meta {
     color: gray;
