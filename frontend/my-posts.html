@@ -17,11 +17,22 @@
     </div>
 
     <div class="center title-text">My Posts</div>
-
     <div class="top-right"></div>
 </header>
 
 <div id="postsContainer"></div>
+
+<!-- Modal for editing -->
+<div class="modal-bg" id="editModalBg">
+    <div class="edit-modal">
+        <h3>Edit Post</h3>
+        <textarea id="editText"></textarea>
+        <div class="modal-actions">
+            <button class="delete-btn" id="cancelEdit">Cancel</button>
+            <button class="edit-btn" id="saveEdit">Save</button>
+        </div>
+    </div>
+</div>
 
 <script src="static/my-posts.js"></script>
 </body>
