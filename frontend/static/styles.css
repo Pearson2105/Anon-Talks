@@ -26,10 +26,9 @@ header {
     background-repeat: repeat-x;
     background-position: bottom center;
     background-size: auto 160px;
-
     position: relative;
     display: flex;
-    justify-content: center; /* title centered */
+    justify-content: center;
     align-items: center;
 }
 
@@ -44,7 +43,7 @@ header {
     color: black;
 }
 
-/* USERNAME CONTAINER (top-left) */
+/* USERNAME CONTAINER */
 .username-container {
     position: absolute;
     top: 20px;
@@ -130,25 +129,26 @@ header {
 /* ----------------------------
    POST CARD
 ---------------------------- */
-.post {
+.post, .post-card {
     width: 60%;
     background: white;
     margin: 25px auto;
     padding: 20px;
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 15px;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    height: auto;
-    overflow: visible;
+    box-sizing: border-box;
 }
 
-.post img {
-    width: 220px;
+.post img, .post-card img {
+    max-width: 100%;
     height: auto;
     border-radius: 10px;
     object-fit: contain;
     display: block;
+    margin: 0 auto;
 }
 
 .post-content {
@@ -170,57 +170,58 @@ header {
     display: none;
     justify-content: center;
     align-items: center;
+    z-index: 100;
 }
 
 .popup-box {
     background: white;
     padding: 25px;
-    width: 350px;
+    width: 400px;
+    max-width: 90%;
     border-radius: 15px;
     text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .popup-box input,
 .popup-box textarea {
     width: 100%;
     margin-bottom: 12px;
-    background: white;
-    color: black;
+    padding: 8px;
     border-radius: 6px;
-    padding: 6px;
+    border: 1px solid #ccc;
 }
 
-.popup-box button {
+/* POPUP BUTTONS CONTAINER */
+.popup-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
     margin-top: 10px;
-    padding: 8px 15px;
-    border: none;
-    background: #7371FC;
-    color: white;
-    cursor: pointer;
-    border-radius: 8px;
-    font-size: 16px;
 }
 
-/* ----------------------------
-   LOGIN / GENERATE PAGE BUTTONS
----------------------------- */
+/* BUTTONS */
+button, .big-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
 .big-btn {
     width: 100%;
-    padding: 15px;
-    font-size: 18px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
+    margin-top: 10px;
     background: #444;
     color: white;
 }
 
 .big-btn.purple {
     background: #7371FC;
+    color: white;
 }
 
-/* LOGIN / GENERATE PAGE BOX */
+/* SETUP BOX (Select Page) */
 .setup-box {
     width: 350px;
     margin: 100px auto;
