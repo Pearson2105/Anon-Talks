@@ -1,24 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Posts</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="my-posts.js" defer></script>
-    <script src="app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Posts – Anon-Talks</title>
+    <link rel="stylesheet" href="static/styles.css">
 </head>
-
 <body>
 
-<div class="header">
-    <h1>My Posts</h1>
+<header>
+    <div class="username-container">
+        <div class="username" id="headerUsername"></div>
+        <div class="username-dropdown" id="usernameDropdown">
+            <div class="dropdown-item" id="logoutBtn">Log Out</div>
+        </div>
+    </div>
+
+    <div class="center title-text">My Posts</div>
+    <div class="top-right"></div>
+</header>
+
+<div id="postsContainer"></div>
+
+<!-- Modal for editing -->
+<div class="modal-bg" id="editModalBg">
+    <div class="edit-modal">
+        <h3>Edit Post</h3>
+        <textarea id="editText"></textarea>
+        <div class="modal-actions">
+            <button class="delete-btn" id="cancelEdit">Cancel</button>
+            <button class="edit-btn" id="saveEdit">Save</button>
+        </div>
+    </div>
 </div>
 
-<div class="container">
-    <button onclick="window.location.href='index.html'">Back to Feed</button>
-
-    <h2 style="margin-top:20px;">Your Posts</h2>
-    <div id="my-posts-container"></div>
-</div>
-
+<script src="static/my-posts.js"></script>
 </body>
 </html>
