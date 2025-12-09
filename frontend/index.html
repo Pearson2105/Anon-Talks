@@ -1,59 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Anon-Talks</title>
     <link rel="stylesheet" href="/static/styles.css">
     <script src="/static/app.js" defer></script>
 </head>
-
 <body>
 
 <header>
+    <div class="username-container">
+        <div class="username" id="headerUsername"></div>
+        <div class="username-dropdown" id="usernameDropdown">
+            <div class="dropdown-item" id="logoutBtn">Log Out</div>
+        </div>
+    </div>
     <div class="center title-text">Anon-Talks</div>
+    <div class="top-right"></div>
 </header>
 
 <div class="container">
-    <!-- Login status -->
-    <div id="welcome-container" style="display:none;">
-        <p id="welcome-text"></p>
-        <button onclick="window.location.href='my-posts.html'">My Posts</button>
-        <button onclick="logoutUser()">Logout</button>
-    </div>
-
-    <!-- Login choice -->
-    <div id="login-container">
-        <h2>Choose how you want to continue:</h2>
-        <button onclick="showLoginForm()">Login</button>
-        <button onclick="generateIdentity()">Generate Identity</button>
-    </div>
-
-    <!-- Login form -->
-    <div id="login-form" style="display:none;">
-        <h3>Login</h3>
-        <input id="login-username" placeholder="Username">
-        <input id="login-password" placeholder="Password" type="password">
-        <button onclick="loginUser()">Login</button>
-        <button onclick="hideLoginForm()">Cancel</button>
-    </div>
-
-    <!-- Generated identity -->
-    <div id="generated-identity" style="display:none;">
-        <h3>Your Anonymous Identity</h3>
-        <p id="gen-user"></p>
-        <p id="gen-pass"></p>
-        <button onclick="useGeneratedIdentity()">Use This Identity</button>
-        <button onclick="hideGenerated()">Cancel</button>
-    </div>
-
-    <!-- Posting area (only visible when logged in) -->
-    <div id="post-area" style="display:none; margin-top:25px;">
+    <div id="post-area" style="margin-top:25px;">
         <h3>Create a Post</h3>
-        <input id="post-title" placeholder="Title">
-        <textarea id="post-body" rows="4" placeholder="Write something..."></textarea>
+        <input id="username" type="hidden">
+        <textarea id="text" rows="4" placeholder="Write something..."></textarea>
+        <input id="imageUrl" placeholder="Image URL (optional)">
         <button id="submitPost">Submit</button>
     </div>
 
-    <!-- Feed -->
     <h2 style="margin-top:30px;">Recent Posts</h2>
     <div id="postsContainer"></div>
 </div>
