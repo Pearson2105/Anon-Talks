@@ -13,6 +13,7 @@
     <div class="username-container">
         <div class="username" id="headerUsername"></div>
         <div class="username-dropdown" id="usernameDropdown">
+            <div class="dropdown-item" id="backBtn">Back to Main</div>
             <div class="dropdown-item" id="logoutBtn">Log Out</div>
         </div>
     </div>
@@ -22,19 +23,28 @@
 <div class="container">
     <div id="postsContainer"></div>
 
-    <!-- EDIT POST MODAL -->
-<div class="popup-overlay" id="editModalBg">
-    <div class="popup-box">
-        <h3>Edit Post</h3>
-        <textarea id="editText"></textarea>
-        <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
-            <button id="cancelEdit" class="big-btn" style="width:100px;">Cancel</button>
-            <button id="saveEdit" class="big-btn purple" style="width:100px;">Save</button>
+    <!-- EDIT POPUP -->
+    <div class="popup-overlay" id="editModalBg">
+        <div class="popup-box">
+            <h3>Edit Post</h3>
+            <textarea id="editText" placeholder="Post content"></textarea>
+            <input id="editImageUrl" placeholder="Image URL (optional)" style="margin-bottom:10px;">
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+                <button id="cancelEdit" class="big-btn" style="width:120px;">Cancel</button>
+                <button id="saveEdit" class="big-btn purple" style="width:120px;">Save</button>
+            </div>
         </div>
     </div>
 </div>
 
-</div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // BACK button
+    document.getElementById("backBtn")?.addEventListener("click", () => {
+        window.location.href = "/index.html";
+    });
+});
+</script>
 
 </body>
 </html>
