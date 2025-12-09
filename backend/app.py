@@ -7,23 +7,24 @@ import os
 import random
 import string
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend"))
+STATIC_DIR = os.path.join(FRONTEND_DIR, "static")
+
 def create_app():
     app = Flask(
         __name__,
-        static_folder="../frontend/static",
-        static_url_path="/static"
+        static_folder=STATIC_DIR,
+        static_url_path="/static",
+        template_folder=FRONTEND_DIR
     )
-
     app.config.from_object(Config)
 
-    # Initialize extensions
     db.init_app(app)
     cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
     limiter.init_app(app)
 
-    # ---------------------------
-    # CREATE TABLES ON STARTUP
-    # ---------------------------
+    # Create tables
     with app.app_context():
         db.create_all()
 
@@ -33,14 +34,13 @@ def create_app():
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def serve_frontend(path):
-        frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
         if path in ["", "index.html"]:
-            return send_from_directory(frontend_dir, "index.html")
+            return send_from_directory(FRONTEND_DIR, "index.html")
         elif path == "my-posts.html":
-            return send_from_directory(frontend_dir, "my-posts.html")
+            return send_from_directory(FRONTEND_DIR, "my-posts.html")
         elif path == "select.html":
-            return send_from_directory(frontend_dir, "select.html")
-        return send_from_directory(frontend_dir, path)
+            return send_from_directory(FRONTEND_DIR, "select.html")
+        return send_from_directory(FRONTEND_DIR, path)
 
     # ---------------------------
     # POSTS API
@@ -59,14 +59,10 @@ def create_app():
         username = Post.normalize_username(data.get("username"))
         content = (data.get("content") or "").strip()
         image_url = (data.get("imageUrl") or data.get("image_url") or "").strip()
-
         if not content and not image_url:
             return jsonify({"error": "content or imageUrl required"}), 400
-
-        if content:
-            content = bleach.clean(content[:4096], tags=[], attributes={}, strip=True)
-        if image_url:
-            image_url = image_url[:1000]
+        if content: content = bleach.clean(content[:4096], tags=[], attributes={}, strip=True)
+        if image_url: image_url = image_url[:1000]
 
         post = Post(username=username, content=content or None, image_url=image_url or None)
         db.session.add(post)
@@ -113,17 +109,12 @@ def create_app():
         data = request.get_json()
         username = (data.get("username") or "").strip()
         password = (data.get("password") or "").strip()
-
         if username.startswith("anon") and password.isdigit() and len(password) == 6:
             return jsonify({"success": True})
-        else:
-            return jsonify({"success": False, "error": "Invalid username or password"}), 401
+        return jsonify({"success": False, "error": "Invalid username or password"}), 401
 
     return app
 
-# ---------------------------
-# RUN APP
-# ---------------------------
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=8080, debug=True)
