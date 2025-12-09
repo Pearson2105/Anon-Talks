@@ -1,103 +1,233 @@
-/* Global resets */
-body, html {
+styles.css "/* ----------------------------
+   IMPORT CUSTOM FONT
+---------------------------- */
+@font-face {
+    font-family: "Chicago";
+    src: url("Chicago.otf") format("opentype");
+}
+
+/* ----------------------------
+   BASIC PAGE STYLE
+---------------------------- */
+body {
     margin: 0;
     padding: 0;
-    font-family: "Chicago", sans-serif;
-    background: #7b77e6; /* purple base */
-    color: #222;
-    height: 100%;
+    background: #7371FC;
+    font-family: Arial, sans-serif;
 }
 
-/* Cloud header */
-.header {
-    background: #d7c8ff;
-    padding: 40px 0 20px;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 0 20px rgba(0,0,0,0.15);
-}
-
-.header h1 {
-    margin: 0;
-    font-size: 48px;
-}
-
-/* Cloud wave */
-.header::after {
-    content: "";
-    display: block;
+/* ----------------------------
+   HEADER CLOUD BAR
+---------------------------- */
+header {
     width: 100%;
-    height: 50px;
-    background: url("cloud.png") repeat-x;
-    background-size: cover;
-    margin-top: 10px;
+    height: 160px;
+    background-image: url("/static/cloud.png");
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-size: auto 160px;
+
+    position: relative;
+    display: flex;
+    justify-content: center; /* title centered */
+    align-items: center;
 }
 
-/* Center container */
-.container {
-    max-width: 700px;
-    margin: 40px auto;
+/* CENTERED TITLE */
+.center.title-text {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Chicago", Arial, sans-serif;
+    font-size: 60px;
+    color: black;
+}
+
+/* USERNAME CONTAINER (top-left) */
+.username-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    z-index: 20;
+}
+
+.username {
+    font-size: 30px;
+    font-weight: bold;
+    color: black;
+}
+
+/* DROPDOWN MENU */
+.username-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 10;
+}
+
+.username-dropdown.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-item {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: black;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: #7371FC;
+    color: white;
+}
+
+/* TOP RIGHT SECTION */
+.top-right {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    z-index: 20;
+}
+
+/* SEARCH BOX */
+.search-container input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 20px;
+    border: none;
+}
+
+/* + BUTTON */
+#createBtn {
+    font-size: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px 12px;
+    border-radius: 15px;
+    transition: 0.2s;
+    background: white;
+    color: #7371FC;
+}
+#createBtn:hover {
+    transform: scale(1.1);
+}
+
+/* ----------------------------
+   POST CARD
+---------------------------- */
+.post {
+    width: 60%;
+    background: white;
+    margin: 25px auto;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+    height: auto;
+    overflow: visible;
+}
+
+.post img {
+    width: 220px;
+    height: auto;
+    border-radius: 10px;
+    object-fit: contain;
+    display: block;
+}
+
+.post-content {
+    width: 100%;
+}
+
+.meta {
+    color: gray;
+    margin-bottom: 8px;
+}
+
+/* ----------------------------
+   POPUP OVERLAY
+---------------------------- */
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-box {
     background: white;
     padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    width: 350px;
+    border-radius: 15px;
+    text-align: center;
 }
 
-/* Buttons */
-button {
-    padding: 10px 18px;
-    font-size: 15px;
-    background: #6a5acd;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-button:hover {
-    background: #4f45b6;
-}
-
-/* Inputs */
-input, textarea {
+.popup-box input,
+.popup-box textarea {
     width: 100%;
-    padding: 10px;
+    margin-bottom: 12px;
+    background: white;
+    color: black;
     border-radius: 6px;
-    border: 1px solid #aaa;
-    margin-top: 6px;
-    margin-bottom: 12px;
+    padding: 6px;
 }
 
-/* Post card */
-.post {
-    background: #f5f3ff;
-    padding: 15px;
+.popup-box button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    border: none;
+    background: #7371FC;
+    color: white;
+    cursor: pointer;
     border-radius: 8px;
-    margin-bottom: 12px;
-    border: 1px solid #dcd3ff;
+    font-size: 16px;
 }
 
-.post-title {
-    font-size: 20px;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.post-body {
-    white-space: pre-wrap;
-}
-
-/* My posts card */
-.my-post-card {
-    background: #f8f6ff;
+/* ----------------------------
+   LOGIN / GENERATE PAGE BUTTONS
+---------------------------- */
+.big-btn {
+    width: 100%;
     padding: 15px;
-    border: 1px solid #b9aaff;
+    font-size: 18px;
+    margin-top: 15px;
+    border: none;
     border-radius: 10px;
-    margin-bottom: 15px;
+    cursor: pointer;
+    background: #444;
+    color: white;
 }
 
-.edit-btn {
-    background: #4caf50;
+.big-btn.purple {
+    background: #7371FC;
 }
-.delete-btn {
-    background: #d9534f;
-}
+
+/* LOGIN / GENERATE PAGE BOX */
+.setup-box {
+    width: 350px;
+    margin: 100px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+}"
