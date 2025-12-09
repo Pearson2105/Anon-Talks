@@ -169,7 +169,7 @@ document.getElementById("logoutBtn")?.addEventListener("click", () => {
 });
 
 document.getElementById("editPosts")?.addEventListener("click", () => {
-    alert("Feature coming soon: edit your posts!");
+    window.location.href = "/my-posts.html";
 });
 
 // =====================================================
