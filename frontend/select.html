@@ -15,16 +15,18 @@
 
 <div class="container">
     <h2>Choose how you want to continue:</h2>
-    <button id="loginBtn">Login</button>
-    <button id="generateBtn">Generate Identity</button>
+
+    <!-- Add big-btn class and purple for login -->
+    <button id="loginBtn" class="big-btn purple">Login</button>
+    <button id="generateBtn" class="big-btn">Generate Identity</button>
 
     <div class="popup-overlay" id="loginPopup">
         <div class="popup-box">
             <h3>Login</h3>
             <input id="loginUser" placeholder="Username">
             <input id="loginPass" type="password" placeholder="Password">
-            <button id="loginConfirm">Login</button>
-            <button id="closeLogin">Cancel</button>
+            <button id="loginConfirm" class="big-btn purple">Login</button>
+            <button id="closeLogin" class="big-btn">Cancel</button>
             <p id="loginError" style="color:red; display:none;">Invalid credentials</p>
         </div>
     </div>
@@ -34,8 +36,8 @@
             <h3>Generated Identity</h3>
             <p>Username: <span id="genUser"></span></p>
             <p>Password: <span id="genPass"></span></p>
-            <button id="useIdentity">Use This Identity</button>
-            <button id="closeGenerate">Cancel</button>
+            <button id="useIdentity" class="big-btn purple">Use This Identity</button>
+            <button id="closeGenerate" class="big-btn">Cancel</button>
         </div>
     </div>
 </div>
