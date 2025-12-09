@@ -6,7 +6,6 @@ import bleach
 import os
 import random
 import string
-from datetime import datetime
 
 def create_app():
     app = Flask(
@@ -20,7 +19,7 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
-    limiter.init_app(app)
+    limiter.init_app(app, key_func=lambda: request.remote_addr)  # fix Limiter key_func
 
     # Create tables once
     @app.before_first_request
@@ -63,7 +62,6 @@ def create_app():
         if not content and not image_url:
             return jsonify({"error": "content or imageUrl required"}), 400
 
-        # Clean content
         if content:
             content = bleach.clean(content[:4096], tags=[], attributes={}, strip=True)
         if image_url:
@@ -124,28 +122,5 @@ def create_app():
 
 
 if __name__ == "__main__":
-    app = create_app()
-    app.run(host="0.0.0.0", port=8080)
-
-if __name__ == "__main__":
-    from extensions import db, limiter
-    from flask import Flask
-    from config import Config
-
-    def create_app():
-        app = Flask(__name__)
-        app.config.from_object(Config)
-
-        # Initialize extensions
-        db.init_app(app)
-        limiter.init_app(app)
-
-        # Example route
-        @app.route("/")
-        def index():
-            return "Hello, Anon-Talks!"
-
-        return app
-
     app = create_app()
     app.run(host="0.0.0.0", port=8080, debug=True)
