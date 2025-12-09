@@ -1,14 +1,3 @@
-/* ----------------------------
-   IMPORT CUSTOM FONT
----------------------------- */
-@font-face {
-    font-family: "Chicago";
-    src: url("/static/Chicago.otf") format("opentype");
-}
-
-/* ----------------------------
-   BASIC PAGE STYLE
----------------------------- */
 body {
     margin: 0;
     padding: 0;
@@ -16,9 +5,7 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* ----------------------------
-   HEADER CLOUD BAR
----------------------------- */
+/* HEADER */
 header {
     width: 100%;
     height: 160px;
@@ -32,7 +19,7 @@ header {
     align-items: center;
 }
 
-/* CENTERED TITLE */
+/* TITLE */
 .center.title-text {
     position: absolute;
     top: 40%;
@@ -43,7 +30,7 @@ header {
     color: black;
 }
 
-/* USERNAME CONTAINER */
+/* USERNAME DROPDOWN */
 .username-container {
     position: absolute;
     top: 20px;
@@ -52,13 +39,6 @@ header {
     z-index: 20;
 }
 
-.username {
-    font-size: 30px;
-    font-weight: bold;
-    color: black;
-}
-
-/* DROPDOWN MENU */
 .username-dropdown {
     position: absolute;
     top: 100%;
@@ -71,7 +51,6 @@ header {
     transform: translateY(-10px);
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 10;
 }
 
 .username-dropdown.show {
@@ -84,7 +63,6 @@ header {
     padding: 10px 20px;
     font-size: 16px;
     color: black;
-    transition: background 0.2s;
 }
 
 .dropdown-item:hover {
@@ -92,78 +70,49 @@ header {
     color: white;
 }
 
-/* TOP RIGHT SECTION */
-.top-right {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    z-index: 20;
-}
-
-/* SEARCH BOX */
-.search-container input {
-    padding: 10px 15px;
-    font-size: 16px;
-    border-radius: 20px;
-    border: none;
-}
-
-/* + BUTTON */
-#createBtn {
-    font-size: 50px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 5px 12px;
-    border-radius: 15px;
-    transition: 0.2s;
-    background: white;
-    color: #7371FC;
-}
-#createBtn:hover {
-    transform: scale(1.1);
-}
-
-/* ----------------------------
-   POST CARD
----------------------------- */
+/* POST CARD */
 .post, .post-card {
     width: 60%;
     background: white;
     margin: 25px auto;
     padding: 20px;
     display: flex;
-    flex-direction: row;        /* side by side */
-    gap: 20px;                  /* spacing between image and content */
+    flex-direction: row;
+    gap: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    box-sizing: border-box;
-    align-items: flex-start;    /* align top of image and content */
 }
 
 .post img, .post-card img {
-    width: 180px;               /* fixed width */
-    height: 140px;              /* fixed height */
+    width: 180px;
+    height: 140px;
     border-radius: 10px;
-    object-fit: cover;          /* crop if needed */
-    flex-shrink: 0;             /* prevent shrinking */
+    object-fit: cover;
+    flex-shrink: 0;
 }
 
-.post-content {
-    flex: 1;                    /* take remaining space */
+.post-card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-
-.meta {
+.post-card-meta {
     color: gray;
     margin-bottom: 8px;
 }
 
-/* ----------------------------
-   POPUP OVERLAY
----------------------------- */
+.post-card-text {
+    flex: 1;
+}
+
+.post-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* POPUPS */
 .popup-overlay {
     position: fixed;
     inset: 0;
@@ -181,7 +130,6 @@ header {
     max-width: 90%;
     border-radius: 15px;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .popup-box input,
@@ -193,12 +141,10 @@ header {
     border: 1px solid #ccc;
 }
 
-/* POPUP BUTTONS CONTAINER */
 .popup-actions {
     display: flex;
     gap: 10px;
     justify-content: center;
-    margin-top: 10px;
 }
 
 /* BUTTONS */
@@ -222,7 +168,7 @@ button, .big-btn {
     color: white;
 }
 
-/* SETUP BOX (Select Page) */
+/* SETUP BOX (Select page) */
 .setup-box {
     width: 350px;
     margin: 100px auto;
@@ -230,5 +176,5 @@ button, .big-btn {
     background: white;
     border-radius: 15px;
     text-align: center;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
