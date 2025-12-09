@@ -1,233 +1,128 @@
-/* ----------------------------
-   IMPORT CUSTOM FONT
----------------------------- */
-@font-face {
-    font-family: "Chicago";
-    src: url("Chicago.otf") format("opentype");
-}
+/* ============================================================
+   MY POSTS PAGE — IMPROVED UI
+   (Safe to append; does NOT override index.html post layout)
+============================================================ */
 
-/* ----------------------------
-   BASIC PAGE STYLE
----------------------------- */
-body {
-    margin: 0;
-    padding: 0;
-    background: #7371FC;
-    font-family: Arial, sans-serif;
-}
-
-/* ----------------------------
-   HEADER CLOUD BAR
----------------------------- */
-header {
-    width: 100%;
-    height: 160px;
-    background-image: url("/static/cloud.png");
-    background-repeat: repeat-x;
-    background-position: bottom center;
-    background-size: auto 160px;
-
-    position: relative;
+/* Container for user posts */
+#postsContainer {
+    max-width: 850px;
+    margin: 120px auto;
     display: flex;
-    justify-content: center; /* title centered */
-    align-items: center;
+    flex-direction: column;
+    gap: 25px;
+    padding-bottom: 60px;
 }
 
-/* CENTERED TITLE */
-.center.title-text {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-family: "Chicago", Arial, sans-serif;
-    font-size: 60px;
-    color: black;
-}
-
-/* USERNAME CONTAINER (top-left) */
-.username-container {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    cursor: pointer;
-    z-index: 20;
-}
-
-.username {
-    font-size: 30px;
-    font-weight: bold;
-    color: black;
-}
-
-/* DROPDOWN MENU */
-.username-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
+/* User post cards */
+.post-card {
     background: white;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Post images */
+.post-card img {
+    width: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+/* Timestamp */
+.post-meta {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Post content */
+.post-text {
+    font-size: 17px;
+    line-height: 1.45;
+}
+
+/* Edit/Delete button row */
+.post-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+    border: none;
+    padding: 10px 16px;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(-10px);
-    pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 10;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s ease;
 }
 
-.username-dropdown.show {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-.dropdown-item {
-    padding: 10px 20px;
-    font-size: 16px;
-    color: black;
-    transition: background 0.2s;
-}
-
-.dropdown-item:hover {
-    background: #7371FC;
+/* Edit button */
+.edit-btn {
+    background: #6c63ff;
     color: white;
 }
-
-/* TOP RIGHT SECTION */
-.top-right {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    z-index: 20;
+.edit-btn:hover {
+    background: #574fe3;
 }
 
-/* SEARCH BOX */
-.search-container input {
-    padding: 10px 15px;
-    font-size: 16px;
-    border-radius: 20px;
-    border: none;
+/* Delete button */
+.delete-btn {
+    background: #ff5b5b;
+    color: white;
+}
+.delete-btn:hover {
+    background: #e04747;
 }
 
-/* + BUTTON */
-#createBtn {
-    font-size: 50px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 5px 12px;
-    border-radius: 15px;
-    transition: 0.2s;
-    background: white;
-    color: #7371FC;
-}
-#createBtn:hover {
-    transform: scale(1.1);
-}
+/* ============================================================
+   EDIT MODAL
+============================================================ */
 
-/* ----------------------------
-   POST CARD
----------------------------- */
-.post {
-    width: 60%;
-    background: white;
-    margin: 25px auto;
-    padding: 20px;
-    display: flex;
-    gap: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-
-    height: auto;
-    overflow: visible;
-}
-
-.post img {
-    width: 220px;
-    height: auto;
-    border-radius: 10px;
-    object-fit: contain;
-    display: block;
-}
-
-.post-content {
-    width: 100%;
-}
-
-.meta {
-    color: gray;
-    margin-bottom: 8px;
-}
-
-/* ----------------------------
-   POPUP OVERLAY
----------------------------- */
-.popup-overlay {
+/* Dimmed background */
+.modal-bg {
     position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.35);
     display: none;
     justify-content: center;
     align-items: center;
+    z-index: 2000;
 }
 
-.popup-box {
+/* Modal window */
+.edit-modal {
     background: white;
     padding: 25px;
-    width: 350px;
-    border-radius: 15px;
-    text-align: center;
+    width: 420px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
-.popup-box input,
-.popup-box textarea {
+/* Modal textarea */
+.edit-modal textarea {
     width: 100%;
-    margin-bottom: 12px;
-    background: white;
-    color: black;
-    border-radius: 6px;
-    padding: 6px;
-}
-
-.popup-box button {
-    margin-top: 10px;
-    padding: 8px 15px;
-    border: none;
-    background: #7371FC;
-    color: white;
-    cursor: pointer;
+    height: 120px;
+    padding: 10px;
     border-radius: 8px;
-    font-size: 16px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    resize: none;
 }
 
-/* ----------------------------
-   LOGIN / GENERATE PAGE BUTTONS
----------------------------- */
-.big-btn {
-    width: 100%;
-    padding: 15px;
-    font-size: 18px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background: #444;
-    color: white;
-}
-
-.big-btn.purple {
-    background: #7371FC;
-}
-
-/* LOGIN / GENERATE PAGE BOX */
-.setup-box {
-    width: 350px;
-    margin: 100px auto;
-    padding: 25px;
-    background: white;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+/* Modal buttons */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
 }
