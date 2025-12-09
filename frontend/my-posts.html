@@ -21,16 +21,16 @@
 
 <div class="container">
     <div id="postsContainer"></div>
-</div>
 
-<!-- Edit modal -->
-<div class="popup-overlay" id="editModalBg">
-    <div class="popup-box">
-        <h3>Edit Post</h3>
-        <textarea id="editText" rows="4"></textarea>
-        <div style="margin-top:10px;">
-            <button id="cancelEdit">Cancel</button>
-            <button id="saveEdit">Save</button>
+    <!-- Modal for editing -->
+    <div class="modal-bg" id="editModalBg">
+        <div class="edit-modal">
+            <h3>Edit Post</h3>
+            <textarea id="editText"></textarea>
+            <div class="modal-actions">
+                <button class="delete-btn" id="cancelEdit">Cancel</button>
+                <button class="edit-btn" id="saveEdit">Save</button>
+            </div>
         </div>
     </div>
 </div>
