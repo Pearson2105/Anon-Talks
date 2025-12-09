@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Select Identity</title>
     <link rel="stylesheet" href="/static/styles.css">
     <script src="/static/app.js" defer></script>
 </head>
-
 <body>
 
 <header>
@@ -15,9 +15,31 @@
 <div class="container">
     <h2>Select Identity</h2>
 
-    <div id="identity-list"></div>
+    <div id="login-container">
+        <button id="loginBtn">Login</button>
+        <button id="generateBtn">Generate Identity</button>
+    </div>
 
-    <button onclick="window.location.href='index.html'">Back</button>
+    <div id="loginPopup" class="popup-overlay" style="display:none;">
+        <div class="popup-box">
+            <h3>Login</h3>
+            <input id="loginUser" placeholder="Username">
+            <input id="loginPass" placeholder="Password" type="password">
+            <button id="loginConfirm">Login</button>
+            <button id="closeLogin">Cancel</button>
+            <p id="loginError" style="color:red; display:none;">Invalid login</p>
+        </div>
+    </div>
+
+    <div id="generatePopup" class="popup-overlay" style="display:none;">
+        <div class="popup-box">
+            <h3>Generated Identity</h3>
+            <p>Username: <span id="genUser"></span></p>
+            <p>Password: <span id="genPass"></span></p>
+            <button id="useIdentity">Use This Identity</button>
+            <button id="closeGenerate">Cancel</button>
+        </div>
+    </div>
 </div>
 
 </body>
