@@ -126,3 +126,26 @@ def create_app():
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=8080)
+
+if __name__ == "__main__":
+    from extensions import db, limiter
+    from flask import Flask
+    from config import Config
+
+    def create_app():
+        app = Flask(__name__)
+        app.config.from_object(Config)
+
+        # Initialize extensions
+        db.init_app(app)
+        limiter.init_app(app)
+
+        # Example route
+        @app.route("/")
+        def index():
+            return "Hello, Anon-Talks!"
+
+        return app
+
+    app = create_app()
+    app.run(host="0.0.0.0", port=8080, debug=True)
