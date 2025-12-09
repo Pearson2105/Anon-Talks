@@ -22,13 +22,14 @@
 <div class="container">
     <div id="postsContainer"></div>
 
-    <div class="modal-bg" id="editModalBg">
-        <div class="edit-modal">
+    <!-- EDIT POST MODAL -->
+    <div class="popup-overlay" id="editModalBg">
+        <div class="popup-box">
             <h3>Edit Post</h3>
             <textarea id="editText"></textarea>
-            <div class="modal-actions">
-                <button class="delete-btn" id="cancelEdit">Cancel</button>
-                <button class="edit-btn" id="saveEdit">Save</button>
+            <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                <button id="cancelEdit" class="big-btn">Cancel</button>
+                <button id="saveEdit" class="big-btn purple">Save</button>
             </div>
         </div>
     </div>
