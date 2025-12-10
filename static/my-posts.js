@@ -3,12 +3,11 @@ const API_BASE = "https://anon-talks.onrender.com";
 document.addEventListener("DOMContentLoaded", async () => {
     const username = localStorage.getItem("anon_username");
     if (!username) {
-        window.location.href = "../index.html";
+        window.location.href = "index.html"; // Adjust path if needed
         return;
     }
 
     document.getElementById("headerUsername").innerText = username;
-
     loadUserPosts(username);
 
     const headerUsername = document.getElementById("headerUsername");
@@ -24,11 +23,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.clear();
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
     });
 
     document.getElementById("backBtn").addEventListener("click", () => {
-        window.location.href = "../select.html";
+        window.location.href = "select.html";
+    });
+
+    // Make sure edit modal buttons exist
+    const cancelBtn = document.getElementById("cancelEdit");
+    const saveBtn = document.getElementById("saveEdit");
+
+    cancelBtn?.addEventListener("click", () => {
+        document.getElementById("editModalBg").style.display = "none";
+    });
+
+    saveBtn?.addEventListener("click", async () => {
+        if (!editingPostId) return alert("No post selected to edit.");
+
+        const newText = document.getElementById("editText").value;
+        const newImage = document.getElementById("editImageUrl").value;
+
+        const res = await fetch(`${API_BASE}/api/posts/${editingPostId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: newText, image_url: newImage })
+        });
+
+        if (res.ok) {
+            document.getElementById("editModalBg").style.display = "none";
+            loadUserPosts(username);
+        } else {
+            alert("Failed to save edit");
+        }
     });
 });
 
@@ -86,29 +113,3 @@ async function loadUserPosts(username) {
         });
     });
 }
-
-document.getElementById("cancelEdit").addEventListener("click", () => {
-    document.getElementById("editModalBg").style.display = "none";
-});
-
-document.getElementById("saveEdit").addEventListener("click", async () => {
-    const newText = document.getElementById("editText").value;
-    const newImage = document.getElementById("editImageUrl").value;
-    const username = localStorage.getItem("anon_username");
-
-    const res = await fetch(`${API_BASE}/api/posts/${editingPostId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            content: newText,
-            image_url: newImage
-        })
-    });
-
-    if (res.ok) {
-        document.getElementById("editModalBg").style.display = "none";
-        loadUserPosts(username);
-    } else {
-        alert("Failed to save edit");
-    }
-});
