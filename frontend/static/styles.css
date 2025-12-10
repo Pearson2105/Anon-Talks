@@ -1,14 +1,8 @@
-/* ----------------------------
-   IMPORT CUSTOM FONT
----------------------------- */
 @font-face {
     font-family: "Chicago";
-    src: url("static/Chicago.otf") format("opentype");
+    src: url("Chicago.otf") format("opentype");
 }
 
-/* ----------------------------
-   BASIC PAGE STYLE
----------------------------- */
 body {
     margin: 0;
     padding: 0;
@@ -16,24 +10,19 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* ----------------------------
-   HEADER CLOUD BAR
----------------------------- */
 header {
     width: 100%;
     height: 160px;
-    background-image: url("static/cloud.png");
+    background-image: url("cloud.png");
     background-repeat: repeat-x;
     background-position: bottom center;
     background-size: auto 160px;
-
     position: relative;
     display: flex;
-    justify-content: center; /* title centered */
+    justify-content: center;
     align-items: center;
 }
 
-/* CENTERED TITLE */
 .center.title-text {
     position: absolute;
     top: 40%;
@@ -44,7 +33,6 @@ header {
     color: black;
 }
 
-/* USERNAME CONTAINER (top-left) */
 .username-container {
     position: absolute;
     top: 20px;
@@ -59,7 +47,6 @@ header {
     color: black;
 }
 
-/* DROPDOWN MENU */
 .username-dropdown {
     position: absolute;
     top: 100%;
@@ -93,7 +80,6 @@ header {
     color: white;
 }
 
-/* TOP RIGHT SECTION */
 .top-right {
     position: absolute;
     top: 20px;
@@ -104,7 +90,6 @@ header {
     z-index: 20;
 }
 
-/* SEARCH BOX */
 .search-container input {
     padding: 10px 15px;
     font-size: 16px;
@@ -112,7 +97,6 @@ header {
     border: none;
 }
 
-/* + BUTTON */
 #createBtn {
     font-size: 50px;
     font-weight: bold;
@@ -123,37 +107,35 @@ header {
     background: white;
     color: #7371FC;
 }
+
 #createBtn:hover {
     transform: scale(1.1);
 }
 
-/* ----------------------------
-   POST CARD
----------------------------- */
 .post, .post-card {
     width: 60%;
     background: white;
     margin: 25px auto;
     padding: 20px;
     display: flex;
-    flex-direction: row;        /* side by side */
-    gap: 20px;                  /* spacing between image and content */
+    flex-direction: row;
+    gap: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     box-sizing: border-box;
-    align-items: flex-start;    /* align top of image and content */
+    align-items: flex-start;
 }
 
 .post img, .post-card img {
-    width: 180px;               /* fixed width */
-    height: 140px;              /* fixed height */
+    width: 180px;
+    height: 140px;
     border-radius: 10px;
-    object-fit: cover;          /* crop if needed */
-    flex-shrink: 0;             /* prevent shrinking */
+    object-fit: cover;
+    flex-shrink: 0;
 }
 
 .post-content {
-    flex: 1;                    /* take remaining space */
+    flex: 1;
 }
 
 .meta {
@@ -161,9 +143,6 @@ header {
     margin-bottom: 8px;
 }
 
-/* ----------------------------
-   POPUP OVERLAY
----------------------------- */
 .popup-overlay {
     position: fixed;
     inset: 0;
@@ -202,9 +181,6 @@ header {
     font-size: 16px;
 }
 
-/* ----------------------------
-   LOGIN / GENERATE PAGE BUTTONS
----------------------------- */
 .big-btn {
     width: 100%;
     padding: 15px;
@@ -221,7 +197,6 @@ header {
     background: #7371FC;
 }
 
-/* LOGIN / GENERATE PAGE BOX */
 .setup-box {
     width: 350px;
     margin: 100px auto;
