@@ -3,7 +3,7 @@
 ---------------------------- */
 @font-face {
     font-family: "Chicago";
-    src: url("/static/Chicago.otf") format("opentype");
+    src: url("static/Chicago.otf") format("opentype");
 }
 
 /* ----------------------------
@@ -22,7 +22,7 @@ body {
 header {
     width: 100%;
     height: 160px;
-    background-image: url("/static/cloud.png");
+    background-image: url("static/cloud.png");
     background-repeat: repeat-x;
     background-position: bottom center;
     background-size: auto 160px;
