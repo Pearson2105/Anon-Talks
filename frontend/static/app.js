@@ -1,78 +1,65 @@
-// =====================================================
-// PAGE DETECTION
-// =====================================================
 const API_BASE = "https://anon-talks.onrender.com";
+
 const pathname = window.location.pathname;
 const onSelectPage = pathname.includes("select.html");
-const onIndexPage = pathname === "/" || pathname.includes("index.html");
+const onIndexPage = pathname.includes("index.html") || pathname.endsWith("/") || pathname.includes("Anon-Talks");
 
-// =====================================================
-// DOM CONTENT LOADED
-// =====================================================
 document.addEventListener("DOMContentLoaded", () => {
 
-    // -----------------------
-    // INDEX PAGE LOGIC
-    // -----------------------
+    // INDEX PAGE
     if (onIndexPage) {
         const username = localStorage.getItem("anon_username");
 
         if (!username) {
-            // Redirect to select page if not logged in
-            window.location.href = "/select.html";
+            window.location.href = "select.html";
             return;
         }
 
-        // Set header username and popup username
         document.getElementById("headerUsername").innerText = username;
         document.getElementById("username").value = username;
 
         loadPosts();
 
-        // Header dropdown toggle
+        // Dropdown
         const headerUsername = document.getElementById("headerUsername");
         const dropdown = document.getElementById("usernameDropdown");
-
         headerUsername?.addEventListener("click", () => dropdown.classList.toggle("show"));
+
         document.addEventListener("click", (e) => {
-            if (!headerUsername?.contains(e.target) && !dropdown?.contains(e.target)) {
-                dropdown?.classList.remove("show");
+            if (!headerUsername.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove("show");
             }
         });
 
-        // Dropdown items
-        document.getElementById("editPosts")?.addEventListener("click", () => {
-            window.location.href = "/my-posts.html";
-        });
-        document.getElementById("logoutBtn")?.addEventListener("click", () => {
+        document.getElementById("editPosts").onclick = () => window.location.href = "my-posts.html";
+        document.getElementById("logoutBtn").onclick = () => {
             localStorage.clear();
-            window.location.href = "/select.html";
-        });
+            window.location.href = "select.html";
+        };
 
-        // Create post popup
+        // Popup create
         const popupOverlay = document.getElementById("popupOverlay");
-        document.getElementById("createBtn")?.addEventListener("click", () => {
-            popupOverlay.style.display = "flex";
-        });
-        document.getElementById("closePopup")?.addEventListener("click", () => {
-            popupOverlay.style.display = "none";
-        });
+        document.getElementById("createBtn").onclick = () => popupOverlay.style.display = "flex";
+        document.getElementById("closePopup").onclick = () => popupOverlay.style.display = "none";
 
-        // Submit new post
-        document.getElementById("submitPost")?.addEventListener("click", async () => {
+        document.getElementById("submitPost").onclick = async () => {
             const username = document.getElementById("username").value.trim();
             const content = document.getElementById("text").value.trim();
             const imageUrl = document.getElementById("imageUrl").value.trim();
 
             if (!username || (!content && !imageUrl)) {
-                alert("Username and at least content or image URL required.");
+                alert("Username and content or image required.");
                 return;
             }
 
-            const res = await fetch(`${API_BASE}/api/posts`), {
+            const res = await fetch(`${API_BASE}/api/posts`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, content, imageUrl })
+                body: JSON.stringify({
+                    username,
+                    content,
+                    image_url: imageUrl
+                })
             });
 
             if (res.ok) {
@@ -81,38 +68,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("imageUrl").value = "";
                 loadPosts();
             } else {
-                const data = await res.json();
-                alert(data.error || "Failed to create post");
+                alert("Failed to create post");
             }
-        });
+        };
 
-        // Search posts
-        document.getElementById("searchBox")?.addEventListener("input", (e) => {
+        // Search
+        document.getElementById("searchBox").addEventListener("input", (e) => {
             loadPosts(e.target.value);
         });
     }
 
-    // -----------------------
-    // SELECT PAGE LOGIC
-    // -----------------------
+    // SELECT PAGE
     if (onSelectPage) {
         const loginPopup = document.getElementById("loginPopup");
         const generatePopup = document.getElementById("generatePopup");
 
-        // Open popups
         document.getElementById("loginBtn").onclick = () => loginPopup.style.display = "flex";
         document.getElementById("generateBtn").onclick = fetchGeneratedIdentity;
 
-        // Close popups
         document.getElementById("closeLogin").onclick = () => loginPopup.style.display = "none";
         document.getElementById("closeGenerate").onclick = () => generatePopup.style.display = "none";
 
-        // LOGIN SUBMIT
+        // LOGIN
         document.getElementById("loginConfirm").onclick = async () => {
             const username = document.getElementById("loginUser").value;
             const password = document.getElementById("loginPass").value;
 
-            const res = await fetch(`${API_BASE}/api/login`), {
+            const res = await fetch(`${API_BASE}/api/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password })
@@ -123,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.success) {
                 localStorage.setItem("anon_username", username);
                 localStorage.setItem("anon_password", password);
-                window.location.href = "/";
+                window.location.href = "index.html";
             } else {
                 document.getElementById("loginError").style.display = "block";
             }
@@ -131,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // GENERATE IDENTITY
         async function fetchGeneratedIdentity() {
-            const res = await fetch(`${API_BASE}/api/generate`), { method: "POST" });
+            const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
             const data = await res.json();
 
             document.getElementById("genUser").innerText = data.username;
@@ -142,15 +124,12 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("useIdentity").onclick = () => {
                 localStorage.setItem("anon_username", data.username);
                 localStorage.setItem("anon_password", data.password);
-                window.location.href = "/";
+                window.location.href = "index.html";
             };
         }
     }
 });
 
-// =====================================================
-// LOAD POSTS FUNCTION
-// =====================================================
 async function loadPosts(filter = "") {
     const res = await fetch(`${API_BASE}/api/posts`);
     const posts = await res.json();
@@ -170,9 +149,7 @@ async function loadPosts(filter = "") {
             const div = document.createElement("div");
             div.className = "post";
 
-            const imgHtml = post.imageUrl
-                ? `<img src="${post.imageUrl}" alt="Post image">`
-                : "";
+            const imgHtml = post.image_url ? `<img src="${post.image_url}" alt="">` : "";
 
             div.innerHTML = `
                 ${imgHtml}
