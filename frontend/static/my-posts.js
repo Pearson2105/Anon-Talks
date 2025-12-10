@@ -1,3 +1,5 @@
+const API_BASE = "https://anon-talks.onrender.com";
+
 document.addEventListener("DOMContentLoaded", async () => {
     const username = localStorage.getItem("anon_username");
     if (!username) {
@@ -32,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 let editingPostId = null;
 
 async function loadUserPosts(username) {
-    const res = await fetch("/api/posts");
+    const res = await fetch(`${API_BASE}/api/posts`);
     const posts = await res.json();
 
     const container = document.getElementById("postsContainer");
@@ -66,7 +68,7 @@ async function loadUserPosts(username) {
     document.querySelectorAll(".delete-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const id = btn.getAttribute("data-id");
-            const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
+            const res = await fetch(`${API_BASE}/api/posts/${id}`, { method: "DELETE" });
             if (res.ok) loadUserPosts(username);
             else alert("Failed to delete");
         });
@@ -92,7 +94,7 @@ document.getElementById("saveEdit").addEventListener("click", async () => {
     const newImage = document.getElementById("editImageUrl").value;
     const username = localStorage.getItem("anon_username");
 
-    const res = await fetch(`/api/posts/${editingPostId}`, {
+    const res = await fetch(`${API_BASE}/api/posts/${editingPostId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: newText, image_url: newImage })
