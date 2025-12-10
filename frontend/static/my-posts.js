@@ -3,7 +3,7 @@ const API_BASE = "https://anon-talks.onrender.com";
 document.addEventListener("DOMContentLoaded", async () => {
     const username = localStorage.getItem("anon_username");
     if (!username) {
-        window.location.href = "select.html";
+        window.location.href = "../index.html";
         return;
     }
 
@@ -11,10 +11,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     loadUserPosts(username);
 
-    // Dropdown
     const headerUsername = document.getElementById("headerUsername");
     const dropdown = document.getElementById("usernameDropdown");
+
     headerUsername.addEventListener("click", () => dropdown.classList.toggle("show"));
+
     document.addEventListener("click", (e) => {
         if (!headerUsername.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.classList.remove("show");
@@ -23,11 +24,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.clear();
-        window.location.href = "select.html";
+        window.location.href = "../index.html";
     });
 
     document.getElementById("backBtn").addEventListener("click", () => {
-        window.location.href = "index.html";
+        window.location.href = "../index.html";
     });
 });
 
