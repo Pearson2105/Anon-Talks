@@ -3,7 +3,7 @@ const API_BASE = "https://anon-talks.onrender.com";
 document.addEventListener("DOMContentLoaded", async () => {
     const username = localStorage.getItem("anon_username");
     if (!username) {
-        window.location.href = "/select.html";
+        window.location.href = "select.html";
         return;
     }
 
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     loadUserPosts(username);
 
-    // Header dropdown
+    // Dropdown
     const headerUsername = document.getElementById("headerUsername");
     const dropdown = document.getElementById("usernameDropdown");
     headerUsername.addEventListener("click", () => dropdown.classList.toggle("show"));
@@ -23,11 +23,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.clear();
-        window.location.href = "/select.html";
+        window.location.href = "select.html";
     });
 
     document.getElementById("backBtn").addEventListener("click", () => {
-        window.location.href = "/";
+        window.location.href = "index.html";
     });
 });
 
@@ -41,8 +41,9 @@ async function loadUserPosts(username) {
     container.innerHTML = "";
 
     const userPosts = posts.filter(p => p.username === username);
+
     if (userPosts.length === 0) {
-        container.innerHTML = `<p style="text-align:center; margin-top:40px;">You have not created any posts yet.</p>`;
+        container.innerHTML = `<p style="text-align:center;margin-top:40px;">You have not created any posts yet.</p>`;
         return;
     }
 
@@ -50,14 +51,14 @@ async function loadUserPosts(username) {
         const card = document.createElement("div");
         card.className = "post-card";
 
-        const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}">` : "";
+        const imgHtml = post.image_url ? `<img src="${post.image_url}">` : "";
 
         card.innerHTML = `
             ${imgHtml}
             <div class="post-meta">${new Date(post.createdAt).toLocaleString()}</div>
             <div class="post-text">${post.content || ""}</div>
             <div class="post-actions">
-                <button class="edit-btn" data-id="${post.id}" data-content="${post.content || ""}" data-image="${post.imageUrl || ""}">Edit</button>
+                <button class="edit-btn" data-id="${post.id}" data-content="${post.content}" data-image="${post.image_url}">Edit</button>
                 <button class="delete-btn" data-id="${post.id}">Delete</button>
             </div>
         `;
@@ -97,7 +98,10 @@ document.getElementById("saveEdit").addEventListener("click", async () => {
     const res = await fetch(`${API_BASE}/api/posts/${editingPostId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newText, image_url: newImage })
+        body: JSON.stringify({
+            content: newText,
+            image_url: newImage
+        })
     });
 
     if (res.ok) {
