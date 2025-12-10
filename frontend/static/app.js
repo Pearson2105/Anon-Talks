@@ -1,6 +1,7 @@
 // =====================================================
 // PAGE DETECTION
 // =====================================================
+const API_BASE = "https://anon-talks.onrender.com";
 const pathname = window.location.pathname;
 const onSelectPage = pathname.includes("select.html");
 const onIndexPage = pathname === "/" || pathname.includes("index.html");
@@ -68,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            const res = await fetch("/api/posts", {
+            const res = await fetch(`${API_BASE}/api/posts`), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, content, imageUrl })
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const username = document.getElementById("loginUser").value;
             const password = document.getElementById("loginPass").value;
 
-            const res = await fetch("/api/login", {
+            const res = await fetch(`${API_BASE}/api/login`), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password })
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // GENERATE IDENTITY
         async function fetchGeneratedIdentity() {
-            const res = await fetch("/api/generate", { method: "POST" });
+            const res = await fetch(`${API_BASE}/api/generate`), { method: "POST" });
             const data = await res.json();
 
             document.getElementById("genUser").innerText = data.username;
@@ -151,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // LOAD POSTS FUNCTION
 // =====================================================
 async function loadPosts(filter = "") {
-    const res = await fetch("/api/posts");
+    const res = await fetch(`${API_BASE}/api/posts`);
     const posts = await res.json();
 
     const container = document.getElementById("postsContainer");
