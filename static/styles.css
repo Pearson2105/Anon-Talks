@@ -1,13 +1,12 @@
-@font-face {
-    font-family: "Chicago";
-    src: url("Chicago.otf") format("opentype");
-}
-
+/* ------------------------
+   GLOBAL STYLES
+------------------------ */
 body {
     margin: 0;
     padding: 0;
     background: #7371FC;
     font-family: Arial, sans-serif;
+    color: black;
 }
 
 header {
@@ -17,22 +16,26 @@ header {
     background-repeat: repeat-x;
     background-position: bottom center;
     background-size: auto 160px;
-    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
+/* Centered title text */
 .center.title-text {
     position: absolute;
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: "Chicago", Arial, sans-serif;
     font-size: 60px;
+    font-weight: bold;
     color: black;
 }
 
+/* ------------------------
+   USERNAME DROPDOWN
+------------------------ */
 .username-container {
     position: absolute;
     top: 20px;
@@ -80,6 +83,9 @@ header {
     color: white;
 }
 
+/* ------------------------
+   TOP RIGHT SEARCH + CREATE
+------------------------ */
 .top-right {
     position: absolute;
     top: 20px;
@@ -97,6 +103,7 @@ header {
     border: none;
 }
 
+/* CREATE POST BUTTON */
 #createBtn {
     font-size: 50px;
     font-weight: bold;
@@ -112,6 +119,9 @@ header {
     transform: scale(1.1);
 }
 
+/* ------------------------
+   POST CARD / FEED
+------------------------ */
 .post, .post-card {
     width: 60%;
     background: white;
@@ -134,15 +144,18 @@ header {
     flex-shrink: 0;
 }
 
-.post-content {
+.post-content, .post-text {
     flex: 1;
 }
 
-.meta {
+.meta, .post-meta {
     color: gray;
     margin-bottom: 8px;
 }
 
+/* ------------------------
+   POPUP MODALS
+------------------------ */
 .popup-overlay {
     position: fixed;
     inset: 0;
@@ -150,6 +163,7 @@ header {
     display: none;
     justify-content: center;
     align-items: center;
+    z-index: 50;
 }
 
 .popup-box {
@@ -164,10 +178,10 @@ header {
 .popup-box textarea {
     width: 100%;
     margin-bottom: 12px;
-    background: white;
-    color: black;
     border-radius: 6px;
     padding: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
 .popup-box button {
@@ -181,6 +195,9 @@ header {
     font-size: 16px;
 }
 
+/* ------------------------
+   BIG BUTTONS
+------------------------ */
 .big-btn {
     width: 100%;
     padding: 15px;
@@ -197,6 +214,7 @@ header {
     background: #7371FC;
 }
 
+/* Setup box for index.html */
 .setup-box {
     width: 350px;
     margin: 100px auto;
@@ -205,4 +223,30 @@ header {
     border-radius: 15px;
     text-align: center;
     box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+}
+
+/* POST ACTION BUTTONS (EDIT / DELETE) */
+.post-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.post-actions .edit-btn,
+.post-actions .delete-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.post-actions .edit-btn {
+    background: #7371FC;
+    color: white;
+}
+
+.post-actions .delete-btn {
+    background: #e74c3c;
+    color: white;
 }
