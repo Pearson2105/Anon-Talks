@@ -1,3 +1,4 @@
+// static/auth.js
 import { showPopup, hidePopup } from "./popups.js";
 
 export const API_BASE = "https://anon-talks.onrender.com";
@@ -14,7 +15,7 @@ export function initAuth() {
         const loginConfirm = document.getElementById("loginConfirm");
         const useIdentity = document.getElementById("useIdentity");
 
-        // LOGIN BUTTONS
+        // LOGIN
         loginBtn?.addEventListener("click", () => showPopup(loginPopup));
         closeLogin?.addEventListener("click", () => hidePopup(loginPopup));
 
@@ -35,7 +36,7 @@ export function initAuth() {
                     localStorage.setItem("anon_password", p);
                     window.location.href = "select.html";
                 } else {
-                    document.getElementById("loginError")?.style.display = "block";
+                    document.getElementById("loginError").style.display = "block";
                 }
             } catch (err) {
                 console.error(err);
@@ -53,13 +54,12 @@ export function initAuth() {
 
                 showPopup(generatePopup);
 
-                // Attach click inside DOMContentLoaded
-                useIdentity.onclick = () => {
+                useIdentity?.addEventListener("click", () => {
                     if (!data.username || !data.password) return;
                     localStorage.setItem("anon_username", data.username);
                     localStorage.setItem("anon_password", data.password);
                     window.location.href = "select.html";
-                };
+                }, { once: true });
 
             } catch (err) {
                 console.error(err);
