@@ -1,75 +1,48 @@
-const API_BASE = "https://anon-talks.onrender.com";
+# backend/app.py
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import random
+import string
 
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("JS loaded!"); // should appear in console
+app = Flask(__name__)
+CORS(app)  # allow frontend JS to call API
 
-    // POPUPS
-    const loginPopup = document.getElementById("loginPopup");
-    const generatePopup = document.getElementById("generatePopup");
+# In-memory "database" for testing
+users = {}
+posts = []
 
-    // BUTTONS
-    const loginBtn = document.getElementById("loginBtn");
-    const generateBtn = document.getElementById("generateBtn");
-    const closeLogin = document.getElementById("closeLogin");
-    const closeGenerate = document.getElementById("closeGenerate");
-    const loginConfirm = document.getElementById("loginConfirm");
-    const useIdentity = document.getElementById("useIdentity");
+def gen_anon():
+    return "anon" + ''.join(random.choices(string.digits, k=6))
 
-    // -------------------------
-    // LOGIN BUTTONS
-    // -------------------------
-    loginBtn.addEventListener("click", () => loginPopup.classList.remove("hidden"));
-    closeLogin.addEventListener("click", () => loginPopup.classList.add("hidden"));
+@app.route("/api/generate", methods=["POST"])
+def generate_identity():
+    username = gen_anon()
+    password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+    users[username] = password
+    return jsonify({"username": username, "password": password})
 
-    loginConfirm.addEventListener("click", async () => {
-        const u = document.getElementById("loginUser").value.trim();
-        const p = document.getElementById("loginPass").value.trim();
-        if (!u || !p) return;
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    u = data.get("username")
+    p = data.get("password")
+    if users.get(u) == p:
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 401
 
-        try {
-            const res = await fetch(`${API_BASE}/api/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: u, password: p })
-            });
-            const data = await res.json();
-            if (res.ok && data.success) {
-                localStorage.setItem("anon_username", u);
-                localStorage.setItem("anon_password", p);
-                window.location.href = "select.html";
-            } else {
-                document.getElementById("loginError").style.display = "block";
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    });
+@app.route("/api/posts", methods=["GET", "POST"])
+def handle_posts():
+    if request.method == "POST":
+        data = request.get_json()
+        posts.append({
+            "id": len(posts)+1,
+            "username": data.get("username"),
+            "content": data.get("content"),
+            "imageUrl": data.get("imageUrl"),
+            "createdAt": "2025-12-11T00:00:00"
+        })
+        return jsonify({"success": True})
+    return jsonify(posts)
 
-    // -------------------------
-    // GENERATE IDENTITY
-    // -------------------------
-    generateBtn.addEventListener("click", async () => {
-        try {
-            const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
-            const data = await res.json();
-
-            document.getElementById("genUser").innerText = data.username || "";
-            document.getElementById("genPass").innerText = data.password || "";
-
-            generatePopup.classList.remove("hidden");
-
-            // Use this identity
-            useIdentity.onclick = () => {
-                if (!data.username || !data.password) return;
-                localStorage.setItem("anon_username", data.username);
-                localStorage.setItem("anon_password", data.password);
-                window.location.href = "select.html";
-            };
-
-        } catch (err) {
-            console.error(err);
-        }
-    });
-
-    closeGenerate.addEventListener("click", () => generatePopup.classList.add("hidden"));
-});
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
