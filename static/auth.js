@@ -1,3 +1,5 @@
+import { showPopup, hidePopup } from "./popups.js";
+
 export const API_BASE = "https://anon-talks.onrender.com";
 
 export function initAuth() {
@@ -11,13 +13,17 @@ export function initAuth() {
     const loginConfirm = document.getElementById("loginConfirm");
     const useIdentity = document.getElementById("useIdentity");
 
+    // -------------------
     // LOGIN
-    loginBtn?.addEventListener("click", () => loginPopup.classList.remove("hidden"));
-    closeLogin?.addEventListener("click", () => loginPopup.classList.add("hidden"));
+    // -------------------
+    loginBtn?.addEventListener("click", () => showPopup(loginPopup));
+    closeLogin?.addEventListener("click", () => hidePopup(loginPopup));
+
     loginConfirm?.addEventListener("click", async () => {
         const u = document.getElementById("loginUser")?.value.trim();
         const p = document.getElementById("loginPass")?.value.trim();
         if (!u || !p) return;
+
         try {
             const res = await fetch(`${API_BASE}/api/login`, {
                 method: "POST",
@@ -30,12 +36,16 @@ export function initAuth() {
                 localStorage.setItem("anon_password", p);
                 window.location.href = "select.html";
             } else {
-                document.getElementById("loginError").style.display = "block";
+                document.getElementById("loginError")?.style.display = "block";
             }
-        } catch (err) { console.error(err); }
+        } catch (err) {
+            console.error(err);
+        }
     });
 
+    // -------------------
     // GENERATE IDENTITY
+    // -------------------
     generateBtn?.addEventListener("click", async () => {
         try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
@@ -43,16 +53,20 @@ export function initAuth() {
 
             document.getElementById("genUser").innerText = data.username || "";
             document.getElementById("genPass").innerText = data.password || "";
-            generatePopup.classList.remove("hidden");
 
-            useIdentity.onclick = () => {
+            showPopup(generatePopup);
+
+            useIdentity?.addEventListener("click", () => {
                 if (!data.username || !data.password) return;
                 localStorage.setItem("anon_username", data.username);
                 localStorage.setItem("anon_password", data.password);
                 window.location.href = "select.html";
-            };
-        } catch (err) { console.error(err); }
+            }, { once: true });
+
+        } catch (err) {
+            console.error(err);
+        }
     });
 
-    closeGenerate?.addEventListener("click", () => generatePopup.classList.add("hidden"));
+    closeGenerate?.addEventListener("click", () => hidePopup(generatePopup));
 }
