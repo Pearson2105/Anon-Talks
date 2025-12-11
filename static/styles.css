@@ -11,19 +11,19 @@ body {
     color: black;
 }
 
-/* FONT — FIXED PATH */
+/* FONT — fixed GitHub Pages paths */
 @font-face {
     font-family: "Chicago";
-    src: url("./Chicago.otf") format("opentype");
+    src: url("/Anon-Talks/static/Chicago.otf") format("opentype");
     font-weight: normal;
     font-style: normal;
 }
 
-/* HEADER — FIXED cloud path */
+/* HEADER — fixed cloud path */
 header {
     width: 100%;
     height: 160px;
-    background-image: url("./cloud.png");
+    background-image: url("/Anon-Talks/static/cloud.png");
     background-repeat: repeat-x;
     background-position: bottom center;
     background-size: auto 160px;
