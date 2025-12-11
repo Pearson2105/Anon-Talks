@@ -8,35 +8,32 @@
   <script type="module" src="./static/app.js"></script>
 </head>
 <body>
-  <header>
-    <div class="username-container" id="headerWrap">
-      <div id="headerUsername" class="username">Anonymous</div>
-      <div class="username-dropdown" id="usernameDropdown">
-        <div class="dropdown-item" id="homeBtn">Home</div>
-        <div class="dropdown-item" id="logoutBtn">Log Out</div>
-      </div>
-    </div>
-
-    <div class="center title-text">Anon-Talks</div>
-  </header>
-
-  <main class="container">
-    <div id="postsContainer">
-      <p id="noPostsMsg">You haven't made any posts yet.</p>
-    </div>
-  </main>
-
-  <!-- EDIT POST MODAL -->
-  <div class="popup-overlay hidden" id="editModalBg">
-    <div class="popup-box">
-      <h3>Edit Post</h3>
-      <textarea id="editText" placeholder="Edit content"></textarea>
-      <input id="editImageUrl" placeholder="Edit image URL" />
-      <div class="post-actions">
-        <button id="saveEdit" class="big-btn purple">Save</button>
-        <button id="cancelEdit" class="big-btn">Cancel</button>
-      </div>
+<header>
+  <div class="username-container">
+    <div id="headerUsername" class="username">Anonymous</div>
+    <div class="username-dropdown" id="usernameDropdown">
+      <div class="dropdown-item" id="homeBtn">Home</div>
+      <div class="dropdown-item" id="logoutBtn">Log Out</div>
     </div>
   </div>
+  <div class="center title-text">Anon-Talks</div>
+</header>
+
+<main class="container">
+  <div id="postsContainer"></div>
+</main>
+
+<!-- EDIT POST POPUP -->
+<div class="popup-overlay hidden" id="editModalBg">
+  <div class="popup-box">
+    <h3>Edit Post</h3>
+    <textarea id="editText" placeholder="Edit content"></textarea>
+    <input id="editImageUrl" placeholder="Edit image URL" />
+    <div class="post-actions">
+      <button id="saveEdit" class="big-btn purple">Save</button>
+      <button id="cancelEdit" class="big-btn">Cancel</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
