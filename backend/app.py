@@ -1,124 +1,75 @@
-from flask import Flask, request, jsonify, send_from_directory
-from .config import Config
-from .extensions import db, cors, limiter
-from .models import Post, gen_anon
-import bleach
-import os
-import random
-import string
+const API_BASE = "https://anon-talks.onrender.com";
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend"))
-STATIC_DIR = os.path.join(FRONTEND_DIR, "static")
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("JS loaded!"); // should appear in console
 
-def create_app():
-    app = Flask(
-        __name__,
-        static_folder=STATIC_DIR,
-        static_url_path="/static",
-        template_folder=FRONTEND_DIR
-    )
-    app.config.from_object(Config)
+    // POPUPS
+    const loginPopup = document.getElementById("loginPopup");
+    const generatePopup = document.getElementById("generatePopup");
 
-    db.init_app(app)
-    cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
-    limiter.init_app(app)
+    // BUTTONS
+    const loginBtn = document.getElementById("loginBtn");
+    const generateBtn = document.getElementById("generateBtn");
+    const closeLogin = document.getElementById("closeLogin");
+    const closeGenerate = document.getElementById("closeGenerate");
+    const loginConfirm = document.getElementById("loginConfirm");
+    const useIdentity = document.getElementById("useIdentity");
 
-    # Create tables
-    with app.app_context():
-        db.create_all()
+    // -------------------------
+    // LOGIN BUTTONS
+    // -------------------------
+    loginBtn.addEventListener("click", () => loginPopup.classList.remove("hidden"));
+    closeLogin.addEventListener("click", () => loginPopup.classList.add("hidden"));
 
-    # ---------------------------
-    # FRONTEND ROUTES
-    # ---------------------------
-    @app.route("/", defaults={"path": ""})
-    @app.route("/<path:path>")
-    def serve_frontend(path):
-        # serve index, select and my-posts explicitly, else try file
-        if path in ["", "index.html"]:
-            return send_from_directory(FRONTEND_DIR, "index.html")
-        if path == "select.html":
-            return send_from_directory(FRONTEND_DIR, "select.html")
-        if path == "my-posts.html":
-            return send_from_directory(FRONTEND_DIR, "my-posts.html")
-        # fallback: try to serve the file from frontend
-        return send_from_directory(FRONTEND_DIR, path)
+    loginConfirm.addEventListener("click", async () => {
+        const u = document.getElementById("loginUser").value.trim();
+        const p = document.getElementById("loginPass").value.trim();
+        if (!u || !p) return;
 
-    # ---------------------------
-    # POSTS API
-    # ---------------------------
-    @app.route("/api/posts", methods=["GET"])
-    def list_posts():
-        posts = Post.query.order_by(Post.created_at.desc()).all()
-        return jsonify([p.as_dict() for p in posts]), 200
+        try {
+            const res = await fetch(`${API_BASE}/api/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: u, password: p })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                localStorage.setItem("anon_username", u);
+                localStorage.setItem("anon_password", p);
+                window.location.href = "select.html";
+            } else {
+                document.getElementById("loginError").style.display = "block";
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    });
 
-    @app.route("/api/posts", methods=["POST"])
-    @limiter.limit("30 per hour")
-    def create_post():
-        if not request.is_json:
-            return jsonify({"error": "JSON body required"}), 400
-        data = request.get_json()
-        username = Post.normalize_username(data.get("username"))
-        content = (data.get("content") or "").strip()
-        image_url = (data.get("imageUrl") or data.get("image_url") or "").strip()
-        if not content and not image_url:
-            return jsonify({"error": "content or imageUrl required"}), 400
-        if content:
-            content = bleach.clean(content[:4096], tags=[], attributes={}, strip=True)
-        if image_url:
-            image_url = image_url[:1000]
+    // -------------------------
+    // GENERATE IDENTITY
+    // -------------------------
+    generateBtn.addEventListener("click", async () => {
+        try {
+            const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
+            const data = await res.json();
 
-        post = Post(username=username, content=content or None, image_url=image_url or None)
-        db.session.add(post)
-        db.session.commit()
-        return jsonify(post.as_dict()), 201
+            document.getElementById("genUser").innerText = data.username || "";
+            document.getElementById("genPass").innerText = data.password || "";
 
-    @app.route("/api/posts/<int:post_id>", methods=["PUT"])
-    def edit_post(post_id):
-        if not request.is_json:
-            return jsonify({"error": "JSON required"}), 400
-        data = request.get_json()
-        content = (data.get("content") or "").strip()
-        if not content:
-            return jsonify({"error": "content required"}), 400
+            generatePopup.classList.remove("hidden");
 
-        post = Post.query.get_or_404(post_id)
-        post.content = bleach.clean(content[:4096], tags=[], attributes={}, strip=True)
-        db.session.commit()
-        return jsonify(post.as_dict()), 200
+            // Use this identity
+            useIdentity.onclick = () => {
+                if (!data.username || !data.password) return;
+                localStorage.setItem("anon_username", data.username);
+                localStorage.setItem("anon_password", data.password);
+                window.location.href = "select.html";
+            };
 
-    @app.route("/api/posts/<int:post_id>", methods=["DELETE"])
-    def delete_post(post_id):
-        post = Post.query.get_or_404(post_id)
-        db.session.delete(post)
-        db.session.commit()
-        return jsonify({"success": True}), 200
+        } catch (err) {
+            console.error(err);
+        }
+    });
 
-    # ---------------------------
-    # GENERATE ACCOUNT
-    # ---------------------------
-    @app.route("/api/generate", methods=["GET", "POST"])
-    def generate_identity():
-        username = gen_anon()
-        password = ''.join(random.choices(string.digits, k=6))
-        return jsonify({"username": username, "password": password}), 201
-
-    # ---------------------------
-    # LOGIN
-    # ---------------------------
-    @app.route("/api/login", methods=["POST"])
-    def login():
-        if not request.is_json:
-            return jsonify({"success": False, "error": "JSON required"}), 400
-        data = request.get_json()
-        username = (data.get("username") or "").strip()
-        password = (data.get("password") or "").strip()
-        if username.startswith("anon") and password.isdigit() and len(password) == 6:
-            return jsonify({"success": True})
-        return jsonify({"success": False, "error": "Invalid username or password"}), 401
-
-    return app
-
-if __name__ == "__main__":
-    app = create_app()
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    closeGenerate.addEventListener("click", () => generatePopup.classList.add("hidden"));
+});
