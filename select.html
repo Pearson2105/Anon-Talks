@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anon-Talks</title>
 
-<!-- FIXED: relative paths (GitHub Pages compatible) -->
 <link rel="stylesheet" href="/Anon-Talks/static/styles.css">
 <script src="/Anon-Talks/static/app.js" defer></script>
 
@@ -37,8 +35,10 @@
             <input id="username" placeholder="Username" readonly>
             <textarea id="text" placeholder="Write something..."></textarea>
             <input id="imageUrl" placeholder="Image URL (optional)">
-            <button id="submitPost">Submit</button>
-            <button id="closePopup">Cancel</button>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+                <button id="submitPost" class="big-btn purple">Submit</button>
+                <button id="closePopup" class="big-btn">Cancel</button>
+            </div>
         </div>
     </div>
     <div id="postsContainer"></div>
@@ -46,7 +46,7 @@
 
 <script>
 document.getElementById("editPosts")?.addEventListener("click", () => {
-    window.location.href = "my-posts.html";
+    window.location.href = "/Anon-Talks/my-posts.html";
 });
 </script>
 
