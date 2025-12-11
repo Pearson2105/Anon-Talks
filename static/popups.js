@@ -1,7 +1,8 @@
-export function showPopup(popupEl) {
-    popupEl?.classList.remove("hidden");
+// static/popups.js
+export function showPopup(popup) {
+    popup?.classList.remove("hidden");
 }
 
-export function hidePopup(popupEl) {
-    popupEl?.classList.add("hidden");
+export function hidePopup(popup) {
+    popup?.classList.add("hidden");
 }
