@@ -1,13 +1,18 @@
-const API_BASE = "https://anon-talks.onrender.com";
+import { API_BASE } from "./auth.js";
+
 let editingPostId = null;
+
+export { editingPostId, initPosts };
 
 export function initPosts() {
     const pathname = window.location.pathname.split("/").pop();
     const username = localStorage.getItem("anon_username");
 
-    if (!username) return;
-
     if (pathname === "select.html") {
+        if (!username) return window.location.href = "index.html";
+
+        document.getElementById("headerUsername")?.innerText = username;
+
         document.getElementById("logoutBtn")?.addEventListener("click", () => {
             localStorage.clear();
             window.location.href = "index.html";
@@ -37,6 +42,9 @@ export function initPosts() {
                     document.getElementById("text").value = "";
                     document.getElementById("imageUrl").value = "";
                     loadPosts();
+                } else {
+                    const err = await res.json().catch(()=>null);
+                    alert("Failed to create post." + (err?.error ? " " + err.error : ""));
                 }
             } catch (err) {
                 console.error(err);
@@ -55,8 +63,20 @@ export function initPosts() {
     }
 
     if (pathname === "my-posts.html") {
+        if (!username) return window.location.href = "index.html";
         document.getElementById("headerUsername")?.innerText = username;
+
         loadUserPosts(username);
+
+        const headerUsername = document.getElementById("headerUsername");
+        const dropdown = document.getElementById("usernameDropdown");
+
+        headerUsername?.addEventListener("click", () => dropdown?.classList.toggle("show"));
+        document.addEventListener("click", (e) => {
+            if (!headerUsername?.contains(e.target) && !dropdown?.contains(e.target)) {
+                dropdown?.classList.remove("show");
+            }
+        });
 
         document.getElementById("logoutBtn")?.addEventListener("click", () => {
             localStorage.clear();
@@ -86,6 +106,9 @@ export function initPosts() {
                 if (res.ok) {
                     document.getElementById("editModalBg")?.classList.add("hidden");
                     loadUserPosts(username);
+                } else {
+                    const err = await res.json().catch(()=>null);
+                    alert("Failed to save edit." + (err?.error ? " " + err.error : ""));
                 }
             } catch (err) {
                 console.error(err);
@@ -94,9 +117,9 @@ export function initPosts() {
     }
 }
 
-// -----------------------
+// --------------------
 // POSTS FUNCTIONS
-// -----------------------
+// --------------------
 export async function loadPosts(filter = "") {
     try {
         const res = await fetch(`${API_BASE}/api/posts`);
@@ -108,11 +131,12 @@ export async function loadPosts(filter = "") {
 
         container.innerHTML = "";
 
-        const filteredPosts = (posts || []).filter(p =>
-            (p.content || "").toLowerCase().includes(filter.toLowerCase())
-        );
+        const filteredPosts = (posts || []).filter(p => {
+            const content = (p.content || "").toString();
+            return content.toLowerCase().includes(filter.toLowerCase());
+        });
 
-        if (!filteredPosts.length) {
+        if (filteredPosts.length === 0) {
             container.innerHTML = `<p style="text-align:center;margin-top:40px;">No posts found.</p>`;
             return;
         }
@@ -121,10 +145,9 @@ export async function loadPosts(filter = "") {
             const card = document.createElement("div");
             card.className = "post-card";
 
-            const imgSrc = post.imageUrl || post.image_url || "";
-            if (imgSrc) {
+            if (post.imageUrl) {
                 const img = document.createElement("img");
-                img.src = imgSrc;
+                img.src = post.imageUrl;
                 img.alt = "post image";
                 card.appendChild(img);
             }
@@ -159,7 +182,7 @@ export async function loadUserPosts(username) {
 
         const userPosts = (posts || []).filter(p => (p.username || p.user) === username);
 
-        if (!userPosts.length) {
+        if (userPosts.length === 0) {
             container.innerHTML = `<p style="text-align:center;margin-top:40px;">You have not created any posts yet.</p>`;
             return;
         }
@@ -168,10 +191,9 @@ export async function loadUserPosts(username) {
             const card = document.createElement("div");
             card.className = "post-card";
 
-            const imgSrc = post.imageUrl || post.image_url || "";
-            if (imgSrc) {
+            if (post.imageUrl) {
                 const img = document.createElement("img");
-                img.src = imgSrc;
+                img.src = post.imageUrl;
                 img.alt = "post image";
                 card.appendChild(img);
             }
@@ -192,22 +214,22 @@ export async function loadUserPosts(username) {
             const editBtn = document.createElement("button");
             editBtn.className = "edit-btn";
             editBtn.textContent = "Edit";
-            editBtn.dataset.id = post.id || post.post_id || "";
+            editBtn.dataset.id = post.id || "";
             editBtn.dataset.content = post.content || "";
-            editBtn.dataset.image = imgSrc || "";
+            editBtn.dataset.image = post.imageUrl || "";
             actions.appendChild(editBtn);
 
             const delBtn = document.createElement("button");
             delBtn.className = "delete-btn";
             delBtn.textContent = "Delete";
-            delBtn.dataset.id = post.id || post.post_id || "";
+            delBtn.dataset.id = post.id || "";
             actions.appendChild(delBtn);
 
             card.appendChild(actions);
             container.appendChild(card);
         });
 
-        // EDIT
+        // Edit buttons
         document.querySelectorAll(".edit-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 editingPostId = btn.dataset.id;
@@ -217,7 +239,7 @@ export async function loadUserPosts(username) {
             });
         });
 
-        // DELETE
+        // Delete buttons
         document.querySelectorAll(".delete-btn").forEach(btn => {
             btn.addEventListener("click", async () => {
                 const id = btn.dataset.id;
@@ -226,6 +248,10 @@ export async function loadUserPosts(username) {
                 try {
                     const res = await fetch(`${API_BASE}/api/posts/${id}`, { method: "DELETE" });
                     if (res.ok) loadUserPosts(username);
+                    else {
+                        const err = await res.json().catch(()=>null);
+                        alert("Failed to delete." + (err?.error ? " " + err.error : ""));
+                    }
                 } catch (err) {
                     console.error(err);
                 }
