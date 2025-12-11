@@ -34,12 +34,14 @@ def create_app():
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def serve_frontend(path):
+        # serve index, select and my-posts explicitly, else try file
         if path in ["", "index.html"]:
             return send_from_directory(FRONTEND_DIR, "index.html")
-        elif path == "my-posts.html":
-            return send_from_directory(FRONTEND_DIR, "my-posts.html")
-        elif path == "select.html":
+        if path == "select.html":
             return send_from_directory(FRONTEND_DIR, "select.html")
+        if path == "my-posts.html":
+            return send_from_directory(FRONTEND_DIR, "my-posts.html")
+        # fallback: try to serve the file from frontend
         return send_from_directory(FRONTEND_DIR, path)
 
     # ---------------------------
@@ -61,8 +63,10 @@ def create_app():
         image_url = (data.get("imageUrl") or data.get("image_url") or "").strip()
         if not content and not image_url:
             return jsonify({"error": "content or imageUrl required"}), 400
-        if content: content = bleach.clean(content[:4096], tags=[], attributes={}, strip=True)
-        if image_url: image_url = image_url[:1000]
+        if content:
+            content = bleach.clean(content[:4096], tags=[], attributes={}, strip=True)
+        if image_url:
+            image_url = image_url[:1000]
 
         post = Post(username=username, content=content or None, image_url=image_url or None)
         db.session.add(post)
@@ -97,7 +101,7 @@ def create_app():
     def generate_identity():
         username = gen_anon()
         password = ''.join(random.choices(string.digits, k=6))
-        return jsonify({"username": username, "password": password})
+        return jsonify({"username": username, "password": password}), 201
 
     # ---------------------------
     # LOGIN
