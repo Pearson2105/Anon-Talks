@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Anon-Talks — My Posts</title>
-
   <link rel="stylesheet" href="./static/styles.css" />
   <script src="./static/app.js" defer></script>
 </head>
@@ -12,27 +11,26 @@
   <header>
     <div class="username-container">
       <div id="headerUsername" class="username">Anonymous</div>
-
       <div class="username-dropdown" id="usernameDropdown">
         <div class="dropdown-item" id="logoutBtn">Logout</div>
       </div>
     </div>
-
     <div class="center title-text">Anon-Talks</div>
     <button id="backBtn" class="big-btn" style="position:absolute; right:20px; top:20px;">Back</button>
   </header>
 
   <main class="container">
-    <div id="postsContainer"></div>
+    <div id="postsContainer">
+      <p id="noPostsMsg">You haven't made any posts yet.</p>
+    </div>
   </main>
 
   <!-- EDIT MODAL -->
-  <div class="popup-overlay" id="editModalBg" style="display:none;">
+  <div class="popup-overlay hidden" id="editModalBg">
     <div class="popup-box">
       <h3>Edit Post</h3>
       <textarea id="editText" placeholder="Edit content"></textarea>
       <input id="editImageUrl" placeholder="Edit image URL" />
-
       <div class="post-actions">
         <button id="saveEdit" class="big-btn purple">Save</button>
         <button id="cancelEdit" class="big-btn">Cancel</button>
