@@ -9,18 +9,21 @@
 </head>
 <body>
   <header>
-    <div class="username-container">
+    <div class="username-container" id="headerWrap">
       <div id="headerUsername" class="username">Anonymous</div>
       <div class="username-dropdown" id="usernameDropdown">
-        <div class="dropdown-item" id="logoutBtn">Logout</div>
+        <div class="dropdown-item" id="homeBtn">Home</div>
+        <div class="dropdown-item" id="logoutBtn">Log Out</div>
       </div>
     </div>
+
     <div class="center title-text">Anon-Talks</div>
-    <button id="backBtn" class="big-btn" style="position:absolute; right:20px; top:20px;">Back</button>
   </header>
 
   <main class="container">
-    <div id="postsContainer"></div>
+    <div id="postsContainer">
+      <p id="noPostsMsg">You haven't made any posts yet.</p>
+    </div>
   </main>
 
   <!-- EDIT POST MODAL -->
