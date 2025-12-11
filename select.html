@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Anon-Talks — Select</title>
-
   <link rel="stylesheet" href="./static/styles.css" />
   <script src="./static/app.js" defer></script>
 </head>
@@ -12,7 +11,6 @@
   <header>
     <div class="username-container" id="headerWrap">
       <div id="headerUsername" class="username">Anonymous</div>
-
       <div class="username-dropdown" id="usernameDropdown">
         <div class="dropdown-item" id="logoutBtn">Logout</div>
         <div class="dropdown-item" id="editPosts">My Posts</div>
@@ -34,12 +32,11 @@
   </main>
 
   <!-- CREATE POST POPUP -->
-  <div class="popup-overlay" id="popupOverlay" style="display:none;">
+  <div class="popup-overlay hidden" id="popupOverlay">
     <div class="popup-box">
       <h3>Create Post</h3>
       <textarea id="text" placeholder="What's on your mind?"></textarea>
       <input id="imageUrl" placeholder="Image URL (optional)" />
-
       <div class="post-actions">
         <button id="submitPost" class="big-btn purple">Post</button>
         <button id="closePopup" class="big-btn">Cancel</button>
