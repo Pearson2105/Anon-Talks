@@ -17,10 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const useIdentity = document.getElementById("useIdentity");
     const loginConfirm = document.getElementById("loginConfirm");
 
-    if (loginBtn) loginBtn.onclick = () => loginPopup.style.display = "flex";
+    if (loginBtn) loginBtn.onclick = () => { if (loginPopup) loginPopup.style.display = "flex"; };
     if (generateBtn) generateBtn.onclick = fetchGeneratedIdentity;
-    if (closeLogin) closeLogin.onclick = () => loginPopup.style.display = "none";
-    if (closeGenerate) closeGenerate.onclick = () => generatePopup.style.display = "none";
+    if (closeLogin) closeLogin.onclick = () => { if (loginPopup) loginPopup.style.display = "none"; };
+    if (closeGenerate) closeGenerate.onclick = () => { if (generatePopup) generatePopup.style.display = "none"; };
 
     if (loginConfirm) loginConfirm.onclick = async () => {
         const u = document.getElementById("loginUser").value.trim();
@@ -34,10 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ username: u, password: p })
             });
             const data = await res.json();
-            if (data.success) {
+            if (res.ok && data.success) {
                 localStorage.setItem("anon_username", u);
                 localStorage.setItem("anon_password", p);
-                window.location.href = "select.html";
+                window.location.href = "/Anon-Talks/select.html";
             } else {
                 document.getElementById("loginError").style.display = "block";
             }
@@ -48,17 +48,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchGeneratedIdentity() {
         try {
+            // backend supports GET & POST; the frontend used POST previously — keep POST
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
             const data = await res.json();
 
-            document.getElementById("genUser").innerText = data.username;
-            document.getElementById("genPass").innerText = data.password;
-            generatePopup.style.display = "flex";
+            document.getElementById("genUser").innerText = data.username || "";
+            document.getElementById("genPass").innerText = data.password || "";
+            if (generatePopup) generatePopup.style.display = "flex";
 
             if (useIdentity) useIdentity.onclick = () => {
+                if (!data.username || !data.password) return;
                 localStorage.setItem("anon_username", data.username);
                 localStorage.setItem("anon_password", data.password);
-                window.location.href = "select.html";
+                window.location.href = "/Anon-Talks/select.html";
             };
         } catch (err) {
             console.error(err);
@@ -70,25 +72,29 @@ document.addEventListener("DOMContentLoaded", () => {
     // -----------------------
     if (pathname === "select.html") {
         if (!username) {
-            window.location.href = "index.html";
+            window.location.href = "/Anon-Talks/index.html";
             return;
         }
 
-        document.getElementById("headerUsername")?.innerText = username;
+        const headerUsernameEl = document.getElementById("headerUsername");
+        if (headerUsernameEl) headerUsernameEl.innerText = username;
 
-        const headerUsername = document.getElementById("headerUsername");
+        // show username in create popup readonly input
+        const usernameInput = document.getElementById("username");
+        if (usernameInput) usernameInput.value = username;
+
         const dropdown = document.getElementById("usernameDropdown");
 
-        headerUsername?.addEventListener("click", () => dropdown?.classList.toggle("show"));
+        headerUsernameEl?.addEventListener("click", () => dropdown?.classList.toggle("show"));
         document.addEventListener("click", (e) => {
-            if (!headerUsername?.contains(e.target) && !dropdown?.contains(e.target)) {
+            if (!headerUsernameEl?.contains(e.target) && !dropdown?.contains(e.target)) {
                 dropdown?.classList.remove("show");
             }
         });
 
         document.getElementById("logoutBtn")?.addEventListener("click", () => {
             localStorage.clear();
-            window.location.href = "index.html";
+            window.location.href = "/Anon-Talks/index.html";
         });
 
         document.getElementById("createBtn")?.addEventListener("click", () => {
@@ -114,14 +120,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.getElementById("text").value = "";
                     document.getElementById("imageUrl").value = "";
                     loadPosts();
-                } else alert("Failed to create post.");
+                } else {
+                    const err = await res.json().catch(()=>null);
+                    alert("Failed to create post." + (err?.error ? " " + err.error : ""));
+                }
             } catch (err) {
                 console.error(err);
             }
         });
 
         document.getElementById("editPosts")?.addEventListener("click", () => {
-            window.location.href = "my-posts.html";
+            window.location.href = "/Anon-Talks/my-posts.html";
         });
 
         document.getElementById("searchBox")?.addEventListener("input", (e) => {
@@ -136,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // -----------------------
     if (pathname === "my-posts.html") {
         if (!username) {
-            window.location.href = "index.html";
+            window.location.href = "/Anon-Talks/index.html";
             return;
         }
 
@@ -145,20 +154,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const headerUsername = document.getElementById("headerUsername");
         const dropdown = document.getElementById("usernameDropdown");
-        headerUsername.addEventListener("click", () => dropdown.classList.toggle("show"));
+        headerUsername?.addEventListener("click", () => dropdown?.classList.toggle("show"));
         document.addEventListener("click", (e) => {
-            if (!headerUsername.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.remove("show");
+            if (!headerUsername?.contains(e.target) && !dropdown?.contains(e.target)) {
+                dropdown?.classList.remove("show");
             }
         });
 
-        document.getElementById("logoutBtn").addEventListener("click", () => {
+        document.getElementById("logoutBtn")?.addEventListener("click", () => {
             localStorage.clear();
-            window.location.href = "index.html";
+            window.location.href = "/Anon-Talks/index.html";
         });
 
-        document.getElementById("backBtn").addEventListener("click", () => {
-            window.location.href = "select.html";
+        document.getElementById("backBtn")?.addEventListener("click", () => {
+            window.location.href = "/Anon-Talks/select.html";
         });
 
         // Edit modal buttons
@@ -179,7 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (res.ok) {
                     document.getElementById("editModalBg").style.display = "none";
                     loadUserPosts(username);
-                } else alert("Failed to save edit.");
+                } else {
+                    const err = await res.json().catch(()=>null);
+                    alert("Failed to save edit." + (err?.error ? " " + err.error : ""));
+                }
             } catch (err) {
                 console.error(err);
             }
@@ -193,12 +205,20 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadPosts(filter = "") {
     try {
         const res = await fetch(`${API_BASE}/api/posts`);
+        if (!res.ok) {
+            console.error("Failed to load posts", res.status);
+            return;
+        }
         const posts = await res.json();
         const container = document.getElementById("postsContainer");
         if (!container) return;
         container.innerHTML = "";
 
-        const filteredPosts = posts.filter(p => p.content?.toLowerCase().includes(filter.toLowerCase()));
+        // normalize fields and filter
+        const filteredPosts = (posts || []).filter(p => {
+            const content = (p.content || p.text || "").toString();
+            return content.toLowerCase().includes((filter || "").toLowerCase());
+        });
 
         if (filteredPosts.length === 0) {
             container.innerHTML = `<p style="text-align:center;margin-top:40px;">No posts found.</p>`;
@@ -208,13 +228,27 @@ async function loadPosts(filter = "") {
         filteredPosts.forEach(post => {
             const card = document.createElement("div");
             card.className = "post-card";
-            const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}" />` : "";
 
-            card.innerHTML = `
-                ${imgHtml}
-                <div class="post-meta">${new Date(post.createdAt).toLocaleString()}</div>
-                <div class="post-text">${post.content || ""}</div>
-            `;
+            const imgSrc = post.imageUrl || post.image_url || post.image || "";
+            if (imgSrc) {
+                const img = document.createElement("img");
+                img.src = imgSrc;
+                img.alt = "post image";
+                card.appendChild(img);
+            }
+
+            const meta = document.createElement("div");
+            meta.className = "post-meta";
+            const created = post.createdAt || post.created_at || post.created || post.createdAt;
+            const dateStr = created ? new Date(created).toLocaleString() : "";
+            meta.textContent = dateStr;
+            card.appendChild(meta);
+
+            const text = document.createElement("div");
+            text.className = "post-text";
+            text.textContent = post.content || post.text || "";
+            card.appendChild(text);
+
             container.appendChild(card);
         });
     } catch (err) {
@@ -225,42 +259,77 @@ async function loadPosts(filter = "") {
 async function loadUserPosts(username) {
     try {
         const res = await fetch(`${API_BASE}/api/posts`);
+        if (!res.ok) {
+            console.error("Failed to load posts", res.status);
+            return;
+        }
         const posts = await res.json();
         const container = document.getElementById("postsContainer");
         if (!container) return;
         container.innerHTML = "";
 
-        const userPosts = posts.filter(p => p.username === username);
+        const userPosts = (posts || []).filter(p => {
+            const pUser = (p.username || p.user || "").toString();
+            return pUser === username;
+        });
 
         if (userPosts.length === 0) {
             container.innerHTML = `<p style="text-align:center;margin-top:40px;">You have not created any posts yet.</p>`;
             return;
         }
 
+        // create DOM elements safely
         userPosts.forEach(post => {
             const card = document.createElement("div");
             card.className = "post-card";
 
-            const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}" />` : "";
+            const imgSrc = post.imageUrl || post.image_url || "";
+            if (imgSrc) {
+                const img = document.createElement("img");
+                img.src = imgSrc;
+                img.alt = "post image";
+                card.appendChild(img);
+            }
 
-            card.innerHTML = `
-                ${imgHtml}
-                <div class="post-meta">${new Date(post.createdAt).toLocaleString()}</div>
-                <div class="post-text">${post.content || ""}</div>
-                <div class="post-actions">
-                    <button class="edit-btn" data-id="${post.id}" data-content="${post.content}" data-image="${post.imageUrl}">Edit</button>
-                    <button class="delete-btn" data-id="${post.id}">Delete</button>
-                </div>
-            `;
+            const meta = document.createElement("div");
+            meta.className = "post-meta";
+            const created = post.createdAt || post.created_at || post.created || "";
+            meta.textContent = created ? new Date(created).toLocaleString() : "";
+            card.appendChild(meta);
+
+            const text = document.createElement("div");
+            text.className = "post-text";
+            text.textContent = post.content || "";
+            card.appendChild(text);
+
+            const actions = document.createElement("div");
+            actions.className = "post-actions";
+
+            const editBtn = document.createElement("button");
+            editBtn.className = "edit-btn";
+            editBtn.textContent = "Edit";
+            // attach data using dataset to avoid fragile string interpolation
+            editBtn.dataset.id = String(post.id || post.post_id || "");
+            editBtn.dataset.content = post.content || "";
+            editBtn.dataset.image = imgSrc || "";
+            actions.appendChild(editBtn);
+
+            const delBtn = document.createElement("button");
+            delBtn.className = "delete-btn";
+            delBtn.textContent = "Delete";
+            delBtn.dataset.id = String(post.id || post.post_id || "");
+            actions.appendChild(delBtn);
+
+            card.appendChild(actions);
             container.appendChild(card);
         });
 
         // EDIT
         document.querySelectorAll(".edit-btn").forEach(btn => {
             btn.addEventListener("click", () => {
-                editingPostId = btn.getAttribute("data-id");
-                document.getElementById("editText").value = btn.getAttribute("data-content");
-                document.getElementById("editImageUrl").value = btn.getAttribute("data-image");
+                editingPostId = btn.dataset.id;
+                document.getElementById("editText").value = btn.dataset.content || "";
+                document.getElementById("editImageUrl").value = btn.dataset.image || "";
                 document.getElementById("editModalBg").style.display = "flex";
             });
         });
@@ -268,11 +337,15 @@ async function loadUserPosts(username) {
         // DELETE
         document.querySelectorAll(".delete-btn").forEach(btn => {
             btn.addEventListener("click", async () => {
-                const id = btn.getAttribute("data-id");
+                const id = btn.dataset.id;
+                if (!id) return alert("Invalid post id");
                 try {
                     const res = await fetch(`${API_BASE}/api/posts/${id}`, { method: "DELETE" });
                     if (res.ok) loadUserPosts(username);
-                    else alert("Failed to delete");
+                    else {
+                        const err = await res.json().catch(()=>null);
+                        alert("Failed to delete." + (err?.error ? " " + err.error : ""));
+                    }
                 } catch (err) {
                     console.error(err);
                 }
