@@ -1,3 +1,8 @@
+console.log("JS loaded!"); // should appear in browser console
+document.getElementById("generateBtn")?.addEventListener("click", () => {
+    alert("Button clicked!");
+});
+
 const API_BASE = "https://anon-talks.onrender.com";
 let editingPostId = null;
 
