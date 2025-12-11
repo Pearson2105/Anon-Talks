@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anon-Talks</title>
 
-<link rel="stylesheet" href="static/styles.css">
-<script src="static/app.js" defer></script>
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script>
 
 </head>
 <body>
@@ -35,7 +35,7 @@
             <input id="username" placeholder="Username" readonly>
             <textarea id="text" placeholder="Write something..."></textarea>
             <input id="imageUrl" placeholder="Image URL (optional)">
-            <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+            <div class="popup-actions">
                 <button id="submitPost" class="big-btn purple">Submit</button>
                 <button id="closePopup" class="big-btn">Cancel</button>
             </div>
@@ -43,12 +43,6 @@
     </div>
     <div id="postsContainer"></div>
 </div>
-
-<script>
-document.getElementById("editPosts")?.addEventListener("click", () => {
-    window.location.href = "/Anon-Talks/my-posts.html";
-});
-</script>
 
 </body>
 </html>
