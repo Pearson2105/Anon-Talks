@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Anon-Talks — Select Identity</title>
 
-  <!-- FIX: static folder is in root -->
+  <!-- CSS & JS -->
   <link rel="stylesheet" href="./static/styles.css" />
   <script src="./static/app.js" defer></script>
 </head>
@@ -28,28 +28,28 @@
   </main>
 
   <!-- LOGIN POPUP -->
-  <div class="popup-overlay" id="loginPopup" aria-hidden="true">
-    <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-      <h3 id="loginTitle">Login</h3>
+  <div class="popup-overlay" id="loginPopup" style="display:none;">
+    <div class="popup-box">
+      <h3>Login</h3>
       <input id="loginUser" placeholder="Username" autocomplete="username" />
       <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" />
-      <div class="popup-actions" style="margin-top:8px;">
-        <button id="loginConfirm" class="big-btn purple" style="width:120px;">Login</button>
-        <button id="closeLogin" class="big-btn" style="width:120px;">Cancel</button>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+        <button id="loginConfirm" class="big-btn purple">Login</button>
+        <button id="closeLogin" class="big-btn">Cancel</button>
       </div>
-      <p id="loginError" class="error" style="display:none; margin-top:10px;">Invalid credentials</p>
+      <p id="loginError" style="color:red; display:none;">Invalid credentials</p>
     </div>
   </div>
 
   <!-- GENERATED IDENTITY POPUP -->
-  <div class="popup-overlay" id="generatePopup" aria-hidden="true">
-    <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="genTitle">
-      <h3 id="genTitle">Generated Identity</h3>
+  <div class="popup-overlay" id="generatePopup" style="display:none;">
+    <div class="popup-box">
+      <h3>Generated Identity</h3>
       <p>Username: <strong id="genUser"></strong></p>
       <p>Password: <strong id="genPass"></strong></p>
-      <div class="popup-actions" style="margin-top:8px;">
-        <button id="useIdentity" class="big-btn purple" style="width:140px;">Use This Identity</button>
-        <button id="closeGenerate" class="big-btn" style="width:120px;">Cancel</button>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+        <button id="useIdentity" class="big-btn purple">Use This Identity</button>
+        <button id="closeGenerate" class="big-btn">Cancel</button>
       </div>
     </div>
   </div>
