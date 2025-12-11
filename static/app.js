@@ -4,9 +4,6 @@ let editingPostId = null;
 document.addEventListener("DOMContentLoaded", () => {
     console.log("JS loaded!"); // should appear in console
 
-    const pathname = window.location.pathname.split("/").pop();
-    const username = localStorage.getItem("anon_username");
-
     // POPUPS
     const loginPopup = document.getElementById("loginPopup");
     const generatePopup = document.getElementById("generatePopup");
@@ -20,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const useIdentity = document.getElementById("useIdentity");
 
     // -------------------------
-    // LOGIN BUTTONS
+    // LOGIN
     // -------------------------
     loginBtn?.addEventListener("click", () => loginPopup?.classList.remove("hidden"));
     closeLogin?.addEventListener("click", () => loginPopup?.classList.add("hidden"));
@@ -52,16 +49,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // -------------------------
     // GENERATE IDENTITY
     // -------------------------
-    generateBtn?.addEventListener("click", fetchGeneratedIdentity);
-    closeGenerate?.addEventListener("click", () => generatePopup?.classList.add("hidden"));
-
-    async function fetchGeneratedIdentity() {
+    generateBtn?.addEventListener("click", async () => {
         try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
             const data = await res.json();
 
             document.getElementById("genUser").innerText = data.username || "";
             document.getElementById("genPass").innerText = data.password || "";
+
             generatePopup?.classList.remove("hidden");
 
             useIdentity?.addEventListener("click", () => {
@@ -73,11 +68,16 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             console.error(err);
         }
-    }
+    });
+
+    closeGenerate?.addEventListener("click", () => generatePopup?.classList.add("hidden"));
 
     // -------------------------
-    // SELECT PAGE
+    // SELECT PAGE LOGIC
     // -------------------------
+    const pathname = window.location.pathname.split("/").pop();
+    const username = localStorage.getItem("anon_username");
+
     if (pathname === "select.html") {
         if (!username) {
             window.location.href = "index.html";
@@ -88,11 +88,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const dropdown = document.getElementById("usernameDropdown");
 
         headerUsernameEl?.addEventListener("click", () => dropdown?.classList.toggle("show"));
-        document.addEventListener("click", e => {
+        document.addEventListener("click", (e) => {
             if (!headerUsernameEl?.contains(e.target) && !dropdown?.contains(e.target)) {
                 dropdown?.classList.remove("show");
             }
         });
+
         headerUsernameEl && (headerUsernameEl.innerText = username);
 
         document.getElementById("logoutBtn")?.addEventListener("click", () => {
@@ -125,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.getElementById("imageUrl").value = "";
                     loadPosts();
                 } else {
-                    const err = await res.json().catch(() => null);
+                    const err = await res.json().catch(()=>null);
                     alert("Failed to create post." + (err?.error ? " " + err.error : ""));
                 }
             } catch (err) {
@@ -137,13 +138,15 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "my-posts.html";
         });
 
-        document.getElementById("searchBox")?.addEventListener("input", e => loadPosts(e.target.value));
+        document.getElementById("searchBox")?.addEventListener("input", (e) => {
+            loadPosts(e.target.value);
+        });
 
         loadPosts();
     }
 
     // -------------------------
-    // MY POSTS PAGE
+    // MY POSTS PAGE LOGIC
     // -------------------------
     if (pathname === "my-posts.html") {
         if (!username) {
@@ -158,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const dropdown = document.getElementById("usernameDropdown");
 
         headerUsername?.addEventListener("click", () => dropdown?.classList.toggle("show"));
-        document.addEventListener("click", e => {
+        document.addEventListener("click", (e) => {
             if (!headerUsername?.contains(e.target) && !dropdown?.contains(e.target)) {
                 dropdown?.classList.remove("show");
             }
@@ -193,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.getElementById("editModalBg")?.classList.add("hidden");
                     loadUserPosts(username);
                 } else {
-                    const err = await res.json().catch(() => null);
+                    const err = await res.json().catch(()=>null);
                     alert("Failed to save edit." + (err?.error ? " " + err.error : ""));
                 }
             } catch (err) {
@@ -218,7 +221,7 @@ async function loadPosts(filter = "") {
         container.innerHTML = "";
 
         const filteredPosts = (posts || []).filter(p => {
-            const content = (p.content || p.text || "").toString();
+            const content = (p.content || "").toString();
             return content.toLowerCase().includes(filter.toLowerCase());
         });
 
@@ -241,8 +244,7 @@ async function loadPosts(filter = "") {
 
             const meta = document.createElement("div");
             meta.className = "post-meta";
-            const created = post.createdAt || post.created_at || "";
-            meta.textContent = created ? new Date(created).toLocaleString() : "";
+            meta.textContent = post.createdAt ? new Date(post.createdAt).toLocaleString() : "";
             card.appendChild(meta);
 
             const text = document.createElement("div");
@@ -289,8 +291,7 @@ async function loadUserPosts(username) {
 
             const meta = document.createElement("div");
             meta.className = "post-meta";
-            const created = post.createdAt || post.created_at || "";
-            meta.textContent = created ? new Date(created).toLocaleString() : "";
+            meta.textContent = post.createdAt ? new Date(post.createdAt).toLocaleString() : "";
             card.appendChild(meta);
 
             const text = document.createElement("div");
@@ -339,7 +340,7 @@ async function loadUserPosts(username) {
                     const res = await fetch(`${API_BASE}/api/posts/${id}`, { method: "DELETE" });
                     if (res.ok) loadUserPosts(username);
                     else {
-                        const err = await res.json().catch(() => null);
+                        const err = await res.json().catch(()=>null);
                         alert("Failed to delete." + (err?.error ? " " + err.error : ""));
                     }
                 } catch (err) {
