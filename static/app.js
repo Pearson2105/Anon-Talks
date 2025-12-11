@@ -3,6 +3,10 @@ import { initPosts } from "./posts.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("JS loaded!");
-    initAuth();   // username + dropdown
-    initPosts();  // posts, search, create
+
+    // Auth (login / generate identity)
+    initAuth();
+
+    // Posts and select.html page functionality
+    initPosts();
 });
