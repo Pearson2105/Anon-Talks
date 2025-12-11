@@ -1,48 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anon-Talks</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Anon-Talks — Select</title>
 
-<link rel="stylesheet" href="static/styles.css">
-<script src="static/app.js" defer></script>
-
+  <link rel="stylesheet" href="static/styles.css" />
+  <!-- make sure no query string so static host finds file -->
+  <script src="static/app.js" defer></script>
 </head>
 <body>
+  <header>
+    <div class="username-container" id="headerWrap">
+      <div id="headerUsername" class="username">Anonymous</div>
 
-<header>
-    <div class="username-container">
-        <div class="username" id="headerUsername"></div>
-        <div class="username-dropdown" id="usernameDropdown">
-            <div class="dropdown-item" id="editPosts">Edit Posts</div>
-            <div class="dropdown-item" id="logoutBtn">Log Out</div>
-        </div>
+      <div class="username-dropdown" id="usernameDropdown">
+        <div class="dropdown-item" id="logoutBtn">Logout</div>
+        <div class="dropdown-item" id="editPosts">My Posts</div>
+      </div>
     </div>
-    <div class="center title-text">Anon-Talks</div>
+
     <div class="top-right">
-        <div class="search-container">
-            <input type="text" id="searchBox" placeholder="Search posts...">
-        </div>
-        <button id="createBtn">+</button>
+      <div class="search-container">
+        <input id="searchBox" placeholder="Search posts..." />
+      </div>
+      <button id="createBtn" title="Create post" aria-label="Create post">+</button>
     </div>
-</header>
 
-<div class="container">
-    <div class="popup-overlay" id="popupOverlay">
-        <div class="popup-box">
-            <h3>Create a Post</h3>
-            <input id="username" placeholder="Username" readonly>
-            <textarea id="text" placeholder="Write something..."></textarea>
-            <input id="imageUrl" placeholder="Image URL (optional)">
-            <div class="popup-actions">
-                <button id="submitPost" class="big-btn purple">Submit</button>
-                <button id="closePopup" class="big-btn">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <div class="center title-text">Anon-Talks</div>
+  </header>
+
+  <main class="container">
     <div id="postsContainer"></div>
-</div>
+  </main>
+
+  <!-- CREATE POST POPUP -->
+  <div class="popup-overlay" id="popupOverlay" style="display:none;">
+    <div class="popup-box">
+      <h3>Create Post</h3>
+      <textarea id="text" placeholder="What's on your mind?"></textarea>
+      <input id="imageUrl" placeholder="Image URL (optional)" />
+
+      <div class="post-actions">
+        <button id="submitPost" class="big-btn purple">Post</button>
+        <button id="closePopup" class="big-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
