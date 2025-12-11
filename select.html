@@ -8,40 +8,41 @@
   <script type="module" src="./static/app.js"></script>
 </head>
 <body>
-  <header>
-    <div class="username-container" id="headerWrap">
-      <div id="headerUsername" class="username">Anonymous</div>
-      <div class="username-dropdown" id="usernameDropdown">
-        <div class="dropdown-item" id="logoutBtn">Log Out</div>
-        <div class="dropdown-item" id="editPosts">My Posts</div>
-      </div>
-    </div>
-
-    <div class="top-right">
-      <div class="search-container">
-        <input id="searchBox" placeholder="Search posts..." />
-      </div>
-      <button id="createBtn" title="Create post" aria-label="Create post">+</button>
-    </div>
-
-    <div class="center title-text">Anon-Talks</div>
-  </header>
-
-  <main class="container">
-    <div id="postsContainer"></div>
-  </main>
-
-  <!-- CREATE POST POPUP -->
-  <div class="popup-overlay hidden" id="popupOverlay">
-    <div class="popup-box">
-      <h3>Create Post</h3>
-      <textarea id="text" placeholder="What's on your mind?"></textarea>
-      <input id="imageUrl" placeholder="Image URL (optional)" />
-      <div class="post-actions">
-        <button id="submitPost" class="big-btn purple">Post</button>
-        <button id="closePopup" class="big-btn">Cancel</button>
-      </div>
+<header>
+  <div class="username-container">
+    <div id="headerUsername" class="username">Anonymous</div>
+    <div class="username-dropdown" id="usernameDropdown">
+      <div class="dropdown-item" id="logoutBtn">Log Out</div>
+      <div class="dropdown-item" id="editPosts">My Posts</div>
     </div>
   </div>
+
+  <div class="top-right">
+    <div class="search-container">
+      <input id="searchBox" placeholder="Search posts..." />
+    </div>
+    <button id="createBtn" title="Create post">+</button>
+  </div>
+
+  <div class="center title-text">Anon-Talks</div>
+</header>
+
+<main class="container">
+  <div id="postsContainer"></div>
+</main>
+
+<!-- CREATE POST POPUP -->
+<div class="popup-overlay hidden" id="popupOverlay">
+  <div class="popup-box">
+    <h3>Create Post</h3>
+    <textarea id="text" placeholder="What's on your mind?"></textarea>
+    <input id="imageUrl" placeholder="Image URL (optional)" />
+    <div class="post-actions">
+      <button id="submitPost" class="big-btn purple">Post</button>
+      <button id="closePopup" class="big-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
