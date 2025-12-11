@@ -1,5 +1,4 @@
 import { showPopup, hidePopup } from "./popups.js";
-import { loadPosts, loadUserPosts } from "./posts.js";
 
 export const API_BASE = "https://anon-talks.onrender.com";
 
@@ -14,7 +13,9 @@ export function initAuth() {
     const loginConfirm = document.getElementById("loginConfirm");
     const useIdentity = document.getElementById("useIdentity");
 
-    // Login popup
+    // -------------------------
+    // LOGIN BUTTONS
+    // -------------------------
     loginBtn?.addEventListener("click", () => showPopup(loginPopup));
     closeLogin?.addEventListener("click", () => hidePopup(loginPopup));
 
@@ -42,7 +43,9 @@ export function initAuth() {
         }
     });
 
-    // Generate identity
+    // -------------------------
+    // GENERATE IDENTITY
+    // -------------------------
     generateBtn?.addEventListener("click", async () => {
         try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
@@ -53,12 +56,14 @@ export function initAuth() {
 
             showPopup(generatePopup);
 
-            useIdentity?.addEventListener("click", () => {
+            // Attach the click handler here to capture the latest generated identity
+            useIdentity.onclick = () => {
                 if (!data.username || !data.password) return;
                 localStorage.setItem("anon_username", data.username);
                 localStorage.setItem("anon_password", data.password);
                 window.location.href = "select.html";
-            }, { once: true });
+            };
+
         } catch (err) {
             console.error(err);
         }
