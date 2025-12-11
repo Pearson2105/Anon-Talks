@@ -17,14 +17,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const useIdentity = document.getElementById("useIdentity");
     const loginConfirm = document.getElementById("loginConfirm");
 
-    if (loginBtn) loginBtn.onclick = () => { if (loginPopup) loginPopup.style.display = "flex"; };
-    if (generateBtn) generateBtn.onclick = fetchGeneratedIdentity;
-    if (closeLogin) closeLogin.onclick = () => { if (loginPopup) loginPopup.style.display = "none"; };
-    if (closeGenerate) closeGenerate.onclick = () => { if (generatePopup) generatePopup.style.display = "none"; };
+    // Show login popup
+    loginBtn?.addEventListener("click", () => {
+        loginPopup?.classList.remove("hidden");
+    });
 
-    if (loginConfirm) loginConfirm.onclick = async () => {
-        const u = document.getElementById("loginUser").value.trim();
-        const p = document.getElementById("loginPass").value.trim();
+    // Close login popup
+    closeLogin?.addEventListener("click", () => {
+        loginPopup?.classList.add("hidden");
+    });
+
+    // Show generate identity popup
+    generateBtn?.addEventListener("click", fetchGeneratedIdentity);
+
+    // Close generate popup
+    closeGenerate?.addEventListener("click", () => {
+        generatePopup?.classList.add("hidden");
+    });
+
+    // Login confirm
+    loginConfirm?.addEventListener("click", async () => {
+        const u = document.getElementById("loginUser")?.value.trim();
+        const p = document.getElementById("loginPass")?.value.trim();
         if (!u || !p) return;
 
         try {
@@ -39,13 +53,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("anon_password", p);
                 window.location.href = "select.html";
             } else {
-                document.getElementById("loginError").style.display = "block";
+                document.getElementById("loginError")?.style.display = "block";
             }
         } catch (err) {
             console.error(err);
         }
-    };
+    });
 
+    // Generate identity function
     async function fetchGeneratedIdentity() {
         try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
@@ -53,14 +68,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById("genUser").innerText = data.username || "";
             document.getElementById("genPass").innerText = data.password || "";
-            if (generatePopup) generatePopup.style.display = "flex";
 
-            if (useIdentity) useIdentity.onclick = () => {
+            generatePopup?.classList.remove("hidden");
+
+            useIdentity?.addEventListener("click", () => {
                 if (!data.username || !data.password) return;
                 localStorage.setItem("anon_username", data.username);
                 localStorage.setItem("anon_password", data.password);
                 window.location.href = "select.html";
-            };
+            }, { once: true });
         } catch (err) {
             console.error(err);
         }
@@ -76,19 +92,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const headerUsernameEl = document.getElementById("headerUsername");
-        if (headerUsernameEl) headerUsernameEl.innerText = username;
-
-        const usernameInput = document.getElementById("username");
-        if (usernameInput) usernameInput.value = username;
-
         const dropdown = document.getElementById("usernameDropdown");
 
-        headerUsernameEl?.addEventListener("click", () => dropdown?.classList.toggle("show"));
+        headerUsernameEl?.addEventListener("click", () => {
+            dropdown?.classList.toggle("show");
+        });
+
         document.addEventListener("click", (e) => {
             if (!headerUsernameEl?.contains(e.target) && !dropdown?.contains(e.target)) {
                 dropdown?.classList.remove("show");
             }
         });
+
+        headerUsernameEl && (headerUsernameEl.innerText = username);
 
         document.getElementById("logoutBtn")?.addEventListener("click", () => {
             localStorage.clear();
@@ -96,15 +112,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.getElementById("createBtn")?.addEventListener("click", () => {
-            document.getElementById("popupOverlay").style.display = "flex";
+            document.getElementById("popupOverlay")?.classList.remove("hidden");
         });
+
         document.getElementById("closePopup")?.addEventListener("click", () => {
-            document.getElementById("popupOverlay").style.display = "none";
+            document.getElementById("popupOverlay")?.classList.add("hidden");
         });
 
         document.getElementById("submitPost")?.addEventListener("click", async () => {
-            const content = document.getElementById("text").value.trim();
-            const imageUrl = document.getElementById("imageUrl").value.trim();
+            const content = document.getElementById("text")?.value.trim();
+            const imageUrl = document.getElementById("imageUrl")?.value.trim();
             if (!content && !imageUrl) return alert("Post must have content or an image.");
 
             try {
@@ -114,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({ username, content, imageUrl })
                 });
                 if (res.ok) {
-                    document.getElementById("popupOverlay").style.display = "none";
+                    document.getElementById("popupOverlay")?.classList.add("hidden");
                     document.getElementById("text").value = "";
                     document.getElementById("imageUrl").value = "";
                     loadPosts();
@@ -169,16 +186,15 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "select.html";
         });
 
-        // Edit modal
         document.getElementById("cancelEdit")?.addEventListener("click", () => {
-            document.getElementById("editModalBg").style.display = "none";
+            document.getElementById("editModalBg")?.classList.add("hidden");
         });
 
         document.getElementById("saveEdit")?.addEventListener("click", async () => {
             if (!editingPostId) return alert("No post selected.");
 
-            const newText = document.getElementById("editText").value.trim();
-            const newImage = document.getElementById("editImageUrl").value.trim();
+            const newText = document.getElementById("editText")?.value.trim();
+            const newImage = document.getElementById("editImageUrl")?.value.trim();
 
             try {
                 const res = await fetch(`${API_BASE}/api/posts/${editingPostId}`, {
@@ -187,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({ content: newText, imageUrl: newImage })
                 });
                 if (res.ok) {
-                    document.getElementById("editModalBg").style.display = "none";
+                    document.getElementById("editModalBg")?.classList.add("hidden");
                     loadUserPosts(username);
                 } else {
                     const err = await res.json().catch(()=>null);
@@ -265,9 +281,7 @@ async function loadUserPosts(username) {
 
         container.innerHTML = "";
 
-        const userPosts = (posts || []).filter(p => {
-            return (p.username || p.user) === username;
-        });
+        const userPosts = (posts || []).filter(p => (p.username || p.user) === username);
 
         if (userPosts.length === 0) {
             container.innerHTML = `<p style="text-align:center;margin-top:40px;">You have not created any posts yet.</p>`;
@@ -324,7 +338,7 @@ async function loadUserPosts(username) {
                 editingPostId = btn.dataset.id;
                 document.getElementById("editText").value = btn.dataset.content || "";
                 document.getElementById("editImageUrl").value = btn.dataset.image || "";
-                document.getElementById("editModalBg").style.display = "flex";
+                document.getElementById("editModalBg")?.classList.remove("hidden");
             });
         });
 
