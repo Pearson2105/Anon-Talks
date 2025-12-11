@@ -13,13 +13,12 @@ export function initAuth() {
     const loginConfirm = document.getElementById("loginConfirm");
     const useIdentity = document.getElementById("useIdentity");
 
-    // LOGIN POPUP
-    loginBtn?.addEventListener("click", () => showPopup(loginPopup));
-    closeLogin?.addEventListener("click", () => hidePopup(loginPopup));
+    loginBtn.addEventListener("click", () => showPopup(loginPopup));
+    closeLogin.addEventListener("click", () => hidePopup(loginPopup));
 
-    loginConfirm?.addEventListener("click", async () => {
-        const u = document.getElementById("loginUser")?.value.trim();
-        const p = document.getElementById("loginPass")?.value.trim();
+    loginConfirm.addEventListener("click", async () => {
+        const u = document.getElementById("loginUser").value.trim();
+        const p = document.getElementById("loginPass").value.trim();
         if (!u || !p) return;
 
         try {
@@ -34,15 +33,14 @@ export function initAuth() {
                 localStorage.setItem("anon_password", p);
                 window.location.href = "select.html";
             } else {
-                document.getElementById("loginError")?.style.display = "block";
+                document.getElementById("loginError").style.display = "block";
             }
         } catch (err) {
             console.error(err);
         }
     });
 
-    // GENERATE IDENTITY
-    generateBtn?.addEventListener("click", async () => {
+    generateBtn.addEventListener("click", async () => {
         try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
             const data = await res.json();
@@ -52,7 +50,6 @@ export function initAuth() {
 
             showPopup(generatePopup);
 
-            // Using onclick avoids invalid left-hand side errors
             useIdentity.onclick = () => {
                 if (!data.username || !data.password) return;
                 localStorage.setItem("anon_username", data.username);
@@ -64,5 +61,5 @@ export function initAuth() {
         }
     });
 
-    closeGenerate?.addEventListener("click", () => hidePopup(generatePopup));
+    closeGenerate.addEventListener("click", () => hidePopup(generatePopup));
 }
