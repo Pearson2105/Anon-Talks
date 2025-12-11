@@ -1,5 +1,3 @@
-import { showPopup, hidePopup } from "./popups.js";
-
 export const API_BASE = "https://anon-talks.onrender.com";
 
 export function initAuth() {
@@ -13,16 +11,13 @@ export function initAuth() {
     const loginConfirm = document.getElementById("loginConfirm");
     const useIdentity = document.getElementById("useIdentity");
 
-    // Show/hide login popup
-    loginBtn?.addEventListener("click", () => showPopup(loginPopup));
-    closeLogin?.addEventListener("click", () => hidePopup(loginPopup));
-
-    // Login button
+    // LOGIN
+    loginBtn?.addEventListener("click", () => loginPopup.classList.remove("hidden"));
+    closeLogin?.addEventListener("click", () => loginPopup.classList.add("hidden"));
     loginConfirm?.addEventListener("click", async () => {
         const u = document.getElementById("loginUser")?.value.trim();
         const p = document.getElementById("loginPass")?.value.trim();
         if (!u || !p) return;
-
         try {
             const res = await fetch(`${API_BASE}/api/login`, {
                 method: "POST",
@@ -37,12 +32,10 @@ export function initAuth() {
             } else {
                 document.getElementById("loginError").style.display = "block";
             }
-        } catch (err) {
-            console.error(err);
-        }
+        } catch (err) { console.error(err); }
     });
 
-    // Generate identity
+    // GENERATE IDENTITY
     generateBtn?.addEventListener("click", async () => {
         try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
@@ -50,19 +43,16 @@ export function initAuth() {
 
             document.getElementById("genUser").innerText = data.username || "";
             document.getElementById("genPass").innerText = data.password || "";
+            generatePopup.classList.remove("hidden");
 
-            showPopup(generatePopup);
-
-            useIdentity?.addEventListener("click", () => {
+            useIdentity.onclick = () => {
                 if (!data.username || !data.password) return;
                 localStorage.setItem("anon_username", data.username);
                 localStorage.setItem("anon_password", data.password);
                 window.location.href = "select.html";
-            }, { once: true });
-        } catch (err) {
-            console.error(err);
-        }
+            };
+        } catch (err) { console.error(err); }
     });
 
-    closeGenerate?.addEventListener("click", () => hidePopup(generatePopup));
+    closeGenerate?.addEventListener("click", () => generatePopup.classList.add("hidden"));
 }
