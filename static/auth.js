@@ -1,11 +1,8 @@
-import { showPopup, hidePopup } from "./popups.js";
-
 export const API_BASE = "https://anon-talks.onrender.com";
 
 export function initAuth() {
     const loginPopup = document.getElementById("loginPopup");
     const generatePopup = document.getElementById("generatePopup");
-
     const loginBtn = document.getElementById("loginBtn");
     const generateBtn = document.getElementById("generateBtn");
     const closeLogin = document.getElementById("closeLogin");
@@ -13,12 +10,13 @@ export function initAuth() {
     const loginConfirm = document.getElementById("loginConfirm");
     const useIdentity = document.getElementById("useIdentity");
 
-    loginBtn.addEventListener("click", () => showPopup(loginPopup));
-    closeLogin.addEventListener("click", () => hidePopup(loginPopup));
+    // Index.html: LOGIN
+    loginBtn?.addEventListener("click", () => loginPopup?.classList.remove("hidden"));
+    closeLogin?.addEventListener("click", () => loginPopup?.classList.add("hidden"));
 
-    loginConfirm.addEventListener("click", async () => {
-        const u = document.getElementById("loginUser").value.trim();
-        const p = document.getElementById("loginPass").value.trim();
+    loginConfirm?.addEventListener("click", async () => {
+        const u = document.getElementById("loginUser")?.value.trim();
+        const p = document.getElementById("loginPass")?.value.trim();
         if (!u || !p) return;
 
         try {
@@ -33,14 +31,15 @@ export function initAuth() {
                 localStorage.setItem("anon_password", p);
                 window.location.href = "select.html";
             } else {
-                document.getElementById("loginError").style.display = "block";
+                document.getElementById("loginError")?.style.display = "block";
             }
         } catch (err) {
             console.error(err);
         }
     });
 
-    generateBtn.addEventListener("click", async () => {
+    // Index.html: GENERATE IDENTITY
+    generateBtn?.addEventListener("click", async () => {
         try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
             const data = await res.json();
@@ -48,18 +47,45 @@ export function initAuth() {
             document.getElementById("genUser").innerText = data.username || "";
             document.getElementById("genPass").innerText = data.password || "";
 
-            showPopup(generatePopup);
+            generatePopup?.classList.remove("hidden");
 
-            useIdentity.onclick = () => {
+            useIdentity?.addEventListener("click", () => {
                 if (!data.username || !data.password) return;
                 localStorage.setItem("anon_username", data.username);
                 localStorage.setItem("anon_password", data.password);
                 window.location.href = "select.html";
-            };
+            }, { once: true });
         } catch (err) {
             console.error(err);
         }
     });
 
-    closeGenerate.addEventListener("click", () => hidePopup(generatePopup));
+    closeGenerate?.addEventListener("click", () => generatePopup?.classList.add("hidden"));
+
+
+    // Select / My-posts dropdown logic
+    const usernameEl = document.getElementById("headerUsername");
+    const dropdown = document.getElementById("usernameDropdown");
+    const username = localStorage.getItem("anon_username");
+    if (username && usernameEl) usernameEl.textContent = username;
+
+    usernameEl?.addEventListener("click", () => dropdown?.classList.toggle("show"));
+    document.addEventListener("click", (e) => {
+        if (!usernameEl?.contains(e.target) && !dropdown?.contains(e.target)) {
+            dropdown?.classList.remove("show");
+        }
+    });
+
+    document.getElementById("logoutBtn")?.addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+    });
+
+    document.getElementById("editPosts")?.addEventListener("click", () => {
+        window.location.href = "my-posts.html";
+    });
+
+    document.getElementById("homeBtn")?.addEventListener("click", () => {
+        window.location.href = "select.html";
+    });
 }
