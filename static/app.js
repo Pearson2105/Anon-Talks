@@ -1,10 +1,9 @@
 console.log("JS loaded!"); // verify JS loads
 
 const API_BASE = "https://anon-talks.onrender.com";
-let editingPostId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Get all necessary elements
+    // --- Get elements ---
     const loginPopup = document.getElementById("loginPopup");
     const generatePopup = document.getElementById("generatePopup");
 
@@ -15,9 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginConfirm = document.getElementById("loginConfirm");
     const useIdentity = document.getElementById("useIdentity");
 
-    // -------------------------
-    // LOGIN BUTTON
-    // -------------------------
+    // --- LOGIN BUTTON ---
     loginBtn?.addEventListener("click", () => {
         loginPopup?.classList.remove("hidden");
     });
@@ -27,20 +24,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     loginConfirm?.addEventListener("click", async () => {
-        const u = document.getElementById("loginUser")?.value.trim();
-        const p = document.getElementById("loginPass")?.value.trim();
-        if (!u || !p) return;
+        const username = document.getElementById("loginUser")?.value.trim();
+        const password = document.getElementById("loginPass")?.value.trim();
+        if (!username || !password) return;
 
         try {
             const res = await fetch(`${API_BASE}/api/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: u, password: p })
+                body: JSON.stringify({ username, password })
             });
             const data = await res.json();
             if (res.ok && data.success) {
-                localStorage.setItem("anon_username", u);
-                localStorage.setItem("anon_password", p);
+                localStorage.setItem("anon_username", username);
+                localStorage.setItem("anon_password", password);
                 window.location.href = "select.html";
             } else {
                 document.getElementById("loginError")?.style.display = "block";
@@ -50,9 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // -------------------------
-    // GENERATE IDENTITY BUTTON
-    // -------------------------
+    // --- GENERATE IDENTITY BUTTON ---
     generateBtn?.addEventListener("click", async () => {
         try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
@@ -63,13 +58,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             generatePopup?.classList.remove("hidden");
 
-            // Use this identity button
-            useIdentity?.addEventListener("click", () => {
+            // Remove previous listener to prevent duplicate execution
+            useIdentity?.replaceWith(useIdentity.cloneNode(true));
+            const newUseIdentity = document.getElementById("useIdentity");
+
+            newUseIdentity?.addEventListener("click", () => {
                 if (!data.username || !data.password) return;
                 localStorage.setItem("anon_username", data.username);
                 localStorage.setItem("anon_password", data.password);
                 window.location.href = "select.html";
-            }, { once: true });
+            });
 
         } catch (err) {
             console.error(err);
