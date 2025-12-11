@@ -6,6 +6,7 @@
   <title>Anon-Talks — Select Identity</title>
 
   <link rel="stylesheet" href="static/styles.css" />
+  <!-- Removed query string to avoid 404 on static hosts -->
   <script src="static/app.js" defer></script>
 </head>
 <body>
@@ -35,13 +36,13 @@
       <input id="loginUser" placeholder="Username" autocomplete="username" />
       <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" />
 
-      <!-- Changed popup-actions → post-actions (valid CSS class) -->
+      <!-- popup-actions → post-actions (matches your CSS) -->
       <div class="post-actions">
         <button id="loginConfirm" class="big-btn purple">Login</button>
         <button id="closeLogin" class="big-btn">Cancel</button>
       </div>
 
-      <!-- .error-msg does not exist in CSS → using inline style -->
+      <!-- inline error message (id used in JS) -->
       <p id="loginError" style="color:red; display:none;">Invalid credentials</p>
     </div>
   </div>
@@ -54,7 +55,6 @@
       <p>Username: <strong id="genUser"></strong></p>
       <p>Password: <strong id="genPass"></strong></p>
 
-      <!-- Changed popup-actions → post-actions -->
       <div class="post-actions">
         <button id="useIdentity" class="big-btn purple">Use This Identity</button>
         <button id="closeGenerate" class="big-btn">Cancel</button>
