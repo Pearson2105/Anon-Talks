@@ -2,40 +2,29 @@ const API_BASE = "https://anon-talks.onrender.com";
 let editingPostId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("JS loaded!"); // should appear in console
+
     const pathname = window.location.pathname.split("/").pop();
     const username = localStorage.getItem("anon_username");
 
-    // -----------------------
-    // INDEX PAGE BUTTONS
-    // -----------------------
+    // POPUPS
     const loginPopup = document.getElementById("loginPopup");
     const generatePopup = document.getElementById("generatePopup");
+
+    // BUTTONS
     const loginBtn = document.getElementById("loginBtn");
     const generateBtn = document.getElementById("generateBtn");
     const closeLogin = document.getElementById("closeLogin");
     const closeGenerate = document.getElementById("closeGenerate");
-    const useIdentity = document.getElementById("useIdentity");
     const loginConfirm = document.getElementById("loginConfirm");
+    const useIdentity = document.getElementById("useIdentity");
 
-    // Show login popup
-    loginBtn?.addEventListener("click", () => {
-        loginPopup?.classList.remove("hidden");
-    });
+    // -------------------------
+    // LOGIN BUTTONS
+    // -------------------------
+    loginBtn?.addEventListener("click", () => loginPopup?.classList.remove("hidden"));
+    closeLogin?.addEventListener("click", () => loginPopup?.classList.add("hidden"));
 
-    // Close login popup
-    closeLogin?.addEventListener("click", () => {
-        loginPopup?.classList.add("hidden");
-    });
-
-    // Show generate identity popup
-    generateBtn?.addEventListener("click", fetchGeneratedIdentity);
-
-    // Close generate popup
-    closeGenerate?.addEventListener("click", () => {
-        generatePopup?.classList.add("hidden");
-    });
-
-    // Login confirm
     loginConfirm?.addEventListener("click", async () => {
         const u = document.getElementById("loginUser")?.value.trim();
         const p = document.getElementById("loginPass")?.value.trim();
@@ -60,7 +49,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Generate identity function
+    // -------------------------
+    // GENERATE IDENTITY
+    // -------------------------
+    generateBtn?.addEventListener("click", fetchGeneratedIdentity);
+    closeGenerate?.addEventListener("click", () => generatePopup?.classList.add("hidden"));
+
     async function fetchGeneratedIdentity() {
         try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
@@ -68,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById("genUser").innerText = data.username || "";
             document.getElementById("genPass").innerText = data.password || "";
-
             generatePopup?.classList.remove("hidden");
 
             useIdentity?.addEventListener("click", () => {
@@ -82,9 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // -----------------------
+    // -------------------------
     // SELECT PAGE
-    // -----------------------
+    // -------------------------
     if (pathname === "select.html") {
         if (!username) {
             window.location.href = "index.html";
@@ -94,16 +87,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const headerUsernameEl = document.getElementById("headerUsername");
         const dropdown = document.getElementById("usernameDropdown");
 
-        headerUsernameEl?.addEventListener("click", () => {
-            dropdown?.classList.toggle("show");
-        });
-
-        document.addEventListener("click", (e) => {
+        headerUsernameEl?.addEventListener("click", () => dropdown?.classList.toggle("show"));
+        document.addEventListener("click", e => {
             if (!headerUsernameEl?.contains(e.target) && !dropdown?.contains(e.target)) {
                 dropdown?.classList.remove("show");
             }
         });
-
         headerUsernameEl && (headerUsernameEl.innerText = username);
 
         document.getElementById("logoutBtn")?.addEventListener("click", () => {
@@ -136,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.getElementById("imageUrl").value = "";
                     loadPosts();
                 } else {
-                    const err = await res.json().catch(()=>null);
+                    const err = await res.json().catch(() => null);
                     alert("Failed to create post." + (err?.error ? " " + err.error : ""));
                 }
             } catch (err) {
@@ -148,16 +137,14 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "my-posts.html";
         });
 
-        document.getElementById("searchBox")?.addEventListener("input", (e) => {
-            loadPosts(e.target.value);
-        });
+        document.getElementById("searchBox")?.addEventListener("input", e => loadPosts(e.target.value));
 
         loadPosts();
     }
 
-    // -----------------------
+    // -------------------------
     // MY POSTS PAGE
-    // -----------------------
+    // -------------------------
     if (pathname === "my-posts.html") {
         if (!username) {
             window.location.href = "index.html";
@@ -171,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const dropdown = document.getElementById("usernameDropdown");
 
         headerUsername?.addEventListener("click", () => dropdown?.classList.toggle("show"));
-        document.addEventListener("click", (e) => {
+        document.addEventListener("click", e => {
             if (!headerUsername?.contains(e.target) && !dropdown?.contains(e.target)) {
                 dropdown?.classList.remove("show");
             }
@@ -206,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.getElementById("editModalBg")?.classList.add("hidden");
                     loadUserPosts(username);
                 } else {
-                    const err = await res.json().catch(()=>null);
+                    const err = await res.json().catch(() => null);
                     alert("Failed to save edit." + (err?.error ? " " + err.error : ""));
                 }
             } catch (err) {
@@ -352,7 +339,7 @@ async function loadUserPosts(username) {
                     const res = await fetch(`${API_BASE}/api/posts/${id}`, { method: "DELETE" });
                     if (res.ok) loadUserPosts(username);
                     else {
-                        const err = await res.json().catch(()=>null);
+                        const err = await res.json().catch(() => null);
                         alert("Failed to delete." + (err?.error ? " " + err.error : ""));
                     }
                 } catch (err) {
