@@ -1,18 +1,22 @@
-const API_BASE = "https://anon-talks.onrender.com";
+import { showPopup, hidePopup } from "./popups.js";
+import { loadPosts, loadUserPosts } from "./posts.js";
+
+export const API_BASE = "https://anon-talks.onrender.com";
 
 export function initAuth() {
-    const loginBtn = document.getElementById("loginBtn");
-    const generateBtn = document.getElementById("generateBtn");
-    const loginConfirm = document.getElementById("loginConfirm");
-    const useIdentity = document.getElementById("useIdentity");
     const loginPopup = document.getElementById("loginPopup");
     const generatePopup = document.getElementById("generatePopup");
+
+    const loginBtn = document.getElementById("loginBtn");
+    const generateBtn = document.getElementById("generateBtn");
     const closeLogin = document.getElementById("closeLogin");
     const closeGenerate = document.getElementById("closeGenerate");
+    const loginConfirm = document.getElementById("loginConfirm");
+    const useIdentity = document.getElementById("useIdentity");
 
     // Login popup
-    loginBtn?.addEventListener("click", () => loginPopup?.classList.remove("hidden"));
-    closeLogin?.addEventListener("click", () => loginPopup?.classList.add("hidden"));
+    loginBtn?.addEventListener("click", () => showPopup(loginPopup));
+    closeLogin?.addEventListener("click", () => hidePopup(loginPopup));
 
     loginConfirm?.addEventListener("click", async () => {
         const u = document.getElementById("loginUser")?.value.trim();
@@ -47,7 +51,7 @@ export function initAuth() {
             document.getElementById("genUser").innerText = data.username || "";
             document.getElementById("genPass").innerText = data.password || "";
 
-            generatePopup?.classList.remove("hidden");
+            showPopup(generatePopup);
 
             useIdentity?.addEventListener("click", () => {
                 if (!data.username || !data.password) return;
@@ -60,5 +64,5 @@ export function initAuth() {
         }
     });
 
-    closeGenerate?.addEventListener("click", () => generatePopup?.classList.add("hidden"));
+    closeGenerate?.addEventListener("click", () => hidePopup(generatePopup));
 }
