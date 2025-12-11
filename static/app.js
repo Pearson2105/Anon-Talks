@@ -219,12 +219,16 @@ async function loadPosts(filter = "") {
         filteredPosts.forEach(post => {
             const card = document.createElement("div");
             card.className = "post-card";
+
             const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}" />` : "";
+
+            // Place date first, then text
             card.innerHTML = `
                 ${imgHtml}
                 <div class="post-meta">${new Date(post.createdAt).toLocaleString()}</div>
                 <div class="post-text">${post.content || ""}</div>
             `;
+
             container.appendChild(card);
         });
     } catch (err) {
@@ -250,7 +254,10 @@ async function loadUserPosts(username) {
         userPosts.forEach(post => {
             const card = document.createElement("div");
             card.className = "post-card";
+
             const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}" />` : "";
+
+            // Place date first, then text
             card.innerHTML = `
                 ${imgHtml}
                 <div class="post-meta">${new Date(post.createdAt).toLocaleString()}</div>
@@ -260,6 +267,7 @@ async function loadUserPosts(username) {
                     <button class="delete-btn" data-id="${post.id}">Delete</button>
                 </div>
             `;
+
             container.appendChild(card);
         });
 
