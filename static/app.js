@@ -6,30 +6,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("anon_username");
 
     // -----------------------
-    // INDEX PAGE
+    // INDEX PAGE BUTTONS
     // -----------------------
-    if (pathname === "index.html" || pathname === "") {
-        const loginPopup = document.getElementById("loginPopup");
-        const generatePopup = document.getElementById("generatePopup");
+    const loginPopup = document.getElementById("loginPopup");
+    const generatePopup = document.getElementById("generatePopup");
+    const loginBtn = document.getElementById("loginBtn");
+    const generateBtn = document.getElementById("generateBtn");
+    const closeLogin = document.getElementById("closeLogin");
+    const closeGenerate = document.getElementById("closeGenerate");
+    const useIdentity = document.getElementById("useIdentity");
+    const loginConfirm = document.getElementById("loginConfirm");
 
-        document.getElementById("loginBtn").onclick = () => loginPopup.style.display = "flex";
-        document.getElementById("generateBtn").onclick = fetchGeneratedIdentity;
-        document.getElementById("closeLogin").onclick = () => loginPopup.style.display = "none";
-        document.getElementById("closeGenerate").onclick = () => generatePopup.style.display = "none";
+    if (loginBtn) loginBtn.onclick = () => loginPopup.style.display = "flex";
+    if (generateBtn) generateBtn.onclick = fetchGeneratedIdentity;
+    if (closeLogin) closeLogin.onclick = () => loginPopup.style.display = "none";
+    if (closeGenerate) closeGenerate.onclick = () => generatePopup.style.display = "none";
 
-        // LOGIN
-        document.getElementById("loginConfirm").onclick = async () => {
-            const u = document.getElementById("loginUser").value.trim();
-            const p = document.getElementById("loginPass").value.trim();
-            if (!u || !p) return;
+    if (loginConfirm) loginConfirm.onclick = async () => {
+        const u = document.getElementById("loginUser").value.trim();
+        const p = document.getElementById("loginPass").value.trim();
+        if (!u || !p) return;
 
+        try {
             const res = await fetch(`${API_BASE}/api/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username: u, password: p })
             });
             const data = await res.json();
-
             if (data.success) {
                 localStorage.setItem("anon_username", u);
                 localStorage.setItem("anon_password", p);
@@ -37,10 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 document.getElementById("loginError").style.display = "block";
             }
-        };
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
-        // GENERATE IDENTITY
-        async function fetchGeneratedIdentity() {
+    async function fetchGeneratedIdentity() {
+        try {
             const res = await fetch(`${API_BASE}/api/generate`, { method: "POST" });
             const data = await res.json();
 
@@ -48,11 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("genPass").innerText = data.password;
             generatePopup.style.display = "flex";
 
-            document.getElementById("useIdentity").onclick = () => {
+            if (useIdentity) useIdentity.onclick = () => {
                 localStorage.setItem("anon_username", data.username);
                 localStorage.setItem("anon_password", data.password);
                 window.location.href = "select.html";
             };
+        } catch (err) {
+            console.error(err);
         }
     }
 
@@ -94,18 +103,21 @@ document.addEventListener("DOMContentLoaded", () => {
             const imageUrl = document.getElementById("imageUrl").value.trim();
             if (!content && !imageUrl) return alert("Post must have content or an image.");
 
-            const res = await fetch(`${API_BASE}/api/posts`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, content, imageUrl })
-            });
-
-            if (res.ok) {
-                document.getElementById("popupOverlay").style.display = "none";
-                document.getElementById("text").value = "";
-                document.getElementById("imageUrl").value = "";
-                loadPosts();
-            } else alert("Failed to create post.");
+            try {
+                const res = await fetch(`${API_BASE}/api/posts`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, content, imageUrl })
+                });
+                if (res.ok) {
+                    document.getElementById("popupOverlay").style.display = "none";
+                    document.getElementById("text").value = "";
+                    document.getElementById("imageUrl").value = "";
+                    loadPosts();
+                } else alert("Failed to create post.");
+            } catch (err) {
+                console.error(err);
+            }
         });
 
         document.getElementById("editPosts")?.addEventListener("click", () => {
@@ -158,16 +170,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const newText = document.getElementById("editText").value.trim();
             const newImage = document.getElementById("editImageUrl").value.trim();
 
-            const res = await fetch(`${API_BASE}/api/posts/${editingPostId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content: newText, imageUrl: newImage })
-            });
-
-            if (res.ok) {
-                document.getElementById("editModalBg").style.display = "none";
-                loadUserPosts(username);
-            } else alert("Failed to save edit.");
+            try {
+                const res = await fetch(`${API_BASE}/api/posts/${editingPostId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: newText, imageUrl: newImage })
+                });
+                if (res.ok) {
+                    document.getElementById("editModalBg").style.display = "none";
+                    loadUserPosts(username);
+                } else alert("Failed to save edit.");
+            } catch (err) {
+                console.error(err);
+            }
         });
     }
 });
@@ -193,7 +208,6 @@ async function loadPosts(filter = "") {
         filteredPosts.forEach(post => {
             const card = document.createElement("div");
             card.className = "post-card";
-
             const imgHtml = post.imageUrl ? `<img src="${post.imageUrl}" />` : "";
 
             card.innerHTML = `
@@ -255,11 +269,16 @@ async function loadUserPosts(username) {
         document.querySelectorAll(".delete-btn").forEach(btn => {
             btn.addEventListener("click", async () => {
                 const id = btn.getAttribute("data-id");
-                const res = await fetch(`${API_BASE}/api/posts/${id}`, { method: "DELETE" });
-                if (res.ok) loadUserPosts(username);
-                else alert("Failed to delete");
+                try {
+                    const res = await fetch(`${API_BASE}/api/posts/${id}`, { method: "DELETE" });
+                    if (res.ok) loadUserPosts(username);
+                    else alert("Failed to delete");
+                } catch (err) {
+                    console.error(err);
+                }
             });
         });
+
     } catch (err) {
         console.error(err);
     }
