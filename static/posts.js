@@ -1,69 +1,36 @@
 import { API_BASE } from "./auth.js";
 
 export function initPosts() {
-    const postsContainer = document.getElementById("postsContainer");
-    const createBtn = document.getElementById("createBtn");
-    const popup = document.getElementById("popupOverlay");
-    const closePopup = document.getElementById("closePopup");
-    const submitPost = document.getElementById("submitPost");
-    const searchBox = document.getElementById("searchBox");
-    const username = localStorage.getItem("anon_username");
+    const username = localStorage.getItem("anon_username") || "Anonymous";
+    const headerUsername = document.getElementById("headerUsername");
+    const dropdown = document.getElementById("usernameDropdown");
 
-    async function loadPosts(filter="") {
-        try {
-            const res = await fetch(`${API_BASE}/api/posts`);
-            if (!res.ok) return;
-            const posts = await res.json();
+    if (headerUsername) headerUsername.textContent = username;
 
-            postsContainer.innerHTML = "";
-            const filtered = (posts || []).filter(p => {
-                const text = (p.content || "").toLowerCase();
-                const user = (p.username || "").toLowerCase();
-                const f = filter.toLowerCase();
-                return text.includes(f) || user.includes(f);
-            });
+    headerUsername?.addEventListener("click", () => dropdown?.classList.toggle("show"));
+    document.addEventListener("click", e => {
+        if (!headerUsername?.contains(e.target) && !dropdown?.contains(e.target)) {
+            dropdown?.classList.remove("show");
+        }
+    });
 
-            if (filtered.length === 0) {
-                postsContainer.innerHTML = `<p style="text-align:center;margin-top:40px;">No posts found.</p>`;
-                return;
-            }
+    document.getElementById("logoutBtn")?.addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+    });
 
-            filtered.forEach(post => {
-                const card = document.createElement("div");
-                card.className = "post-card";
+    document.getElementById("editPosts")?.addEventListener("click", () => {
+        window.location.href = "my-posts.html";
+    });
 
-                if (post.imageUrl) {
-                    const img = document.createElement("img");
-                    img.src = post.imageUrl;
-                    img.alt = "post image";
-                    card.appendChild(img);
-                }
-
-                const meta = document.createElement("div");
-                meta.className = "post-meta";
-                meta.textContent = `${post.username} — ${new Date(post.createdAt).toLocaleString()}`;
-                card.appendChild(meta);
-
-                const text = document.createElement("div");
-                text.className = "post-text";
-                text.textContent = post.content;
-                card.appendChild(text);
-
-                postsContainer.appendChild(card);
-            });
-        } catch (err) { console.error(err); }
-    }
-
-    loadPosts();
-    searchBox?.addEventListener("input", e => loadPosts(e.target.value));
-
-    createBtn?.addEventListener("click", () => popup.classList.remove("hidden"));
-    closePopup?.addEventListener("click", () => popup.classList.add("hidden"));
-
-    submitPost?.addEventListener("click", async () => {
-        const content = document.getElementById("text").value.trim();
-        const imageUrl = document.getElementById("imageUrl").value.trim();
-        if (!content && !imageUrl) return alert("Post must have text or image.");
+    // CREATE POST POPUP
+    const popupOverlay = document.getElementById("popupOverlay");
+    document.getElementById("createBtn")?.addEventListener("click", () => popupOverlay?.classList.remove("hidden"));
+    document.getElementById("closePopup")?.addEventListener("click", () => popupOverlay?.classList.add("hidden"));
+    document.getElementById("submitPost")?.addEventListener("click", async () => {
+        const content = document.getElementById("text")?.value.trim();
+        const imageUrl = document.getElementById("imageUrl")?.value.trim();
+        if (!content && !imageUrl) return alert("Post must have content or image.");
 
         try {
             const res = await fetch(`${API_BASE}/api/posts`, {
@@ -71,16 +38,65 @@ export function initPosts() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, content, imageUrl })
             });
-
             if (res.ok) {
-                popup.classList.add("hidden");
                 document.getElementById("text").value = "";
                 document.getElementById("imageUrl").value = "";
+                popupOverlay?.classList.add("hidden");
                 loadPosts();
-            } else {
-                const err = await res.json().catch(()=>null);
-                alert("Failed to create post." + (err?.error ? " " + err.error : ""));
-            }
+            } else alert("Failed to create post.");
         } catch (err) { console.error(err); }
     });
+
+    document.getElementById("searchBox")?.addEventListener("input", e => loadPosts(e.target.value));
+
+    // Initial posts load
+    loadPosts();
+}
+
+export async function loadPosts(filter = "") {
+    try {
+        const res = await fetch(`${API_BASE}/api/posts`);
+        if (!res.ok) return;
+        const posts = await res.json();
+        const container = document.getElementById("postsContainer");
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        const filtered = (posts || []).filter(p => {
+            const content = (p.content || "").toString().toLowerCase();
+            const user = (p.username || "").toLowerCase();
+            return content.includes(filter.toLowerCase()) || user.includes(filter.toLowerCase());
+        });
+
+        if (!filtered.length) {
+            container.innerHTML = `<p style="text-align:center;margin-top:40px;">No posts found.</p>`;
+            return;
+        }
+
+        filtered.forEach(post => {
+            const card = document.createElement("div");
+            card.className = "post-card";
+
+            if (post.imageUrl) {
+                const img = document.createElement("img");
+                img.src = post.imageUrl;
+                img.alt = "post image";
+                card.appendChild(img);
+            }
+
+            const textDiv = document.createElement("div");
+            textDiv.className = "post-text";
+            textDiv.textContent = post.content || "";
+            card.appendChild(textDiv);
+
+            const metaDiv = document.createElement("div");
+            metaDiv.className = "post-meta";
+            metaDiv.textContent = `${post.username || ""} — ${new Date(post.createdAt || post.created_at).toLocaleString()}`;
+            card.appendChild(metaDiv);
+
+            container.appendChild(card);
+        });
+
+    } catch (err) { console.error(err); }
 }
