@@ -1,67 +1,73 @@
 import { API_BASE } from "./auth.js";
 
 export function initPosts() {
-    console.log("initPosts running");
-
-    const isSelectPage = window.location.pathname.includes("select.html");
-
-    if (!isSelectPage) {
-        console.log("Not on select.html — skipping feed setup");
-        return;
-    }
-
     const username = localStorage.getItem("anon_username");
-    const password = localStorage.getItem("anon_password");
 
-    if (!username || !password) {
-        window.location.href = "index.html";
-        return;
+    // Top-right buttons
+    const createBtn = document.getElementById("createBtn");
+    const popupOverlay = document.getElementById("popupOverlay");
+    const closePopup = document.getElementById("closePopup");
+    const submitPost = document.getElementById("submitPost");
+    const searchBox = document.getElementById("searchBox");
+
+    // Dropdown
+    const headerUsernameEl = document.getElementById("headerUsername");
+    const dropdown = document.getElementById("usernameDropdown");
+    if (headerUsernameEl) headerUsernameEl.textContent = username;
+    if (headerUsernameEl && dropdown) {
+        headerUsernameEl.addEventListener("click", () => {
+            dropdown.classList.toggle("show");
+        });
+        document.addEventListener("click", e => {
+            if (!headerUsernameEl.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove("show");
+            }
+        });
     }
 
-    // Set username in top-left
-    const headerUser = document.getElementById("headerUsername");
-    if (headerUser) headerUser.textContent = username;
-
-    setupDropdown();
-    setupCreatePost();
-    setupSearch();
-
-    loadAllPosts();
-}
-
-/* --------------------------------------
-   DROPDOWN MENU
---------------------------------------- */
-function setupDropdown() {
-    const wrap = document.getElementById("headerWrap");
-    const menu = document.getElementById("usernameDropdown");
+    // Dropdown actions
     const logoutBtn = document.getElementById("logoutBtn");
     const editPostsBtn = document.getElementById("editPosts");
-
-    if (!wrap || !menu) return;
-
-    wrap.addEventListener("click", () => {
-        menu.classList.toggle("show");
+    logoutBtn?.addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+    });
+    editPostsBtn?.addEventListener("click", () => {
+        window.location.href = "my-posts.html";
     });
 
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-            localStorage.clear();
-            window.location.href = "index.html";
-        });
-    }
+    // Create post popup
+    createBtn?.addEventListener("click", () => popupOverlay?.classList.remove("hidden"));
+    closePopup?.addEventListener("click", () => popupOverlay?.classList.add("hidden"));
 
-    if (editPostsBtn) {
-        editPostsBtn.addEventListener("click", () => {
-            window.location.href = "my-posts.html";
-        });
-    }
+    submitPost?.addEventListener("click", async () => {
+        const content = document.getElementById("text")?.value.trim();
+        const imageUrl = document.getElementById("imageUrl")?.value.trim();
+        if (!content && !imageUrl) return alert("Post must have content or an image.");
+
+        try {
+            await fetch(`${API_BASE}/api/posts`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, content, imageUrl })
+            });
+            document.getElementById("text").value = "";
+            document.getElementById("imageUrl").value = "";
+            popupOverlay?.classList.add("hidden");
+            loadPosts();
+        } catch (err) {
+            console.error(err);
+        }
+    });
+
+    // Search
+    searchBox?.addEventListener("input", e => loadPosts(e.target.value));
+
+    loadPosts();
 }
 
-/* --------------------------------------
-   LOAD ALL POSTS
---------------------------------------- */
-async function loadAllPosts() {
+// Load posts (all users)
+async function loadPosts(filter = "") {
     const container = document.getElementById("postsContainer");
     if (!container) return;
 
@@ -69,101 +75,40 @@ async function loadAllPosts() {
         const res = await fetch(`${API_BASE}/api/posts`);
         const posts = await res.json();
 
-        window._ALL_POSTS = posts; // for filtering
-        renderPosts(posts);
-
-    } catch (err) {
-        console.error("Failed to load posts", err);
-        container.innerHTML = "<p>Error loading posts.</p>";
-    }
-}
-
-function renderPosts(posts) {
-    const container = document.getElementById("postsContainer");
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    if (!posts.length) {
-        container.innerHTML = "<p>No posts available.</p>";
-        return;
-    }
-
-    posts.forEach(p => {
-        const card = document.createElement("div");
-        card.className = "post-card";
-
-        const img = p.imageUrl || "https://via.placeholder.com/180x140";
-
-        card.innerHTML = `
-            <img src="${img}">
-            <div class="post-text">
-                <div class="post-meta">@${p.username} • ${new Date(p.createdAt).toLocaleString()}</div>
-                <div>${p.content}</div>
-            </div>
-        `;
-
-        container.appendChild(card);
-    });
-}
-
-/* --------------------------------------
-   SEARCH FILTER
---------------------------------------- */
-function setupSearch() {
-    const box = document.getElementById("searchBox");
-    if (!box) return;
-
-    box.addEventListener("input", () => {
-        const term = box.value.toLowerCase();
-        const posts = window._ALL_POSTS || [];
-
-        const filtered = posts.filter(p =>
-            p.content.toLowerCase().includes(term) ||
-            p.username.toLowerCase().includes(term)
+        // Filter
+        let filtered = posts.filter(p =>
+            (p.content || "").toLowerCase().includes(filter.toLowerCase()) ||
+            (p.username || "").toLowerCase().includes(filter.toLowerCase())
         );
 
-        renderPosts(filtered);
-    });
-}
+        // Sort newest first
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-/* --------------------------------------
-   CREATE POST POPUP
---------------------------------------- */
-function setupCreatePost() {
-    const btn = document.getElementById("createBtn");
-    const overlay = document.getElementById("popupOverlay");
-    const closeBtn = document.getElementById("closePopup");
-    const submitBtn = document.getElementById("submitPost");
+        container.innerHTML = filtered.length
+            ? ""
+            : `<p style="text-align:center;margin-top:40px;">No posts found.</p>`;
 
-    if (!btn || !overlay) return;
+        filtered.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "post-card";
 
-    btn.addEventListener("click", () => overlay.classList.remove("hidden"));
-    if (closeBtn) closeBtn.addEventListener("click", () => overlay.classList.add("hidden"));
-
-    if (submitBtn) {
-        submitBtn.addEventListener("click", async () => {
-            const content = document.getElementById("text").value.trim();
-            const imageUrl = document.getElementById("imageUrl").value.trim();
-
-            const username = localStorage.getItem("anon_username");
-            const password = localStorage.getItem("anon_password");
-
-            if (!content) return;
-
-            try {
-                await fetch(`${API_BASE}/api/posts`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, password, content, imageUrl })
-                });
-
-                overlay.classList.add("hidden");
-                loadAllPosts();
-
-            } catch (err) {
-                console.error("Post failed", err);
+            if (p.imageUrl) {
+                const img = document.createElement("img");
+                img.src = p.imageUrl;
+                img.alt = "post image";
+                card.appendChild(img);
             }
+
+            const text = document.createElement("div");
+            text.className = "post-text";
+            const date = p.createdAt ? new Date(p.createdAt).toLocaleString() : "";
+            text.innerHTML = `<div class="post-meta">@${p.username} • ${date}</div>${p.content || ""}`;
+            card.appendChild(text);
+
+            container.appendChild(card);
         });
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = "<p>Error loading posts.</p>";
     }
 }
