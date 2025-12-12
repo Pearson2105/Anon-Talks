@@ -1,5 +1,6 @@
 import { API_BASE } from "./auth.js";
 
+// Load only the logged-in user's posts
 document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("anon_username");
     if (!username) {
@@ -13,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadMyPosts(username);
 });
 
+// Show dropdown menu for username
 function setupDropdown() {
     const wrap = document.getElementById("headerWrap");
     const menu = document.getElementById("usernameDropdown");
@@ -29,6 +31,8 @@ function setupDropdown() {
     });
 }
 
+
+// Fetch posts from server and filter only user's
 async function loadMyPosts(username) {
     const container = document.getElementById("postsContainer");
 
@@ -89,7 +93,7 @@ async function loadMyPosts(username) {
     }
 }
 
-// ---------------- EDIT POPUP ----------------
+// Edit popup logic
 function showEditPopup(post, username) {
     const editModal = document.getElementById("editModalBg");
     const editText = document.getElementById("editText");
@@ -128,7 +132,7 @@ function showEditPopup(post, username) {
     cancelBtn.addEventListener("click", cancelHandler);
 }
 
-// ---------------- DELETE POPUP ----------------
+// Delete popup logic
 function showDeletePopup(post, username) {
     const deleteModal = document.getElementById("deleteModalBg");
     const confirmBtn = document.getElementById("confirmDelete");
