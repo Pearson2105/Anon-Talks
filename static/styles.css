@@ -173,19 +173,18 @@ header {
     margin-bottom: 8px;
 }
 
-/* POST ACTION BUTTONS */
+/* POST ACTION BUTTONS - REVERTED BELOW CONTENT */
 .post-actions {
     display: flex;
-    gap: 5px;
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
+    gap: 10px;
+    margin-top: 10px; /* added space below content */
+    position: static;  /* revert from absolute positioning */
 }
 
 .post-actions .edit-btn,
 .post-actions .delete-btn {
-    padding: 5px 8px;
-    font-size: 12px;
+    padding: 5px 10px;
+    font-size: 14px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
