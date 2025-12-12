@@ -3,20 +3,19 @@ import { API_BASE } from "./auth.js";
 document.addEventListener("DOMContentLoaded", () => {
     console.log("my-posts loaded");
 
-    const user = localStorage.getItem("anon_username");
-    const pw = localStorage.getItem("anon_password");
+    const username = localStorage.getItem("anon_username");
+    const password = localStorage.getItem("anon_password");
 
-    // If not logged in → back to index
-    if (!user || !pw) {
+    // If user not logged in
+    if (!username || !password) {
         window.location.href = "index.html";
         return;
     }
 
-    // Set header username
-    const header = document.getElementById("headerUsername");
-    if (header) header.textContent = user;
+    // Set username in header
+    document.getElementById("headerUsername").textContent = username;
 
-    // Dropdown toggle
+    // ---- DROPDOWN ----
     const headerWrap = document.getElementById("headerWrap");
     const dropdown = document.getElementById("usernameDropdown");
 
@@ -24,35 +23,35 @@ document.addEventListener("DOMContentLoaded", () => {
         dropdown.classList.toggle("show");
     });
 
-    // HOME BUTTON → go back to select.html
-    const homeBtn = document.getElementById("homeBtn");
-    if (homeBtn) {
-        homeBtn.addEventListener("click", () => {
-            window.location.href = "select.html";
-        });
-    }
+    // HOME BUTTON
+    document.getElementById("homeBtn").addEventListener("click", () => {
+        window.location.href = "select.html";
+    });
 
-    // LOG OUT BUTTON
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-            localStorage.clear();
-            window.location.href = "index.html";
-        });
-    }
+    // LOGOUT BUTTON
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+    });
 
-    // Load ONLY user's own posts
-    loadMyPosts(user);
+    // Load posts
+    loadMyPosts(username);
 });
 
+
+// -------------------------------------------
+// LOAD ONLY USER'S POSTS
+// -------------------------------------------
 async function loadMyPosts(username) {
     const postsContainer = document.getElementById("postsContainer");
 
     try {
         const res = await fetch(`${API_BASE}/api/posts`);
-        const posts = await res.json();
+        const allPosts = await res.json();
 
-        const mine = posts.filter(p => p.username === username);
+        console.log("Loaded posts:", allPosts);
+
+        const mine = allPosts.filter(p => p.username === username);
 
         postsContainer.innerHTML = "";
 
@@ -65,18 +64,23 @@ async function loadMyPosts(username) {
             const card = document.createElement("div");
             card.className = "post-card";
 
+            const img = post.imageUrl && post.imageUrl !== "" 
+                ? post.imageUrl 
+                : "https://via.placeholder.com/180x140?text=No+Image";
+
             card.innerHTML = `
-                <img src="${post.image || "https://via.placeholder.com/150"}" />
+                <img src="${img}">
                 <div class="post-text">
-                    <div class="post-meta">@${post.username}</div>
-                    <div>${post.text}</div>
+                    <div class="post-meta">@${post.username} • ${new Date(post.createdAt).toLocaleString()}</div>
+                    <div>${post.content}</div>
                 </div>
             `;
 
             postsContainer.appendChild(card);
         });
 
-    } catch (e) {
-        console.error("Failed to load posts", e);
+    } catch (err) {
+        console.error("Failed to load posts", err);
+        postsContainer.innerHTML = "<p>Error loading posts.</p>";
     }
 }
