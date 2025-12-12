@@ -1,157 +1,131 @@
 import { API_BASE } from "./auth.js";
 
-export function initPosts() {
+// Run only on select.html
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("select.js loaded");
+
     const username = localStorage.getItem("anon_username");
+    const password = localStorage.getItem("anon_password");
 
-    // Set header username in select.html
-    const headerUsername = document.getElementById("headerUsername");
-    if (headerUsername) headerUsername.innerText = username || "Anonymous";
+    if (!username || !password) {
+        window.location.href = "index.html";
+        return;
+    }
 
-    // Dropdown
-    const dropdown = document.getElementById("usernameDropdown");
-    headerUsername?.addEventListener("click", () => dropdown?.classList.toggle("show"));
-    document.addEventListener("click", (e) => {
-        if (!headerUsername?.contains(e.target) && !dropdown?.contains(e.target)) {
-            dropdown?.classList.remove("show");
-        }
+    document.getElementById("headerUsername").textContent = username;
+
+    setupDropdown();
+    loadPosts();
+    setupCreatePost(username);
+    setupSearch();
+});
+
+
+// ----------------------
+// DROPDOWN
+// ----------------------
+function setupDropdown() {
+    const wrap = document.getElementById("headerWrap");
+    const menu = document.getElementById("usernameDropdown");
+
+    wrap.addEventListener("click", () => {
+        menu.classList.toggle("show");
     });
 
-    // Dropdown actions
-    document.getElementById("logoutBtn")?.addEventListener("click", () => {
+    document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.clear();
         window.location.href = "index.html";
     });
-    document.getElementById("editPosts")?.addEventListener("click", () => {
+
+    document.getElementById("editPosts").addEventListener("click", () => {
         window.location.href = "my-posts.html";
     });
+}
 
-    // Create post
-    const createBtn = document.getElementById("createBtn");
-    const popupOverlay = document.getElementById("popupOverlay");
-    const closePopup = document.getElementById("closePopup");
-    const submitPost = document.getElementById("submitPost");
 
-    createBtn?.addEventListener("click", () => popupOverlay?.classList.remove("hidden"));
-    closePopup?.addEventListener("click", () => popupOverlay?.classList.add("hidden"));
+// ----------------------
+// LOAD ALL POSTS
+// ----------------------
+async function loadPosts() {
+    const container = document.getElementById("postsContainer");
 
-    submitPost?.addEventListener("click", async () => {
-        const content = document.getElementById("text")?.value.trim();
-        const imageUrl = document.getElementById("imageUrl")?.value.trim();
-        if (!content && !imageUrl) return alert("Post must have content or an image.");
+    try {
+        const res = await fetch(`${API_BASE}/api/posts`);
+        const posts = await res.json();
 
-        try {
-            const res = await fetch(`${API_BASE}/api/posts`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, content, imageUrl })
-            });
-            if (res.ok) {
-                document.getElementById("text").value = "";
-                document.getElementById("imageUrl").value = "";
-                popupOverlay?.classList.add("hidden");
-                loadPosts();
-            }
-        } catch (err) { console.error(err); }
+        container.innerHTML = "";
+
+        posts.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "post-card";
+
+            const img = p.imageUrl ? p.imageUrl : "https://via.placeholder.com/180x140";
+
+            card.innerHTML = `
+                <img src="${img}">
+                <div class="post-text">
+                    <div class="post-meta">@${p.username} • ${new Date(p.createdAt).toLocaleString()}</div>
+                    <div>${p.content}</div>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error("Failed loading posts", err);
+        container.innerHTML = "<p>Error loading posts.</p>";
+    }
+}
+
+
+// ----------------------
+// CREATE POST
+// ----------------------
+function setupCreatePost(username) {
+    const openBtn = document.getElementById("createBtn");
+    const closeBtn = document.getElementById("closePopup");
+    const popup = document.getElementById("popupOverlay");
+    const submit = document.getElementById("submitPost");
+
+    openBtn.addEventListener("click", () => popup.classList.remove("hidden"));
+    closeBtn.addEventListener("click", () => popup.classList.add("hidden"));
+
+    submit.addEventListener("click", async () => {
+        const text = document.getElementById("text").value.trim();
+        const imageUrl = document.getElementById("imageUrl").value.trim();
+
+        if (!text) return;
+
+        await fetch(`${API_BASE}/api/posts`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username,
+                content: text,
+                imageUrl
+            })
+        });
+
+        popup.classList.add("hidden");
+        loadPosts();
     });
-
-    const searchBox = document.getElementById("searchBox");
-    searchBox?.addEventListener("input", (e) => loadPosts(e.target.value));
-
-    // Load posts
-    if (window.location.pathname.endsWith("select.html")) loadPosts();
-    if (window.location.pathname.endsWith("my-posts.html")) loadUserPosts(username);
 }
 
-// Load all posts for select.html
-export async function loadPosts(filter = "") {
-    try {
-        const res = await fetch(`${API_BASE}/api/posts`);
-        if (!res.ok) return;
-        const posts = await res.json();
-        const container = document.getElementById("postsContainer");
-        if (!container) return;
 
-        container.innerHTML = "";
+// ----------------------
+// SEARCH FILTER
+// ----------------------
+function setupSearch() {
+    const box = document.getElementById("searchBox");
 
-        const filtered = (posts || []).filter(p => {
-            return (p.content || "").toLowerCase().includes(filter.toLowerCase()) ||
-                   (p.username || "").toLowerCase().includes(filter.toLowerCase());
+    box.addEventListener("input", () => {
+        const value = box.value.toLowerCase();
+        const cards = document.querySelectorAll(".post-card");
+
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(value) ? "flex" : "none";
         });
-
-        if (!filtered.length) {
-            container.innerHTML = `<p style="text-align:center;margin-top:40px;">No posts found.</p>`;
-            return;
-        }
-
-        filtered.forEach(post => {
-            const card = document.createElement("div");
-            card.className = "post-card";
-
-            if (post.imageUrl) {
-                const img = document.createElement("img");
-                img.src = post.imageUrl;
-                img.alt = "post image";
-                card.appendChild(img);
-            }
-
-            const meta = document.createElement("div");
-            meta.className = "post-meta";
-            meta.textContent = `${post.username} — ${new Date(post.createdAt).toLocaleString()}`;
-            card.appendChild(meta);
-
-            const text = document.createElement("div");
-            text.className = "post-text";
-            text.textContent = post.content || "";
-            card.appendChild(text);
-
-            container.appendChild(card);
-        });
-
-    } catch (err) { console.error(err); }
-}
-
-// Load only user's posts for my-posts.html
-export async function loadUserPosts(username, filter = "") {
-    try {
-        const res = await fetch(`${API_BASE}/api/posts`);
-        if (!res.ok) return;
-        const posts = await res.json();
-        const container = document.getElementById("postsContainer");
-        if (!container) return;
-
-        container.innerHTML = "";
-
-        const userPosts = (posts || []).filter(p => p.username === username && 
-            ((p.content || "").toLowerCase().includes(filter.toLowerCase()))
-        );
-
-        if (!userPosts.length) {
-            container.innerHTML = `<p style="text-align:center;margin-top:40px;">You haven't created any posts yet.</p>`;
-            return;
-        }
-
-        userPosts.forEach(post => {
-            const card = document.createElement("div");
-            card.className = "post-card";
-
-            if (post.imageUrl) {
-                const img = document.createElement("img");
-                img.src = post.imageUrl;
-                img.alt = "post image";
-                card.appendChild(img);
-            }
-
-            const meta = document.createElement("div");
-            meta.className = "post-meta";
-            meta.textContent = `${post.username} — ${new Date(post.createdAt).toLocaleString()}`;
-            card.appendChild(meta);
-
-            const text = document.createElement("div");
-            text.className = "post-text";
-            text.textContent = post.content || "";
-            card.appendChild(text);
-
-            container.appendChild(card);
-        });
-    } catch (err) { console.error(err); }
+    });
 }
