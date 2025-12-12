@@ -1,4 +1,3 @@
-# backend/app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import random
@@ -38,9 +37,6 @@ def handle_posts():
 
     data = request.get_json()
 
-    # -------------------
-    # CREATE POST
-    # -------------------
     if request.method == "POST":
         post = {
             "id": len(posts) + 1,
@@ -52,9 +48,6 @@ def handle_posts():
         posts.append(post)
         return jsonify({"success": True, "post": post})
 
-    # -------------------
-    # EDIT POST
-    # -------------------
     if request.method == "PATCH":
         post_id = data.get("id")
         for p in posts:
@@ -64,10 +57,10 @@ def handle_posts():
                 return jsonify({"success": True, "post": p})
         return jsonify({"success": False, "error": "Post not found"}), 404
 
-    # -------------------
-    # DELETE POST
-    # -------------------
     if request.method == "DELETE":
         post_id = data.get("id")
         posts = [p for p in posts if p["id"] != post_id]
         return jsonify({"success": True})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
