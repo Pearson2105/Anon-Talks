@@ -1,32 +1,48 @@
-import { API_BASE } from "./auth.js";
-
 export function initPosts() {
     const username = localStorage.getItem("anon_username") || "Anonymous";
-    document.getElementById("headerUsername").textContent = username;
 
-    setupDropdown();
-    loadPosts();
-    setupCreatePopup();
-    setupSearch();
+    const headerUsernameEl = document.getElementById("headerUsername");
+    if (headerUsernameEl) {
+        headerUsernameEl.textContent = username;
+    }
 
+    const headerWrapEl = document.getElementById("headerWrap");
+    if (headerWrapEl) {
+        setupDropdown();
+    }
+
+    const postsContainer = document.getElementById("postsContainer");
+    if (postsContainer) {
+        loadPosts();
+        setupCreatePopup();
+        setupSearch();
+    }
+
+    // ----------------------
     function setupDropdown() {
         const wrap = document.getElementById("headerWrap");
         const menu = document.getElementById("usernameDropdown");
+        if (!wrap || !menu) return;
 
         wrap.addEventListener("click", () => menu.classList.toggle("show"));
 
-        document.getElementById("logoutBtn").addEventListener("click", () => {
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) logoutBtn.addEventListener("click", () => {
             localStorage.clear();
             window.location.href = "index.html";
         });
 
-        document.getElementById("editPosts").addEventListener("click", () => {
+        const editPostsBtn = document.getElementById("editPosts");
+        if (editPostsBtn) editPostsBtn.addEventListener("click", () => {
             window.location.href = "my-posts.html";
         });
     }
 
+    // ----------------------
     async function loadPosts(filter="") {
         const container = document.getElementById("postsContainer");
+        if (!container) return;
+
         try {
             const res = await fetch(`${API_BASE}/api/posts`);
             const posts = (await res.json()).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
@@ -53,18 +69,22 @@ export function initPosts() {
         }
     }
 
+    // ----------------------
     function setupCreatePopup() {
         const popup = document.getElementById("popupOverlay");
         const createBtn = document.getElementById("createBtn");
         const closeBtn = document.getElementById("closePopup");
         const submitBtn = document.getElementById("submitPost");
+        if (!popup || !createBtn || !closeBtn || !submitBtn) return;
 
         createBtn.addEventListener("click", ()=>popup.classList.remove("hidden"));
         closeBtn.addEventListener("click", ()=>popup.classList.add("hidden"));
 
         submitBtn.addEventListener("click", async ()=>{
-            const text = document.getElementById("text").value;
-            const imageUrl = document.getElementById("imageUrl").value;
+            const textEl = document.getElementById("text");
+            const imageEl = document.getElementById("imageUrl");
+            const text = textEl ? textEl.value : "";
+            const imageUrl = imageEl ? imageEl.value : "";
             const username = localStorage.getItem("anon_username") || "Anonymous";
 
             if(!text) return alert("Post text required");
@@ -77,8 +97,8 @@ export function initPosts() {
                     body: JSON.stringify(post)
                 });
                 popup.classList.add("hidden");
-                document.getElementById("text").value="";
-                document.getElementById("imageUrl").value="";
+                if (textEl) textEl.value="";
+                if (imageEl) imageEl.value="";
                 loadPosts();
             }catch(e){
                 console.error(e);
@@ -86,8 +106,10 @@ export function initPosts() {
         });
     }
 
+    // ----------------------
     function setupSearch(){
         const search = document.getElementById("searchBox");
+        if (!search) return;
         search.addEventListener("input", e=>{
             loadPosts(e.target.value.toLowerCase());
         });
