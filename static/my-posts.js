@@ -1,7 +1,7 @@
 import { API_BASE } from "./auth.js";
 
-export function initMyPosts() {
-    console.log("initMyPosts running");
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("my-posts loaded");
 
     const username = localStorage.getItem("anon_username");
     const password = localStorage.getItem("anon_password");
@@ -11,16 +11,17 @@ export function initMyPosts() {
         return;
     }
 
-    const headerUser = document.getElementById("headerUsername");
-    if (headerUser) headerUser.textContent = username;
+    // Set top-left username
+    const u = document.getElementById("headerUsername");
+    if (u) u.textContent = username;
 
     setupDropdown();
     loadMyPosts(username);
-}
+});
 
-/* --------------------------------------
-   DROPDOWN MENU
---------------------------------------- */
+/* --------------------------
+   DROPDOWN
+--------------------------- */
 function setupDropdown() {
     const wrap = document.getElementById("headerWrap");
     const menu = document.getElementById("usernameDropdown");
@@ -32,13 +33,14 @@ function setupDropdown() {
     });
 
     const homeBtn = document.getElementById("homeBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
     if (homeBtn) {
         homeBtn.addEventListener("click", () => {
             window.location.href = "select.html";
         });
     }
 
-    const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
             localStorage.clear();
@@ -47,9 +49,9 @@ function setupDropdown() {
     }
 }
 
-/* --------------------------------------
-   LOAD ONLY USER'S POSTS
---------------------------------------- */
+/* --------------------------
+   LOAD USER’S POSTS
+--------------------------- */
 async function loadMyPosts(username) {
     const container = document.getElementById("postsContainer");
     if (!container) return;
