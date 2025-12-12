@@ -1,17 +1,10 @@
-// static/my-posts.js
 import { API_BASE } from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const username = localStorage.getItem("anon_username");
-    if (!username) {
-        window.location.href = "index.html";
-        return;
-    }
+    if (!username) return window.location.href = "index.html";
 
-    // Show username
-    const headerUsernameEl = document.getElementById("headerUsername");
-    if (headerUsernameEl) headerUsernameEl.textContent = username;
-
+    document.getElementById("headerUsername").textContent = username;
     setupDropdown();
     loadMyPosts(username);
 });
@@ -19,13 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
 function setupDropdown() {
     const wrap = document.getElementById("headerWrap");
     const menu = document.getElementById("usernameDropdown");
-
     wrap.addEventListener("click", () => menu.classList.toggle("show"));
 
-    document.getElementById("homeBtn").addEventListener("click", () => {
-        window.location.href = "select.html";
-    });
-
+    document.getElementById("homeBtn").addEventListener("click", () => window.location.href = "select.html");
     document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.clear();
         window.location.href = "index.html";
@@ -34,18 +23,15 @@ function setupDropdown() {
 
 async function loadMyPosts(username) {
     const container = document.getElementById("postsContainer");
-
     try {
         const res = await fetch(`${API_BASE}/api/posts`);
-        const posts = await res.json();
-
-        // Only user’s posts, newest first
-        const mine = posts.filter(p => p.username === username)
-                          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const posts = (await res.json())
+                        .filter(p => p.username === username)
+                        .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         container.innerHTML = "";
 
-        if (mine.length === 0) {
+        if (posts.length === 0) {
             container.innerHTML = `
                 <div class="no-posts-box">
                     <p>No posts yet.</p>
@@ -53,22 +39,19 @@ async function loadMyPosts(username) {
                     <button class="big-btn purple" id="goCreate">Create Post</button>
                 </div>
             `;
-            document.getElementById("goCreate").addEventListener("click", () => {
-                window.location.href = "select.html";
-            });
+            document.getElementById("goCreate").addEventListener("click", () => window.location.href="select.html");
             return;
         }
 
-        mine.forEach(p => {
+        posts.forEach(p => {
             const card = document.createElement("div");
             card.className = "post-card";
-
             const img = p.imageUrl || "https://via.placeholder.com/180x140";
 
             card.innerHTML = `
                 <img src="${img}">
                 <div class="post-text">
-                    <div class="post-meta">@${p.username} • ${new Date(p.createdAt).toLocaleString()}</div>
+                    <div class="post-meta">@${p.username} • ${p.createdAt}</div>
                     <div>${p.content}</div>
                 </div>
                 <div class="post-actions">
@@ -76,42 +59,36 @@ async function loadMyPosts(username) {
                     <button class="delete-btn">Delete</button>
                 </div>
             `;
-
             container.appendChild(card);
 
-            const editBtn = card.querySelector(".edit-btn");
-            const deleteBtn = card.querySelector(".delete-btn");
-
-            // ----------------------
-            // EDIT POST
-            // ----------------------
-            editBtn.addEventListener("click", () => {
+            // EDIT
+            card.querySelector(".edit-btn").addEventListener("click", async () => {
                 const newText = prompt("Edit post text:", p.content);
                 if (newText !== null) {
-                    p.content = newText;
-                    fetch(`${API_BASE}/api/posts`, {
-                        method: "POST",  // backend needs PATCH ideally
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(p)
-                    }).then(() => loadMyPosts(username));
+                    await fetch(`${API_BASE}/api/posts`, {
+                        method: "PATCH",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({id: p.id, content: newText, imageUrl: p.imageUrl})
+                    });
+                    loadMyPosts(username);
                 }
             });
 
-            // ----------------------
-            // DELETE POST
-            // ----------------------
-            deleteBtn.addEventListener("click", () => {
+            // DELETE
+            card.querySelector(".delete-btn").addEventListener("click", async () => {
                 if (confirm("Delete this post?")) {
-                    fetch(`${API_BASE}/api/posts`, {
-                        method: "DELETE",  // backend needs DELETE endpoint
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ id: p.id })
-                    }).then(() => loadMyPosts(username));
+                    await fetch(`${API_BASE}/api/posts`, {
+                        method: "DELETE",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({id: p.id})
+                    });
+                    loadMyPosts(username);
                 }
             });
         });
-    } catch (err) {
-        console.error(err);
+
+    } catch(e) {
+        console.error(e);
         container.innerHTML = "<p>Error loading posts.</p>";
     }
 }
