@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import random
 import string
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)  # allow frontend JS to call API
@@ -34,12 +35,15 @@ def login():
 def handle_posts():
     if request.method == "POST":
         data = request.get_json()
+        now = datetime.utcnow()  # current UTC time
+        timestamp = now.strftime("%d/%m/%Y %H:%M:%S")  # dd/mm/yyyy hh:mm:ss format
+
         posts.append({
-            "id": len(posts)+1,
+            "id": len(posts) + 1,
             "username": data.get("username"),
             "content": data.get("content"),
             "imageUrl": data.get("imageUrl"),
-            "createdAt": "2025-12-11T00:00:00"
+            "createdAt": timestamp
         })
         return jsonify({"success": True})
     return jsonify(posts)
