@@ -153,6 +153,7 @@ header {
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     align-items: flex-start;
+    position: relative;
 }
 
 .post img, .post-card img {
@@ -170,6 +171,32 @@ header {
 .meta, .post-meta {
     color: gray;
     margin-bottom: 8px;
+}
+
+.post-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.post-buttons .edit-btn,
+.post-buttons .delete-btn {
+    padding: 5px 8px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.post-buttons .edit-btn {
+    background: #7371FC;
+    color: white;
+}
+
+.post-buttons .delete-btn {
+    background: #e74c3c;
+    color: white;
 }
 
 /* ------------------------
@@ -273,6 +300,12 @@ header {
 .post-actions .delete-btn {
     background: #e74c3c;
     color: white;
+}
+
+/* SMALL BUTTONS */
+.small-btn {
+    font-size: 12px;
+    padding: 4px 6px;
 }
 
 /* ------------------------
