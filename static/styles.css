@@ -1,6 +1,3 @@
-/* ------------------------
-   GLOBAL STYLES
------------------------- */
 * {
     box-sizing: border-box;
 }
@@ -13,7 +10,7 @@ body {
     color: black;
 }
 
-/* FONT — fixed GitHub Pages paths */
+/* Font */
 @font-face {
     font-family: "Chicago";
     src: url("Chicago.otf") format("opentype");
@@ -22,12 +19,12 @@ body {
     font-display: swap;
 }
 
-/* HIDDEN CLASS */
+/* Hidden class */
 .hidden {
     display: none !important;
 }
 
-/* HEADER */
+/* Header */
 header {
     width: 100%;
     height: 160px;
@@ -53,9 +50,7 @@ header {
     transform: translate(-50%, -50%);
 }
 
-/* ------------------------
-   USERNAME DROPDOWN
------------------------- */
+/* Username dropdown*/
 .username-container {
     position: absolute;
     top: 20px;
@@ -103,9 +98,7 @@ header {
     color: white;
 }
 
-/* ------------------------
-   TOP RIGHT SEARCH + CREATE
------------------------- */
+/* Serach filter anc create posts */
 .top-right {
     position: absolute;
     top: 20px;
@@ -123,7 +116,7 @@ header {
     border: none;
 }
 
-/* CREATE POST BUTTON */
+/* Create post button */
 #createBtn {
     font-size: 50px;
     font-weight: bold;
@@ -139,9 +132,7 @@ header {
     transform: scale(1.1);
 }
 
-/* ------------------------
-   POST CARD / FEED
------------------------- */
+/* Posts cards */
 .post, .post-card {
     width: 60%;
     background: white;
@@ -173,12 +164,12 @@ header {
     margin-bottom: 8px;
 }
 
-/* POST ACTION BUTTONS - REVERTED BELOW CONTENT */
+/* Post action buttons */
 .post-actions {
     display: flex;
     gap: 10px;
-    margin-top: 10px; /* added space below content */
-    position: static;  /* revert from absolute positioning */
+    margin-top: 10px; 
+    position: static; 
 }
 
 .post-actions .edit-btn,
@@ -200,9 +191,7 @@ header {
     color: white;
 }
 
-/* ------------------------
-   POPUP MODALS
------------------------- */
+/* Popup modals*/
 .popup-overlay {
     position: fixed;
     inset: 0;
@@ -242,9 +231,7 @@ header {
     font-size: 16px;
 }
 
-/* ------------------------
-   BIG BUTTONS
------------------------- */
+/* Big buttons */
 .big-btn {
     width: 100%;
     padding: 15px;
@@ -277,7 +264,7 @@ header {
     box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
 }
 
-/* NO POSTS BOX */
+/* No posts box */
 .no-posts-box {
     width: 60%;
     margin: 100px auto;
@@ -288,9 +275,7 @@ header {
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-/* ------------------------
-   RESPONSIVE DESIGN
------------------------- */
+/* Responsive design */
 @media (max-width: 600px) {
     .post, .post-card, .no-posts-box {
         width: 90%;
