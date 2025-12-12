@@ -1,7 +1,7 @@
 import { API_BASE } from "./auth.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("my-posts loaded");
+export function initMyPosts() {
+    console.log("initMyPosts running");
 
     const username = localStorage.getItem("anon_username");
     const password = localStorage.getItem("anon_password");
@@ -11,40 +11,48 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    document.getElementById("headerUsername").textContent = username;
+    const headerUser = document.getElementById("headerUsername");
+    if (headerUser) headerUser.textContent = username;
 
     setupDropdown();
     loadMyPosts(username);
-});
+}
 
-
-// ----------------------
-// DROPDOWN
-// ----------------------
+/* --------------------------------------
+   DROPDOWN MENU
+--------------------------------------- */
 function setupDropdown() {
     const wrap = document.getElementById("headerWrap");
     const menu = document.getElementById("usernameDropdown");
+
+    if (!wrap || !menu) return;
 
     wrap.addEventListener("click", () => {
         menu.classList.toggle("show");
     });
 
-    document.getElementById("homeBtn").addEventListener("click", () => {
-        window.location.href = "select.html";
-    });
+    const homeBtn = document.getElementById("homeBtn");
+    if (homeBtn) {
+        homeBtn.addEventListener("click", () => {
+            window.location.href = "select.html";
+        });
+    }
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.clear();
-        window.location.href = "index.html";
-    });
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.clear();
+            window.location.href = "index.html";
+        });
+    }
 }
 
-
-// ----------------------
-// LOAD ONLY USER POSTS
-// ----------------------
+/* --------------------------------------
+   LOAD ONLY USER'S POSTS
+--------------------------------------- */
 async function loadMyPosts(username) {
     const container = document.getElementById("postsContainer");
+    if (!container) return;
 
     try {
         const res = await fetch(`${API_BASE}/api/posts`);
@@ -63,7 +71,7 @@ async function loadMyPosts(username) {
             const card = document.createElement("div");
             card.className = "post-card";
 
-            const img = p.imageUrl ? p.imageUrl : "https://via.placeholder.com/180x140";
+            const img = p.imageUrl || "https://via.placeholder.com/180x140";
 
             card.innerHTML = `
                 <img src="${img}">
