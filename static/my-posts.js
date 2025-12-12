@@ -1,21 +1,16 @@
 import { API_BASE } from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("my-posts loaded");
-
     const username = localStorage.getItem("anon_username");
-    const password = localStorage.getItem("anon_password");
-
-    if (!username || !password) {
-        window.location.href = "index.html";
-        return;
-    }
+    if (!username) window.location.href = "index.html";
 
     document.getElementById("headerUsername").textContent = username;
 
     setupDropdown();
     loadMyPosts(username);
 });
+
+let currentEditPost = null;
 
 // ----------------------
 // DROPDOWN
@@ -39,7 +34,7 @@ function setupDropdown() {
 }
 
 // ----------------------
-// LOAD ONLY USER POSTS
+// LOAD POSTS
 // ----------------------
 async function loadMyPosts(username) {
     const container = document.getElementById("postsContainer");
@@ -48,15 +43,12 @@ async function loadMyPosts(username) {
         const res = await fetch(`${API_BASE}/api/posts`);
         const posts = await res.json();
 
-        // Filter posts by current user
         const mine = posts.filter(p => p.username === username);
-
-        // Sort posts by createdAt descending (latest first)
-        mine.sort((a, b) => new Date(b.createdAt.split("/").reverse().join("-")) - new Date(a.createdAt.split("/").reverse().join("-")));
+        mine.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         container.innerHTML = "";
 
-        if (mine.length === 0) {
+        if (!mine.length) {
             container.innerHTML = "<p>No posts yet.</p>";
             return;
         }
@@ -70,31 +62,24 @@ async function loadMyPosts(username) {
             card.innerHTML = `
                 <img src="${imgSrc}">
                 <div class="post-text">
-                    <div class="post-meta">@${p.username} • ${p.createdAt}</div>
+                    <div class="post-meta">@${p.username} • ${formatDate(p.createdAt)}</div>
                     <div>${p.content}</div>
-                    <div class="post-actions">
+                    <div class="post-actions" style="justify-content:flex-end;">
                         <button class="edit-btn">Edit</button>
                         <button class="delete-btn">Delete</button>
                     </div>
                 </div>
             `;
-
             container.appendChild(card);
 
             // ----------------------
             // EDIT BUTTON
             // ----------------------
             card.querySelector(".edit-btn").addEventListener("click", () => {
-                const newContent = prompt("Edit your post:", p.content);
-                const newImage = prompt("Edit image URL (optional):", p.imageUrl || "");
-                if (newContent !== null) {
-                    p.content = newContent;
-                    p.imageUrl = newImage;
-                    // Update post on backend
-                    updatePost(p.id, p);
-                    card.querySelector(".post-text > div:nth-child(2)").textContent = newContent;
-                    card.querySelector("img").src = newImage || "https://via.placeholder.com/180x140";
-                }
+                currentEditPost = p;
+                document.getElementById("editText").value = p.content;
+                document.getElementById("editImageUrl").value = p.imageUrl || "";
+                showPopup("editPostPopup");
             });
 
             // ----------------------
@@ -108,23 +93,53 @@ async function loadMyPosts(username) {
             });
         });
 
+        // ----------------------
+        // EDIT MODAL BUTTONS
+        // ----------------------
+        document.getElementById("saveEdit").onclick = () => {
+            if (!currentEditPost) return;
+            const newContent = document.getElementById("editText").value.trim();
+            const newImage = document.getElementById("editImageUrl").value.trim();
+            currentEditPost.content = newContent;
+            currentEditPost.imageUrl = newImage;
+            hidePopup("editPostPopup");
+            loadMyPosts(username); // refresh posts
+        };
+
+        document.getElementById("cancelEdit").onclick = () => {
+            hidePopup("editPostPopup");
+        };
+
     } catch (err) {
-        console.error("Failed to load posts", err);
+        console.error(err);
         container.innerHTML = "<p>Error loading posts.</p>";
     }
 }
 
 // ----------------------
-// BACKEND UPDATE FUNCTIONS
+// POPUP HELPERS
 // ----------------------
-async function updatePost(postId, data) {
-    // Replace with actual API call if backend supports edit
-    console.log(`Updating post ${postId}`, data);
-    // For now, just updating in memory
+function showPopup(id) {
+    document.getElementById(id)?.classList.remove("hidden");
 }
 
+function hidePopup(id) {
+    document.getElementById(id)?.classList.add("hidden");
+}
+
+// ----------------------
+// DELETE POST
+// ----------------------
 async function deletePost(postId) {
-    // Replace with actual API call if backend supports delete
-    console.log(`Deleting post ${postId}`);
-    // For now, just removing from memory
+    console.log("Deleting post", postId);
+    // replace with backend API call if available
+}
+
+// ----------------------
+// FORMAT DATE
+// ----------------------
+function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()} ` +
+           `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}`;
 }
