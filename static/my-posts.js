@@ -31,108 +31,79 @@ function setupDropdown() {
 
 async function loadMyPosts(username) {
     const container = document.getElementById("postsContainer");
-    container.innerHTML = "";
 
     try {
         const res = await fetch(`${API_BASE}/api/posts`);
         const posts = await res.json();
+
         const mine = posts.filter(p => p.username === username)
-                           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                           .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        container.innerHTML = "";
 
         if (mine.length === 0) {
-            container.innerHTML = "<p>No posts yet.</p>";
+            container.innerHTML = `
+                <div class="no-posts-box">
+                    <p>No posts yet.</p>
+                    <p>Do you want to go and create a post?</p>
+                    <button class="big-btn purple" id="goCreate">Create Post</button>
+                </div>
+            `;
+            document.getElementById("goCreate").addEventListener("click", () => {
+                window.location.href = "select.html";
+            });
             return;
         }
 
         mine.forEach(p => {
             const card = document.createElement("div");
             card.className = "post-card";
-            card.dataset.postId = p.id;
+
+            const img = p.imageUrl || "https://via.placeholder.com/180x140";
 
             card.innerHTML = `
-                <img src="${p.imageUrl || 'https://via.placeholder.com/180x140'}">
+                <img src="${img}">
                 <div class="post-text">
-                    <div class="post-meta">@${p.username} • ${p.createdAt}</div>
-                    <div class="post-content">${p.content}</div>
+                    <div class="post-meta">@${p.username} • ${new Date(p.createdAt).toLocaleString()}</div>
+                    <div>${p.content}</div>
                 </div>
-                <div class="post-buttons">
-                    <button class="edit-btn small-btn">Edit</button>
-                    <button class="delete-btn small-btn">Delete</button>
+                <div class="post-actions">
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>
                 </div>
             `;
 
             container.appendChild(card);
+
+            // Edit/Delete handlers (popups)
+            const editBtn = card.querySelector(".edit-btn");
+            const deleteBtn = card.querySelector(".delete-btn");
+
+            editBtn.addEventListener("click", () => {
+                const newText = prompt("Edit post text:", p.content);
+                if (newText !== null) {
+                    p.content = newText;
+                    fetch(`${API_BASE}/api/posts`, {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify(p)
+                    }).then(()=>loadMyPosts(username));
+                }
+            });
+
+            deleteBtn.addEventListener("click", () => {
+                if (confirm("Delete this post?")) {
+                    fetch(`${API_BASE}/api/posts`, {
+                        method: "DELETE",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({id: p.id})
+                    }).then(()=>loadMyPosts(username));
+                }
+            });
         });
 
-        setupPostButtons();
     } catch (err) {
         console.error(err);
         container.innerHTML = "<p>Error loading posts.</p>";
     }
-}
-
-// ------------------ POST BUTTONS ------------------
-function setupPostButtons() {
-    const editModal = document.getElementById("editModalBg");
-    const deleteModal = document.getElementById("deleteModalBg");
-
-    let currentPostId = null;
-
-    document.querySelectorAll(".edit-btn").forEach(btn => {
-        btn.addEventListener("click", e => {
-            const card = e.target.closest(".post-card");
-            currentPostId = card.dataset.postId;
-
-            const content = card.querySelector(".post-content").textContent;
-            const img = card.querySelector("img").src;
-
-            document.getElementById("editText").value = content;
-            document.getElementById("editImageUrl").value = img.includes("placeholder") ? "" : img;
-
-            editModal.classList.remove("hidden");
-        });
-    });
-
-    document.getElementById("cancelEdit").addEventListener("click", () => {
-        editModal.classList.add("hidden");
-    });
-
-    document.getElementById("saveEdit").addEventListener("click", async () => {
-        const content = document.getElementById("editText").value;
-        const imageUrl = document.getElementById("editImageUrl").value;
-
-        try {
-            await fetch(`${API_BASE}/api/posts/${currentPostId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content, imageUrl })
-            });
-            editModal.classList.add("hidden");
-            loadMyPosts(localStorage.getItem("anon_username"));
-        } catch (err) {
-            console.error(err);
-        }
-    });
-
-    document.querySelectorAll(".delete-btn").forEach(btn => {
-        btn.addEventListener("click", e => {
-            const card = e.target.closest(".post-card");
-            currentPostId = card.dataset.postId;
-            deleteModal.classList.remove("hidden");
-        });
-    });
-
-    document.getElementById("cancelDelete").addEventListener("click", () => {
-        deleteModal.classList.add("hidden");
-    });
-
-    document.getElementById("confirmDelete").addEventListener("click", async () => {
-        try {
-            await fetch(`${API_BASE}/api/posts/${currentPostId}`, { method: "DELETE" });
-            deleteModal.classList.add("hidden");
-            loadMyPosts(localStorage.getItem("anon_username"));
-        } catch (err) {
-            console.error(err);
-        }
-    });
 }
