@@ -8,18 +8,20 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-# In-memory storage
+# In-memory database for users + posts (temporary storage)
 users = {}
 posts = []
 
-# ---------- UTILS ----------
+# Utils
 def gen_anon():
     return "anon" + ''.join(random.choices(string.digits, k=6))
 
 def current_iso():
     return datetime.now().isoformat()  # current timestamp in ISO format
 
-# ---------- IDENTITY ----------
+# Identity
+
+# POST /api/generate → create random account
 @app.route("/api/generate", methods=["POST"])
 def generate_identity():
     username = gen_anon()
@@ -27,6 +29,7 @@ def generate_identity():
     users[username] = password
     return jsonify({"username": username, "password": password})
 
+# POST /api/login → check username/password
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -36,7 +39,9 @@ def login():
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
 
-# ---------- POSTS CRUD ----------
+# Posts
+
+# GET/POST /api/posts → list or create posts
 @app.route("/api/posts", methods=["GET", "POST", "OPTIONS"])
 def handle_posts():
     global posts
@@ -58,6 +63,7 @@ def handle_posts():
     # GET
     return jsonify(posts)
 
+# PATCH/DELETE /api/posts/<id> → update or delete posts
 @app.route("/api/posts/<int:post_id>", methods=["PATCH", "DELETE", "OPTIONS"])
 def update_delete_post(post_id):
     global posts
@@ -78,6 +84,6 @@ def update_delete_post(post_id):
         posts.remove(post)
         return jsonify({"success": True})
 
-# ---------- RUN ----------
+#Run
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
