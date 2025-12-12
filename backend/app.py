@@ -1,18 +1,30 @@
+# backend/app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from datetime import datetime
 import random
 import string
-from datetime import datetime
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # allow frontend JS to call API
 
+# In-memory "database" for testing
 users = {}
 posts = []
 
+# --------------------------
+# UTILITY FUNCTIONS
+# --------------------------
 def gen_anon():
     return "anon" + ''.join(random.choices(string.digits, k=6))
 
+def current_timestamp():
+    # dd/mm/yyyy hh:mm:ss
+    return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+# --------------------------
+# AUTHENTICATION ROUTES
+# --------------------------
 @app.route("/api/generate", methods=["POST"])
 def generate_identity():
     username = gen_anon()
@@ -29,33 +41,45 @@ def login():
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
 
-@app.route("/api/posts", methods=["GET", "POST", "PUT", "DELETE"])
+# --------------------------
+# POSTS ROUTES
+# --------------------------
+@app.route("/api/posts", methods=["GET", "POST"])
 def handle_posts():
+    global posts
     if request.method == "POST":
         data = request.get_json()
         posts.append({
-            "id": len(posts)+1,
+            "id": len(posts) + 1,
             "username": data.get("username"),
             "content": data.get("content"),
             "imageUrl": data.get("imageUrl"),
-            "createdAt": datetime.utcnow().isoformat()
+            "createdAt": current_timestamp()
         })
         return jsonify({"success": True})
+    # return posts sorted chronologically (oldest first)
+    sorted_posts = sorted(posts, key=lambda x: datetime.strptime(x["createdAt"], "%d/%m/%Y %H:%M:%S"))
+    return jsonify(sorted_posts)
 
-    elif request.method == "PUT":
+@app.route("/api/posts/<int:post_id>", methods=["PUT", "DELETE"])
+def modify_post(post_id):
+    global posts
+    post = next((p for p in posts if p["id"] == post_id), None)
+    if not post:
+        return jsonify({"error": "Post not found"}), 404
+
+    if request.method == "PUT":
         data = request.get_json()
-        post_id = data.get("id")
-        for p in posts:
-            if p["id"] == post_id:
-                p["content"] = data.get("content", p["content"])
-                p["imageUrl"] = data.get("imageUrl", p["imageUrl"])
-                return jsonify({"success": True})
-        return jsonify({"success": False, "error": "Post not found"}), 404
+        post["content"] = data.get("content", post["content"])
+        post["imageUrl"] = data.get("imageUrl", post["imageUrl"])
+        return jsonify({"success": True, "post": post})
 
-    elif request.method == "DELETE":
-        post_id = int(request.args.get("id", 0))
-        global posts
+    if request.method == "DELETE":
         posts = [p for p in posts if p["id"] != post_id]
         return jsonify({"success": True})
 
-    return jsonify(posts)
+# --------------------------
+# RUN APP
+# --------------------------
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
