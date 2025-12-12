@@ -1,57 +1,34 @@
 import { API_BASE } from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("my-posts loaded");
-
     const username = localStorage.getItem("anon_username");
-    const password = localStorage.getItem("anon_password");
+    if (!username) return (window.location.href = "index.html");
 
-    if (!username || !password) {
-        window.location.href = "index.html";
-        return;
-    }
-
-    // Set top-left username
-    const u = document.getElementById("headerUsername");
-    if (u) u.textContent = username;
+    document.getElementById("headerUsername").textContent = username;
 
     setupDropdown();
     loadMyPosts(username);
 });
 
-/* --------------------------
-   DROPDOWN
---------------------------- */
 function setupDropdown() {
     const wrap = document.getElementById("headerWrap");
     const menu = document.getElementById("usernameDropdown");
 
-    if (!wrap || !menu) return;
-
-    wrap.addEventListener("click", () => {
-        menu.classList.toggle("show");
+    wrap.addEventListener("click", () => menu.classList.toggle("show"));
+    document.addEventListener("click", e => {
+        if (!wrap.contains(e.target) && !menu.contains(e.target)) menu.classList.remove("show");
     });
 
     const homeBtn = document.getElementById("homeBtn");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    if (homeBtn) {
-        homeBtn.addEventListener("click", () => {
-            window.location.href = "select.html";
-        });
-    }
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-            localStorage.clear();
-            window.location.href = "index.html";
-        });
-    }
+    homeBtn?.addEventListener("click", () => window.location.href = "select.html");
+    logoutBtn?.addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+    });
 }
 
-/* --------------------------
-   LOAD USER’S POSTS
---------------------------- */
 async function loadMyPosts(username) {
     const container = document.getElementById("postsContainer");
     if (!container) return;
@@ -60,34 +37,33 @@ async function loadMyPosts(username) {
         const res = await fetch(`${API_BASE}/api/posts`);
         const posts = await res.json();
 
-        const mine = posts.filter(p => p.username === username);
+        const mine = posts
+            .filter(p => p.username === username)
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-        container.innerHTML = "";
-
-        if (mine.length === 0) {
-            container.innerHTML = "<p>No posts yet.</p>";
-            return;
-        }
+        container.innerHTML = mine.length ? "" : "<p>No posts yet.</p>";
 
         mine.forEach(p => {
             const card = document.createElement("div");
             card.className = "post-card";
 
-            const img = p.imageUrl || "https://via.placeholder.com/180x140";
+            if (p.imageUrl) {
+                const img = document.createElement("img");
+                img.src = p.imageUrl;
+                img.alt = "post image";
+                card.appendChild(img);
+            }
 
-            card.innerHTML = `
-                <img src="${img}">
-                <div class="post-text">
-                    <div class="post-meta">@${p.username} • ${new Date(p.createdAt).toLocaleString()}</div>
-                    <div>${p.content}</div>
-                </div>
-            `;
+            const text = document.createElement("div");
+            text.className = "post-text";
+            const date = p.createdAt ? new Date(p.createdAt).toLocaleString() : "";
+            text.innerHTML = `<div class="post-meta">@${p.username} • ${date}</div>${p.content || ""}`;
+            card.appendChild(text);
 
             container.appendChild(card);
         });
-
     } catch (err) {
-        console.error("Failed to load posts", err);
+        console.error(err);
         container.innerHTML = "<p>Error loading posts.</p>";
     }
 }
