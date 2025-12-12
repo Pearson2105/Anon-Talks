@@ -3,6 +3,11 @@ import { initPosts } from "./posts.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("app DOMContentLoaded");
+
     initAuth();
-    initPosts();
+
+    // only run post system on select.html
+    if (window.location.pathname.endsWith("select.html")) {
+        initPosts();
+    }
 });
