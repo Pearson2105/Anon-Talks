@@ -173,28 +173,30 @@ header {
     margin-bottom: 8px;
 }
 
-.post-buttons {
+/* POST ACTION BUTTONS */
+.post-actions {
     display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 10px;
+    gap: 5px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
 }
 
-.post-buttons .edit-btn,
-.post-buttons .delete-btn {
+.post-actions .edit-btn,
+.post-actions .delete-btn {
     padding: 5px 8px;
-    border: none;
-    border-radius: 6px;
     font-size: 12px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
 }
 
-.post-buttons .edit-btn {
+.post-actions .edit-btn {
     background: #7371FC;
     color: white;
 }
 
-.post-buttons .delete-btn {
+.post-actions .delete-btn {
     background: #e74c3c;
     color: white;
 }
@@ -276,43 +278,22 @@ header {
     box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
 }
 
-/* POST ACTION BUTTONS */
-.post-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.post-actions .edit-btn,
-.post-actions .delete-btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.post-actions .edit-btn {
-    background: #7371FC;
-    color: white;
-}
-
-.post-actions .delete-btn {
-    background: #e74c3c;
-    color: white;
-}
-
-/* SMALL BUTTONS */
-.small-btn {
-    font-size: 12px;
-    padding: 4px 6px;
+/* NO POSTS BOX */
+.no-posts-box {
+    width: 60%;
+    margin: 100px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 /* ------------------------
    RESPONSIVE DESIGN
 ------------------------ */
 @media (max-width: 600px) {
-    .post, .post-card {
+    .post, .post-card, .no-posts-box {
         width: 90%;
         flex-direction: column;
         align-items: center;
