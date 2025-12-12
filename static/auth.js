@@ -13,9 +13,11 @@ export function initAuth() {
     const loginConfirm = document.getElementById("loginConfirm");
     const useIdentity = document.getElementById("useIdentity");
 
+    // open login popup
     if (loginBtn && loginPopup) loginBtn.addEventListener("click", () => loginPopup.classList.remove("hidden"));
     if (closeLogin && loginPopup) closeLogin.addEventListener("click", () => loginPopup.classList.add("hidden"));
 
+    // login: send username + password to backend
     if (loginConfirm) {
         loginConfirm.addEventListener("click", async () => {
             const uIn = document.getElementById("loginUser");
@@ -43,6 +45,7 @@ export function initAuth() {
         });
     }
 
+    // generate random identity
     if (generateBtn) {
         generateBtn.addEventListener("click", async () => {
             try {
