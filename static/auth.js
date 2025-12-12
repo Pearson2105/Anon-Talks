@@ -52,12 +52,18 @@ export function initAuth() {
 
             showPopup(generatePopup);
 
-            useIdentity?.addEventListener("click", () => {
-                if (!data.username || !data.password) return;
-                localStorage.setItem("anon_username", data.username);
-                localStorage.setItem("anon_password", data.password);
-                window.location.href = "select.html";
-            }, { once: true });
+            // Use identity - correct syntax
+            if (useIdentity) {
+                const handler = () => {
+                    if (!data.username || !data.password) return;
+                    localStorage.setItem("anon_username", data.username);
+                    localStorage.setItem("anon_password", data.password);
+                    window.location.href = "select.html";
+                    useIdentity.removeEventListener("click", handler);
+                };
+                useIdentity.addEventListener("click", handler);
+            }
+
         } catch (err) {
             console.error(err);
         }
