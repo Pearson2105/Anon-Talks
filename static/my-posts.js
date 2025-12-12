@@ -1,112 +1,145 @@
+// static/posts.js
 import { API_BASE } from "./auth.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-    const username = localStorage.getItem("anon_username");
-    if(!username){ window.location.href="index.html"; return; }
-    document.getElementById("headerUsername").textContent = username;
-    setupDropdown();
-    loadMyPosts(username);
-});
+export function initPosts() {
+    const username = localStorage.getItem("anon_username") || "Anonymous";
 
-function setupDropdown() {
-    const wrap = document.getElementById("headerWrap");
-    const menu = document.getElementById("usernameDropdown");
-    wrap.addEventListener("click", ()=>menu.classList.toggle("show"));
+    const headerUsernameEl = document.getElementById("headerUsername");
+    if (headerUsernameEl) headerUsernameEl.textContent = username;
 
-    document.getElementById("homeBtn").addEventListener("click", ()=>window.location.href="select.html");
-    document.getElementById("logoutBtn").addEventListener("click", ()=>{
-        localStorage.clear();
-        window.location.href="index.html";
-    });
-}
+    setupDropdown(); // ensure dropdown works
 
-async function loadMyPosts(username){
-    const container = document.getElementById("postsContainer");
-    try{
-        const res = await fetch(`${API_BASE}/api/posts`);
-        const posts = (await res.json()).filter(p=>p.username===username)
-                                        .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
-        container.innerHTML="";
+    const postsContainer = document.getElementById("postsContainer");
+    if (postsContainer) {
+        loadPosts();
+        setupCreatePopup();
+        setupSearch();
+    }
 
-        if(posts.length===0){
-            container.innerHTML=`
-                <div class="no-posts-box">
-                    <p>No posts yet.</p>
-                    <p>Do you want to go and create a post?</p>
-                    <button class="big-btn purple" id="goCreate">Create Post</button>
-                </div>
-            `;
-            document.getElementById("goCreate").addEventListener("click", ()=>window.location.href="select.html");
-            return;
-        }
+    // ----------------------
+    // DROPDOWN
+    // ----------------------
+    function setupDropdown() {
+        const wrap = document.getElementById("headerWrap");
+        const menu = document.getElementById("usernameDropdown");
+        if (!wrap || !menu) return;
 
-        posts.forEach(p=>{
-            const card=document.createElement("div");
-            card.className="post-card";
-            const img=p.imageUrl || "https://via.placeholder.com/180x140";
-            card.innerHTML=`
-                <img src="${img}">
-                <div class="post-text">
-                    <div class="post-meta">@${p.username} • ${new Date(p.createdAt).toLocaleString()}</div>
-                    <div>${p.content}</div>
-                </div>
-                <div class="post-actions">
-                    <button class="edit-btn">Edit</button>
-                    <button class="delete-btn">Delete</button>
-                </div>
-            `;
-            container.appendChild(card);
-
-            const editBtn = card.querySelector(".edit-btn");
-            const deleteBtn = card.querySelector(".delete-btn");
-
-            // Edit popup
-            editBtn.addEventListener("click", ()=>{
-                const editBg = document.getElementById("editModalBg");
-                const editText = document.getElementById("editText");
-                const editImage = document.getElementById("editImageUrl");
-                editBg.classList.remove("hidden");
-                editText.value = p.content;
-                editImage.value = p.imageUrl || "";
-
-                document.getElementById("saveEdit").onclick = async ()=>{
-                    const newContent = editText.value;
-                    const newImage = editImage.value;
-                    try{
-                        await fetch(`${API_BASE}/api/posts`,{
-                            method:"PATCH",
-                            headers:{"Content-Type":"application/json"},
-                            body: JSON.stringify({...p, content:newContent, imageUrl:newImage})
-                        });
-                        editBg.classList.add("hidden");
-                        loadMyPosts(username);
-                    }catch(e){ console.error(e); }
-                };
-
-                document.getElementById("cancelEdit").onclick = ()=>{
-                    editBg.classList.add("hidden");
-                };
-            });
-
-            // Delete popup
-            deleteBtn.addEventListener("click", ()=>{
-                const delBg = document.getElementById("deleteModalBg");
-                delBg.classList.remove("hidden");
-                document.getElementById("confirmDelete").onclick = async ()=>{
-                    try{
-                        await fetch(`${API_BASE}/api/posts`,{
-                            method:"DELETE",
-                            headers:{"Content-Type":"application/json"},
-                            body: JSON.stringify({id:p.id})
-                        });
-                        delBg.classList.add("hidden");
-                        loadMyPosts(username);
-                    }catch(e){ console.error(e); }
-                };
-                document.getElementById("cancelDelete").onclick = ()=>{
-                    delBg.classList.add("hidden");
-                };
-            });
+        // toggle dropdown on click
+        wrap.addEventListener("click", (e) => {
+            e.stopPropagation(); // prevent closing immediately
+            menu.classList.toggle("show");
         });
-    }catch(e){ container.innerHTML="<p>Error loading posts.</p>"; console.error(e); }
+
+        // close dropdown if clicking outside
+        document.addEventListener("click", () => {
+            menu.classList.remove("show");
+        });
+
+        // buttons inside dropdown
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) logoutBtn.addEventListener("click", () => {
+            localStorage.clear();
+            window.location.href = "index.html";
+        });
+
+        const editPostsBtn = document.getElementById("editPosts");
+        if (editPostsBtn) editPostsBtn.addEventListener("click", () => {
+            window.location.href = "my-posts.html";
+        });
+    }
+
+    // ----------------------
+    async function loadPosts(filter = "") {
+        const container = document.getElementById("postsContainer");
+        if (!container) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/posts`);
+            const posts = (await res.json()).sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
+
+            container.innerHTML = "";
+            posts
+                .filter((p) => {
+                    if (!filter) return true;
+                    return (
+                        p.content.toLowerCase().includes(filter) ||
+                        p.username.toLowerCase().includes(filter)
+                    );
+                })
+                .forEach((p) => {
+                    const card = document.createElement("div");
+                    card.className = "post-card";
+                    const img = p.imageUrl || "https://via.placeholder.com/180x140";
+
+                    card.innerHTML = `
+                        <img src="${img}">
+                        <div class="post-text">
+                            <div class="post-meta">@${p.username} • ${new Date(
+                        p.createdAt
+                    ).toLocaleString()}</div>
+                            <div>${p.content}</div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="edit-btn">Edit</button>
+                            <button class="delete-btn">Delete</button>
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+
+                    // TODO: attach edit/delete functionality if needed
+                });
+        } catch (e) {
+            container.innerHTML = "<p>Error loading posts.</p>";
+            console.error(e);
+        }
+    }
+
+    // ----------------------
+    function setupCreatePopup() {
+        const popup = document.getElementById("popupOverlay");
+        const createBtn = document.getElementById("createBtn");
+        const closeBtn = document.getElementById("closePopup");
+        const submitBtn = document.getElementById("submitPost");
+        if (!popup || !createBtn || !closeBtn || !submitBtn) return;
+
+        createBtn.addEventListener("click", () => popup.classList.remove("hidden"));
+        closeBtn.addEventListener("click", () => popup.classList.add("hidden"));
+
+        submitBtn.addEventListener("click", async () => {
+            const textEl = document.getElementById("text");
+            const imageEl = document.getElementById("imageUrl");
+            const text = textEl ? textEl.value : "";
+            const imageUrl = imageEl ? imageEl.value : "";
+            const username = localStorage.getItem("anon_username") || "Anonymous";
+
+            if (!text) return alert("Post text required");
+
+            const post = { username, content: text, imageUrl, createdAt: new Date().toISOString() };
+            try {
+                await fetch(`${API_BASE}/api/posts`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(post),
+                });
+                popup.classList.add("hidden");
+                if (textEl) textEl.value = "";
+                if (imageEl) imageEl.value = "";
+                loadPosts();
+            } catch (e) {
+                console.error(e);
+            }
+        });
+    }
+
+    // ----------------------
+    function setupSearch() {
+        const search = document.getElementById("searchBox");
+        if (!search) return;
+        search.addEventListener("input", (e) => {
+            loadPosts(e.target.value.toLowerCase());
+        });
+    }
 }
