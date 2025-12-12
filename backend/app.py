@@ -1,4 +1,3 @@
-# backend/app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import random
@@ -6,9 +5,8 @@ import string
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app)  # allow frontend JS to call API
+CORS(app)
 
-# In-memory "database" for testing
 users = {}
 posts = []
 
@@ -31,22 +29,33 @@ def login():
         return jsonify({"success": True})
     return jsonify({"success": False}), 401
 
-@app.route("/api/posts", methods=["GET", "POST"])
+@app.route("/api/posts", methods=["GET", "POST", "PUT", "DELETE"])
 def handle_posts():
     if request.method == "POST":
         data = request.get_json()
-        now = datetime.utcnow()  # current UTC time
-        timestamp = now.strftime("%d/%m/%Y %H:%M:%S")  # dd/mm/yyyy hh:mm:ss format
-
         posts.append({
-            "id": len(posts) + 1,
+            "id": len(posts)+1,
             "username": data.get("username"),
             "content": data.get("content"),
             "imageUrl": data.get("imageUrl"),
-            "createdAt": timestamp
+            "createdAt": datetime.utcnow().isoformat()
         })
         return jsonify({"success": True})
-    return jsonify(posts)
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    elif request.method == "PUT":
+        data = request.get_json()
+        post_id = data.get("id")
+        for p in posts:
+            if p["id"] == post_id:
+                p["content"] = data.get("content", p["content"])
+                p["imageUrl"] = data.get("imageUrl", p["imageUrl"])
+                return jsonify({"success": True})
+        return jsonify({"success": False, "error": "Post not found"}), 404
+
+    elif request.method == "DELETE":
+        post_id = int(request.args.get("id", 0))
+        global posts
+        posts = [p for p in posts if p["id"] != post_id]
+        return jsonify({"success": True})
+
+    return jsonify(posts)
