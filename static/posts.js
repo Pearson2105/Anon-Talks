@@ -27,6 +27,7 @@ export function initPosts() {
         if (editPostsBtn) editPostsBtn.addEventListener("click", () => window.location.href = "my-posts.html");
     }
 
+    // Load all posts from backend
     async function loadPosts(filter="") {
         const container = document.getElementById("postsContainer");
         if (!container) return;
@@ -57,6 +58,7 @@ export function initPosts() {
         }
     }
 
+    // Show popup for creating new post
     function setupCreatePopup() {
         const popup = document.getElementById("popupOverlay");
         const createBtn = document.getElementById("createBtn");
@@ -94,6 +96,7 @@ export function initPosts() {
         });
     }
 
+    // Search filter
     function setupSearch() {
         const search = document.getElementById("searchBox");
         if (!search) return;
